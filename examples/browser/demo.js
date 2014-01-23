@@ -25,7 +25,7 @@ require( [
     };
 
     var xhr = new XMLHttpRequest( );
-    xhr.open( 'GET', 'assets/chip8/guess.ch8', true );
+    xhr.open( 'GET', 'assets/chip8/maze.ch8', true );
     xhr.onload = start;
     xhr.responseType = 'arraybuffer';
     xhr.send( null );
