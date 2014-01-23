@@ -15,7 +15,7 @@ define( [
 
     Screen.prototype.setSize = function ( width, height ) {
 
-        this._term.resize( width + 1, height + 1 );
+        this._term.resize( width * 2 + 1, height + 1 );
 
     };
 
@@ -24,8 +24,8 @@ define( [
         var colorKey = ( '000000' + color.toString( 16 ).toLowerCase( ) ).substr( - 6 );
         var actualColor = this._colorMap[ colorKey ];
 
-        this._term.cursorPos( [ y + 1, x + 1 ] );
-        this._term.write( '\x1b[' + actualColor + 'm ' );
+        this._term.cursorPos( [ y + 1, x * 2 + 1 ] );
+        this._term.write( '\x1b[' + actualColor + 'm  ' );
 
     };
 
