@@ -19,6 +19,14 @@ define( [
 
             };
 
+            engine.start = function ( ) {
+
+                this.load.apply( this, arguments );
+
+                this.resume( );
+
+            };
+
             engine.pause = function ( ) {
 
                 if ( this.status !== 'running' )
@@ -40,12 +48,7 @@ define( [
 
             engine.initialize( );
 
-            return function ( data ) {
-
-                engine.load( data );
-                engine.resume( );
-
-            };
+            return engine;
 
         }
 
