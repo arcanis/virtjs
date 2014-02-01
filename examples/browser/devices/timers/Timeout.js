@@ -4,7 +4,7 @@ define( function ( ) {
 
     };
 
-    Timer.prototype.tick = function ( callback ) {
+    Timer.prototype.nextTick = function ( callback ) {
 
         window.setTimeout( function ( ) {
             callback( );

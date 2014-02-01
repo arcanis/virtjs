@@ -1,7 +1,10 @@
 require.config( {
 
-    paths : {
-        'virt.js' : '../../sources'
+    map : {
+        '*' : {
+            'base' : '../../libraries/base/index',
+            'architectures' : '../../libraries/architectures/'
+        }
     }
 
 } );

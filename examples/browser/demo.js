@@ -1,14 +1,13 @@
 require( [
 
-    'virt.js/Virt',
-    'virt.js/Chip8',
-    'virt.js/GB',
+    'base',
+    'architectures/gb/index',
 
     'devices/inputs/Keyboard',
     'devices/screens/CanvasScanline',
     'devices/timers/Timeout'
 
-], function ( Virt, Chip8, GB, Keyboard, Screen, Timer ) {
+], function ( Virt, GB, Keyboard, Screen, Timer ) {
 
     var screen = new Screen( { className : 'screen' } );
     screen.open( document.body );
@@ -24,7 +23,8 @@ require( [
             screen : screen,
             timer : timer,
             keyboard : keyboard,
-            skipBios : true
+            skipBios : true,
+            debug : { instructionPool : [ ] }
         } );
 
         engine.start( xhr.response );
