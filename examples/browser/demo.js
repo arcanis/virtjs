@@ -23,8 +23,7 @@ require( [
             screen : screen,
             timer : timer,
             keyboard : keyboard,
-            skipBios : true,
-            debug : { instructionPool : [ ] }
+            skipBios : false
         } );
 
         engine.start( xhr.response );
