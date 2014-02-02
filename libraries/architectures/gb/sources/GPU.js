@@ -196,6 +196,16 @@ define( [
 
         },
 
+        _resetVram : function ( ) {
+
+            for ( var t = 0, T = this._vram.length; t < T; ++ t ) {
+
+                this._vram[ t ] = 0;
+
+            }
+
+        },
+
         _updateTile : function ( address ) {
 
             // The row address

@@ -1,15 +1,43 @@
 define( [
 
-], function ( ) {
+    'base'
 
-    var Keyboard = function ( ) {
+], function ( Virtjs ) {
 
-    };
+    return Virtjs.ClassUtil.extend( [
 
-    Keyboard.prototype.open = function ( ) {
+        Virtjs.EmitterMixin
 
-    };
+    ], {
 
-    return Keyboard;
+        initialize : function ( map ) {
+
+            this._map = map;
+
+        },
+
+        open : function ( element ) {
+
+            element.addEventListener( 'keydown', function ( e ) {
+
+                if ( typeof this._map[ e.keyCode ] === 'undefined' )
+                    return ;
+
+                this.emit( 'keydown', this._map[ e.keyCode ] );
+
+            }.bind( this ) );
+
+            element.addEventListener( 'keyup', function ( e ) {
+
+                if ( typeof this._map[ e.keyCode ] === 'undefined' )
+                    return ;
+
+                this.emit( 'keyup', this._map[ e.keyCode ] );
+
+            }.bind( this ) );
+
+        }
+
+    } );
 
 } );

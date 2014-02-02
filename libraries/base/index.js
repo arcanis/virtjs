@@ -2,17 +2,23 @@ define( [
 
     './common/Class',
     './common/Format',
+    './common/Log',
     './common/Object',
+
+    './common/Emitter',
 
     './core/Engine'
 
-], function ( ClassUtil, FormatUtil, ObjectUtil, Engine ) {
+], function ( ClassUtil, FormatUtil, LogUtil, ObjectUtil, EmitterMixin, Engine ) {
 
     return {
 
         ClassUtil : ClassUtil,
         FormatUtil : FormatUtil,
+        LogUtil : LogUtil,
         ObjectUtil : ObjectUtil,
+
+        EmitterMixin : EmitterMixin,
 
         Engine : Engine,
 

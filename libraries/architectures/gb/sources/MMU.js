@@ -78,6 +78,11 @@ define( [
             if ( current >= 0xFF40 )
                 return this._engine._gpu.settingMapping( user, current - 0xFF40 );
 
+
+            // Input Binding
+            if ( current === 0xFF00 )
+                return this._engine._io.keyMapping( user, current - 0xFF00 );
+
             // IO control handling [0xFF00;0xFF80[
             if ( current > 0xFF00 )
                 return [ [ 0 ], 0 ];
@@ -119,6 +124,8 @@ define( [
                 return 0;
 
             this._inBios = value === 0;
+
+            this._engine._gpu._resetVram( );
 
             return undefined;
 

@@ -4,11 +4,12 @@ define( [
 
     './sources/CPU',
     './sources/GPU',
+    './sources/IO',
     './sources/MMU',
 
     './sources/bios'
 
-], function ( Virtjs, CPU, GPU, MMU, bios ) {
+], function ( Virtjs, CPU, GPU, IO, MMU, bios ) {
 
     return Virtjs.Engine.extend( {
 
@@ -20,6 +21,7 @@ define( [
 
             this._cpu = new CPU( this );
             this._gpu = new GPU( this );
+            this._io  = new IO( this );
             this._mmu = new MMU( this );
 
         },
@@ -42,6 +44,7 @@ define( [
             this._zram = new Uint8Array( 128 );
 
             // Immediate Enable Flag
+
             this._ime = new Uint8Array( 1 );
 
         },
@@ -82,6 +85,19 @@ define( [
             }
 
         }
+
+    }, {
+
+        RIGHT  : 0x11,
+        LEFT   : 0x12,
+        UP     : 0x14,
+        DOWN   : 0x18,
+
+        A      : 0x21,
+        B      : 0x22,
+
+        START  : 0x23,
+        SELECT : 0x24
 
     } );
 
