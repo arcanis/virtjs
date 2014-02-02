@@ -1,15 +1,15 @@
 define( [
 
-    './common/Class',
-    './common/Format',
-    './common/Log',
-    './common/Object',
+    './core/Engine',
 
-    './common/Emitter',
+    './mixins/Emitter',
 
-    './core/Engine'
+    './utils/Class',
+    './utils/Format',
+    './utils/Log',
+    './utils/Object'
 
-], function ( ClassUtil, FormatUtil, LogUtil, ObjectUtil, EmitterMixin, Engine ) {
+], function ( Engine, EmitterMixin, ClassUtil, FormatUtil, LogUtil, ObjectUtil ) {
 
     return {
 

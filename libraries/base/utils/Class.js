@@ -1,6 +1,6 @@
 define( [
 
-    '../common/Object'
+    './Object'
 
 ], function ( ObjectUtil ) {
 

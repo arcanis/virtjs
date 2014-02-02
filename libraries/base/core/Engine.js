@@ -1,6 +1,6 @@
 define( [
 
-    '../common/Class'
+    '../utils/Class'
 
 ], function ( ClassUtil ) {
 
