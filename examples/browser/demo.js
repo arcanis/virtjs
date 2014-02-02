@@ -9,10 +9,13 @@ require( [
 
 ], function ( Virt, GB, Keyboard, Screen, Timer ) {
 
+    var AZERTY = { 65 : GB.A, 90 : GB.B, 13 : GB.START, 32 : GB.SELECT
+                 , 37 : GB.LEFT, 38 : GB.UP, 39 : GB.RIGHT, 40 : GB.DOWN };
+
     var screen = new Screen( { className : 'screen' } );
     screen.open( document.body );
 
-    var keyboard = new Keyboard( );
+    var keyboard = new Keyboard( AZERTY );
     keyboard.open( document.body );
 
     var timer = new Timer( );

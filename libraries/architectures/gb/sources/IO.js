@@ -17,11 +17,11 @@ define( [
 
             this._engine._options.keyboard.on( 'keydown', function ( key ) {
                 this._keys[ key & 0xF0 ] &= key ^ 0x0F;
-            } );
+            }.bind( this ) );
 
             this._engine._options.keyboard.on( 'keyup', function ( key ) {
                 this._keys[ key & 0xF0 ] |= key;
-            } );
+            }.bind( this ) );
 
         },
 

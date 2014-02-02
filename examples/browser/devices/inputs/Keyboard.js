@@ -12,6 +12,8 @@ define( [
 
         initialize : function ( map ) {
 
+            console.log( map );
+
             this._map = map;
 
         },
