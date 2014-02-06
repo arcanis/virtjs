@@ -14,23 +14,19 @@ define( [
 
         _rsv : function ( ) {
 
-            return ; // Not sure ... why do we have to save registers ?
-
-            Z80._rsv.a = Z80._r.a; Z80._rsv.b = Z80._r.b;
-            Z80._rsv.c = Z80._r.c; Z80._rsv.d = Z80._r.d;
-            Z80._rsv.e = Z80._r.e; Z80._rsv.f = Z80._r.f;
-            Z80._rsv.h = Z80._r.h; Z80._rsv.l = Z80._r.l;
+            this._a = this._cpu._a[ 0 ]; this._b = this._cpu._b[ 0 ];
+            this._c = this._cpu._c[ 0 ]; this._d = this._cpu._d[ 0 ];
+            this._e = this._cpu._e[ 0 ]; this._f = this._cpu._f[ 0 ];
+            this._h = this._cpu._h[ 0 ]; this._l = this._cpu._l[ 0 ];
 
         },
 
         _rrs : function ( ) {
 
-            return ; // Not sure ... why do we have to restore registers ?
-
-            Z80._r.a = Z80._rsv.a; Z80._r.b = Z80._rsv.b;
-            Z80._r.c = Z80._rsv.c; Z80._r.d = Z80._rsv.d;
-            Z80._r.e = Z80._rsv.e; Z80._r.f = Z80._rsv.f;
-            Z80._r.h = Z80._rsv.h; Z80._r.l = Z80._rsv.l;
+            this._cpu._a[ 0 ] = this._a; this._cpu._b[ 0 ] = this._b;
+            this._cpu._c[ 0 ] = this._c; this._cpu._d[ 0 ] = this._d;
+            this._cpu._e[ 0 ] = this._e; this._cpu._f[ 0 ] = this._f;
+            this._cpu._h[ 0 ] = this._h; this._cpu._l[ 0 ] = this._l;
 
         },
 
@@ -5434,7 +5430,7 @@ define( [
 
         RETI : function ( ) {
 
-            this._cpu._engine._ime[ 0 ] = 1;
+            this._cpu._ime = true;
             this._rrs( );
             this._cpu._pc[ 0 ] = this._cpu._engine._mmu.readUint16( this._cpu._sp[ 0 ] );
             this._cpu._sp[ 0 ] += 2;
@@ -5655,7 +5651,7 @@ define( [
 
         DI : function ( ) {
 
-            this._cpu._engine._ime[ 0 ] = 0;
+            this._cpu._ime = false;
 
             this._cpu._m[ 0 ] = 1;
 
@@ -5663,7 +5659,7 @@ define( [
 
         EI : function ( ) {
 
-            this._cpu._engine._ime[ 0 ] = 1;
+            this._cpu._ime = true;
 
             this._cpu._m[ 0 ] = 1;
 

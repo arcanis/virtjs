@@ -12,8 +12,6 @@ define( [
 
         initialize : function ( map ) {
 
-            console.log( map );
-
             this._map = map;
 
         },
@@ -24,6 +22,8 @@ define( [
 
                 if ( typeof this._map[ e.keyCode ] === 'undefined' )
                     return ;
+
+                e.preventDefault( );
 
                 this.emit( 'keydown', this._map[ e.keyCode ] );
 

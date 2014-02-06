@@ -7,15 +7,17 @@ define( [
     './utils/Class',
     './utils/Format',
     './utils/Log',
+    './utils/Memory',
     './utils/Object'
 
-], function ( Engine, EmitterMixin, ClassUtil, FormatUtil, LogUtil, ObjectUtil ) {
+], function ( Engine, EmitterMixin, ClassUtil, FormatUtil, LogUtil, MemoryUtil, ObjectUtil ) {
 
     return {
 
         ClassUtil : ClassUtil,
         FormatUtil : FormatUtil,
         LogUtil : LogUtil,
+        MemoryUtil : MemoryUtil,
         ObjectUtil : ObjectUtil,
 
         EmitterMixin : EmitterMixin,

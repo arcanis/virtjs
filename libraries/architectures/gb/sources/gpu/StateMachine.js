@@ -10,10 +10,14 @@ define( [
 
             this._gpu = gpu;
 
+        },
+
+        setup : function ( ) {
+
             this._clock = 0;
             this._line = 0;
 
-            this._state = this._hblank;
+            this._state = this._oam;
 
         },
 
@@ -27,7 +31,7 @@ define( [
 
         _hblank : function ( ) {
 
-            if ( this._clock < 204 )
+            if ( this._clock < 51 )
                 return ;
 
             this._gpu._hblank( this._line );
@@ -35,7 +39,7 @@ define( [
             this._clock = 0;
             this._line += 1;
 
-            if ( this._line < 143 ) {
+            if ( this._line < 144 ) {
 
                 this._state = this._oam;
 
@@ -49,7 +53,7 @@ define( [
 
         _vblank : function ( ) {
 
-            if ( this._clock < 456 )
+            if ( this._clock < 114 )
                 return ;
 
             this._clock = 0;
@@ -67,7 +71,7 @@ define( [
 
         _oam : function ( ) {
 
-            if ( this._clock < 80 )
+            if ( this._clock < 20 )
                 return ;
 
             this._clock = 0;
@@ -78,7 +82,7 @@ define( [
 
         _vram : function ( ) {
 
-            if ( this._clock < 172 )
+            if ( this._clock < 43 )
                 return ;
 
             this._clock = 0;

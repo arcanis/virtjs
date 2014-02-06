@@ -10,6 +10,13 @@ define( [
 
             this._engine = engine;
 
+            // Bind mappers in order to keep the context when passing them around
+            this._biosMapper_ = this._biosMapper.bind( this );
+
+        },
+
+        setup : function ( ) {
+
             // BIOS flag
             this._inBios = true;
 
@@ -17,10 +24,10 @@ define( [
 
         readUint8 : function ( address ) {
 
-            var mapping = this.mapAddress( address, address );
+            var mapping = this.mapAddress( address );
 
-            if ( typeof mapping === 'function' )
-                return mapping( );
+            if ( typeof mapping[ 0 ] === 'function' )
+                return mapping[ 0 ].call( null, mapping[ 1 ], undefined, address );
 
             return mapping[ 0 ][ mapping[ 1 ] ];
 
@@ -28,10 +35,10 @@ define( [
 
         writeUint8 : function ( address, value ) {
 
-            var mapping = this.mapAddress( address, address );
+            var mapping = this.mapAddress( address );
 
-            if ( typeof mapping === 'function' )
-                return mapping( value );
+            if ( typeof mapping[ 0 ] === 'function' )
+                return mapping[ 0 ].call( null, mapping[ 1 ], value, address );
 
             if ( mapping[ 0 ] === this._engine._bios )
                 return undefined;
@@ -60,61 +67,67 @@ define( [
 
         },
 
-        mapAddress : function ( user, current ) {
+        mapAddress : function ( current ) {
 
-            // Immediate Enable Flag [0xFFFF;0xFFFF]
+            // [CPU] Enabled interruptions [0xFFFF;0xFFFF]
             if ( current === 0xFFFF )
-                return [ this._engine._ime, 0 ];
+                return [ this._engine._cpu._interruptions, 0 ];
 
-            // Zero-page [0xFF80;0xFFFF[
-            if ( current >= 0xFF80 )
+            //       Zero-page [0xFF80;0xFFFF[
+            if ( current >= 0xFF80 && current < 0xFFFF )
                 return [ this._engine._zram, current & 0x007F ];
 
-            // BIOS Flag
+            // [MMU] BIOS flag [0xFF50]
             if ( this._inBios && current === 0xFF50 )
-                return this._biosMapper.bind( this );
+                return [ this._biosMapper_, 0 ];
 
-            // GPU Binding [0xFF40;0xFF80[
-            if ( current >= 0xFF40 )
-                return this._engine._gpu.settingMapping( user, current - 0xFF40 );
+            // [GPU] GPU binding [0xFF40;0xFF80[
+            if ( current >= 0xFF40 && current < 0xFF80 )
+                return this._engine._gpu.settingsMapping( current - 0xFF40 );
 
+            // [CPU] Requested interruptions [0xFF0F]
+            if ( current === 0xFF0F )
+                return [ this._engine._cpu._interruptions, 1 ];
 
-            // Input Binding
+            // [IO]  Input binding [0xFF00]
             if ( current === 0xFF00 )
-                return this._engine._io.keyMapping( user, current - 0xFF00 );
+                return this._engine._io.keyMapping( current - 0xFF00 );
 
-            // IO control handling [0xFF00;0xFF80[
-            if ( current > 0xFF00 )
+            // [SND] Sound binding [0xFF10;0xFF30[
+            if ( current >= 0xFF10 && current < 0xFF30 )
                 return [ [ 0 ], 0 ];
 
-            // Object attributes memory [0xFE00;0xFF00[
-            if ( current >= 0xFE00 )
-                return [ this._engine._oam, current & 0x1FFF ];
+            // [GPU] Object attributes memory [0xFE00;0xFF00[
+            if ( current >= 0xFE00 && current < 0xFF00 )
+                return this._engine._gpu.oamMapping( current - 0xFE00 );
 
-            // Working RAM shadow [0xE000;0xFE00[
-            if ( current >= 0xF000 )
+            //       Working RAM shadow [0xE000;0xFE00[
+            if ( current >= 0xF000 && current < 0xFE00 )
                 return [ this._engine._wram, current & 0x1FFF ];
-            if ( current >= 0xE000 )
-                return [ this._engine._wram, current & 0x1FFF ];
-
-            // Working RAM [0xC000;0xE000[
-            if ( current >= 0xC000 )
+            if ( current >= 0xE000 && current < 0xF000 )
                 return [ this._engine._wram, current & 0x1FFF ];
 
-            // External RAM [0xA000;0xC000[
-            if ( current >= 0xA000 )
+            //       Working RAM [0xC000;0xE000[
+            if ( current >= 0xC000 && current < 0xE000 )
+                return [ this._engine._wram, current & 0x1FFF ];
+
+            //       External RAM [0xA000;0xC000[
+            if ( current >= 0xA000 && current < 0xC000 )
                 return [ this._engine._eram, current & 0x1FFF ];
 
-            // Graphics VRAM [0x8000;0xA000[
-            if ( current >= 0x8000 )
-                return this._engine._gpu.vramMapping( user, current & 0x1FFF );
+            // [GPU] Graphics VRAM [0x8000;0xA000[
+            if ( current >= 0x8000 && current < 0xA000 )
+                return this._engine._gpu.vramMapping( current & 0x1FFF );
 
-            // BIOS [0x0000;0x0100[
+            //       BIOS [0x0000;0x0100[
             if ( current < 0x0100 && this._inBios === true )
                 return [ this._engine._bios, current & 0x1FFF ];
 
-            // ROM [0x0000;0x8000[
-            return [ this._engine._rom, current ];
+            //       ROM [0x0000;0x8000[
+            if ( current < 0x8000 )
+                return [ this._engine._rom, current ];
+
+            return [ Virtjs.MemoryUtil.unaddressable( 16 ), 0 ];
 
         },
 

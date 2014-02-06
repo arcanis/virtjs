@@ -13,9 +13,39 @@ define( [
 
             this._engine = engine;
 
+            this._instructions = new InstructionSet( this );
+            this._instructionMap = Object.keys( InstructionMap ).reduce( function ( remap, key ) {
+
+                remap[ key ] = InstructionMap[ key ].map( function ( instruction ) {
+
+                    if ( instruction === null || ! this._instructions[ instruction ] )
+                        return undefined;
+
+                    var bind = this._instructions[ instruction ].bind( this._instructions );
+                    bind.instruction = instruction;
+
+                    return bind;
+
+                }.bind( this ) );
+
+                return remap;
+
+            }.bind( this ), { } );
+
+        },
+
+        setup : function ( ) {
+
+            // Halt Inner Register
             this._halt = false;
 
-            // Standard registers
+            // Interruptions Enable Flag
+            this._ime = false;
+
+            // Interruptions (0: enabled, 1: requested)
+            this._interruptions = new Uint8Array( 2 );
+
+            // Standard Registers
             this._a = new Uint8Array( 1 );
             this._b = new Uint8Array( 1 );
             this._c = new Uint8Array( 1 );
@@ -24,36 +54,17 @@ define( [
             this._h = new Uint8Array( 1 );
             this._l = new Uint8Array( 1 );
 
-            // Flags register
+            // Flags Register
             this._f = new Uint8Array( 1 );
 
-            // Stack pointer
+            // Stack Pointer
             this._sp = new Uint16Array( 1 );
 
-            // Program count; index
+            // Program Count
             this._pc = new Uint16Array( 1 );
 
-            // Instruction timer
+            // Cycle Register
             this._m = new Uint8Array( 1 );
-
-            var instructions = new InstructionSet( this );
-            this._instructionMap = Object.keys( InstructionMap ).reduce( function ( remap, key ) {
-
-                remap[ key ] = InstructionMap[ key ].map( function ( instruction ) {
-
-                    if ( instruction === null || ! instructions[ instruction ] )
-                        return undefined;
-
-                    var bind = instructions[ instruction ].bind( instructions );
-                    bind.instruction = instruction;
-
-                    return bind;
-
-                } );
-
-                return remap;
-
-            }, { } );
 
         },
 
@@ -72,16 +83,18 @@ define( [
                 var command = this._instructionMap.standard[ opcode ];
                 var instruction = command && command.instruction;
 
-                if ( this._engine._options.debug && this._engine._options.debug.instructions === 'all' )
-                    debugger ;
-
-                if ( this._engine._options.debug && this._engine._options.debug.instructions === 'invalid' && ! command )
-                    debugger ;
-
-                if ( this._engine._options.debug && this._engine._options.debug.instructionPool )
-                    this._engine._options.debug.instructionPool.push( [ address, opcode, instruction ] );
-
                 command( );
+
+                if ( this._ime && this._interruptions[ 0 ] && this._interruptions[ 1 ] ) {
+
+                    var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
+
+                    if ( firedInterruptions & 0x01 ) {
+                        this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
+                        this._instructions.RST40( );
+                    }
+
+                }
 
             }
 

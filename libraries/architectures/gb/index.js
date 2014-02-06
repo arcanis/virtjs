@@ -43,9 +43,11 @@ define( [
             // Zero-page RAM
             this._zram = new Uint8Array( 128 );
 
-            // Immediate Enable Flag
-
-            this._ime = new Uint8Array( 1 );
+            // CPU, GPU, MMU & IO Setup
+            this._cpu.setup( );
+            this._gpu.setup( );
+            this._mmu.setup( );
+            this._io.setup( );
 
         },
 
@@ -88,16 +90,16 @@ define( [
 
     }, {
 
-        RIGHT  : 0x11,
-        LEFT   : 0x12,
-        UP     : 0x14,
-        DOWN   : 0x18,
+        RIGHT  : 0x21,
+        LEFT   : 0x22,
+        UP     : 0x24,
+        DOWN   : 0x28,
 
-        A      : 0x21,
-        B      : 0x22,
+        A      : 0x11,
+        B      : 0x12,
 
-        START  : 0x23,
-        SELECT : 0x24
+        SELECT : 0x14,
+        START  : 0x18
 
     } );
 
