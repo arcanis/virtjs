@@ -40,7 +40,7 @@ define( [
             this._halt = false;
 
             // Interruptions Enable Flag
-            this._ime = false;
+            this._ime = true;
 
             // Interruptions (0: enabled, 1: requested)
             this._interruptions = new Uint8Array( 2 );
@@ -66,6 +66,9 @@ define( [
             // Cycle Register
             this._m = new Uint8Array( 1 );
 
+            // Instruction count
+            this._count = 0;
+
         },
 
         step : function ( ) {
@@ -84,14 +87,20 @@ define( [
                 var instruction = command && command.instruction;
 
                 command( );
+                this._count += 1;
 
                 if ( this._ime && this._interruptions[ 0 ] && this._interruptions[ 1 ] ) {
 
                     var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
 
+                    this._ime = false;
+
                     if ( firedInterruptions & 0x01 ) {
                         this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
                         this._instructions.RST40( );
+                    } else {
+                        // Instantly restore the master interruption flag
+                        this._ime = true;
                     }
 
                 }

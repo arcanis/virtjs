@@ -49,6 +49,7 @@ define( [
 
             // Bind mappers in order to keep the context when passing them around
             this._settingsMapper_           = this._settingsMapper.bind( this );
+            this._lcdStatusMapper_          = this._lcdStatusMapper.bind( this );
             this._scrollMapper_X_           = this._scrollMapper.bind( this, 0 );
             this._scrollMapper_Y_           = this._scrollMapper.bind( this, 1 );
             this._lineMapper_               = this._lineMapper.bind( this );
@@ -106,7 +107,7 @@ define( [
                 return [ this._settingsMapper_, address ];
 
             if ( address === 0x01 )
-                return [ [ 0 ], 0 ];
+                return [ this._lcdStatusMapper_, address ];
 
             if ( address === 0x02 )
                 return [ this._scrollMapper_Y_, address ];
@@ -169,6 +170,18 @@ define( [
 
         },
 
+        _lcdStatusMapper : function ( address, value, user ) {
+
+            if ( typeof value === 'undefined' )
+                return this._states._mode;
+
+            if ( value & 3 )
+                throw new Error( 'Invalid write at ' + Virtjs.FormatUtil.address( user, 16 ) );
+
+            return undefined;
+
+        },
+
         _lineMapper : function ( address, value, user ) {
 
             if ( typeof value === 'undefined' )
@@ -210,6 +223,9 @@ define( [
             if ( typeof value === 'undefined' )
                 return this._oam[ address ];
 
+            if ( this._states._mode === 2 || this._states._mode === 3 )
+                return undefined;
+
             this._oam[ address ] = value;
             this._updateSprite( address );
 
@@ -221,6 +237,9 @@ define( [
 
             if ( typeof value === 'undefined' )
                 return this._vram[ address ];
+
+            if ( this._states._mode === 3 )
+                return undefined;
 
             this._vram[ address ] = value;
             this._updateTile( address );
@@ -339,8 +358,6 @@ define( [
         },
 
         _hblank : function ( line ) {
-
-            console.log( 'foo' );
 
             if ( this._enableBackground ) {
                 this._backgroundScanline( this._scanline, line );

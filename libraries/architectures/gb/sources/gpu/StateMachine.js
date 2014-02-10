@@ -17,6 +17,7 @@ define( [
             this._clock = 0;
             this._line = 0;
 
+            this._mode = 2;
             this._state = this._oam;
 
         },
@@ -34,17 +35,19 @@ define( [
             if ( this._clock < 51 )
                 return ;
 
-            this._gpu._hblank( this._line );
-
             this._clock = 0;
             this._line += 1;
 
             if ( this._line < 144 ) {
 
+                this._mode = 2;
                 this._state = this._oam;
 
             } else {
 
+                this._gpu._vblank( );
+
+                this._mode = 1;
                 this._state = this._vblank;
 
             }
@@ -63,8 +66,8 @@ define( [
                 return ;
 
             this._line = 0;
-            this._gpu._vblank( );
 
+            this._mode = 2;
             this._state = this._oam;
 
         },
@@ -76,6 +79,7 @@ define( [
 
             this._clock = 0;
 
+            this._mode = 3;
             this._state = this._vram;
 
         },
@@ -87,6 +91,9 @@ define( [
 
             this._clock = 0;
 
+            this._gpu._hblank( this._line );
+
+            this._mode = 0;
             this._state = this._hblank;
 
         }

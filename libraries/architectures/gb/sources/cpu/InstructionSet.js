@@ -921,7 +921,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._b[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -938,7 +938,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._c[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -955,7 +955,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._d[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -972,7 +972,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._e[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -989,7 +989,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._h[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1006,7 +1006,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._l[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1023,7 +1023,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] += this._cpu._a[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1041,7 +1041,7 @@ define( [
             var m = this._cpu._engine._mmu.readUint8( ( this._cpu._h[ 0 ] << 8 ) + this._cpu._l[ 0 ] );
 
             this._cpu._a[ 0 ] += m;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1060,7 +1060,7 @@ define( [
 
             this._cpu._a[ 0 ] += m;
             this._cpu._pc[ 0 ] += 1;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] < a ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
