@@ -1161,10 +1161,12 @@ define( [
         ADCr_b : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._b[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._b[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1179,10 +1181,12 @@ define( [
         ADCr_c : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._c[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._c[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1197,10 +1201,12 @@ define( [
         ADCr_d : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._d[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._d[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1215,10 +1221,12 @@ define( [
         ADCr_e : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._e[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._e[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1233,10 +1241,12 @@ define( [
         ADCr_h : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._h[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._h[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1251,10 +1261,12 @@ define( [
         ADCr_l : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._l[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._l[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1269,10 +1281,12 @@ define( [
         ADCr_a : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += this._cpu._a[ 0 ];
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += this._cpu._a[ 0 ] + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1287,11 +1301,14 @@ define( [
         ADCHL : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
+
             var m = this._cpu._engine._mmu.readUint8( ( this._cpu._h[ 0 ] << 8 ) + this._cpu._l[ 0 ] );
 
-            this._cpu._a[ 0 ] += m;
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+            this._cpu._a[ 0 ] += m + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1306,12 +1323,15 @@ define( [
         ADCn : function ( ) {
 
             var a = this._cpu._a[ 0 ];
-            var m = this._cpu._engine._mmu.readUint8( this._cpu._pc[ 0 ] );
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] += m;
+            var m = this._cpu._engine._mmu.readUint8( this._cpu._pc[ 0 ] );
             this._cpu._pc[ 0 ] += 1;
-            this._cpu._a[ 0 ] += ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] > 0xFF ) ? 0x10 : 0;
+
+            this._cpu._a[ 0 ] += m + carry;
+
+            var overflow = carry ? this._cpu._a[ 0 ] <= a : this._cpu._a[ 0 ] < a;
+            this._cpu._f[ 0 ] = overflow ? 0x10 : 0;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1328,7 +1348,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._b[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1345,7 +1365,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._c[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1362,7 +1382,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._d[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1379,7 +1399,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._e[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1396,7 +1416,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._h[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1413,7 +1433,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._l[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1430,7 +1450,7 @@ define( [
             var a = this._cpu._a[ 0 ];
 
             this._cpu._a[ 0 ] -= this._cpu._a[ 0 ];
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1448,7 +1468,7 @@ define( [
             var m = this._cpu._engine._mmu.readUint8( ( this._cpu._h[ 0 ] << 8 ) + this._cpu._l[ 0 ] );
 
             this._cpu._a[ 0 ] -= m;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1467,7 +1487,7 @@ define( [
 
             this._cpu._a[ 0 ] -= m;
             this._cpu._pc[ 0 ] += 1;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._f[ 0 ] = this._cpu._a[ 0 ] > a ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1482,10 +1502,12 @@ define( [
         SBCr_b : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._b[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._b[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1500,10 +1522,12 @@ define( [
         SBCr_c : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._c[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._c[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1518,10 +1542,12 @@ define( [
         SBCr_d : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._d[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._d[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1536,10 +1562,12 @@ define( [
         SBCr_e : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._e[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._e[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1554,10 +1582,12 @@ define( [
         SBCr_h : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._h[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._h[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1572,10 +1602,12 @@ define( [
         SBCr_l : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._l[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._l[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1590,10 +1622,12 @@ define( [
         SBCr_a : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= this._cpu._a[ 0 ];
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= this._cpu._a[ 0 ] + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1608,11 +1642,14 @@ define( [
         SBCHL : function ( ) {
 
             var a = this._cpu._a[ 0 ];
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
+
             var m = this._cpu._engine._mmu.readUint8( ( this._cpu._h[ 0 ] << 8 ) + this._cpu._l[ 0 ] );
 
-            this._cpu._a[ 0 ] -= m;
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+            this._cpu._a[ 0 ] -= m + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
@@ -1627,12 +1664,15 @@ define( [
         SBCn : function ( ) {
 
             var a = this._cpu._a[ 0 ];
-            var m = this._cpu._engine._mmu.readUint8( this._cpu._pc[ 0 ] );
+            var carry = this._cpu._f[ 0 ] & 0x10 ? 1 : 0;
 
-            this._cpu._a[ 0 ] -= m;
+            var m = this._cpu._engine._mmu.readUint8( this._cpu._pc[ 0 ] );
             this._cpu._pc[ 0 ] += 1;
-            this._cpu._a[ 0 ] -= ( this._cpu._f[ 0 ] & 0x10 ) ? 1 : 0;
-            this._cpu._f[ 0 ] = ( this._cpu._a[ 0 ] < 0 ) ? 0x50 : 0x40;
+
+            this._cpu._a[ 0 ] -= m + carry;
+
+            var underflow = carry ? this._cpu._a[ 0 ] >= a : this._cpu._a[ 0 ] > a;
+            this._cpu._f[ 0 ] = underflow ? 0x50 : 0x40;
 
             if ( !this._cpu._a[ 0 ] )
                 this._cpu._f[ 0 ] |= 0x80;
