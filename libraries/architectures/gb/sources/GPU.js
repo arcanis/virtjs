@@ -132,7 +132,7 @@ define( [
 
             return [ [ 0 ], 0 ];
 
-            return [ Virtjs.MemoryUtil.unadressable( 16 ), address ];
+            return [ Virtjs.MemoryUtil.unaddressable( 16 ), address ];
 
         },
 

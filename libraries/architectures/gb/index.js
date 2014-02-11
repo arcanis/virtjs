@@ -6,10 +6,11 @@ define( [
     './sources/GPU',
     './sources/IO',
     './sources/MMU',
+    './sources/Timer',
 
     './sources/bios'
 
-], function ( Virtjs, CPU, GPU, IO, MMU, bios ) {
+], function ( Virtjs, CPU, GPU, IO, MMU, Timer, bios ) {
 
     return Virtjs.Engine.extend( {
 
@@ -23,6 +24,7 @@ define( [
             this._gpu = new GPU( this );
             this._io  = new IO( this );
             this._mmu = new MMU( this );
+            this._timer = new Timer( this );
 
         },
 
@@ -48,6 +50,7 @@ define( [
             this._gpu.setup( );
             this._mmu.setup( );
             this._io.setup( );
+            this._timer.setup( );
 
         },
 
@@ -80,10 +83,7 @@ define( [
             this._continue = true;
 
             while ( this._continue ) {
-
                 this._cpu.step( );
-                this._gpu.step( );
-
             }
 
         }

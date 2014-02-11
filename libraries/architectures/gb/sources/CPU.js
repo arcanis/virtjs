@@ -87,22 +87,32 @@ define( [
                 var instruction = command && command.instruction;
 
                 command( );
-                this._count += 1;
 
-                if ( this._ime && this._interruptions[ 0 ] && this._interruptions[ 1 ] ) {
+            }
 
-                    var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
+            this._engine._gpu.step( );
+            this._engine._timer.step( );
+            this._m[ 0 ] = 0;
 
-                    this._ime = false;
+            if ( this._ime && this._interruptions[ 0 ] && this._interruptions[ 1 ] ) {
 
-                    if ( firedInterruptions & 0x01 ) {
-                        this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
-                        this._instructions.RST40( );
-                    } else {
-                        // Instantly restore the master interruption flag
-                        this._ime = true;
-                    }
+                var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
 
+                this._ime = false;
+
+                if ( firedInterruptions & 0x01 ) {
+                    this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
+                    this._instructions.RST40( );
+                } else {
+                    // Instantly restore the master interruption flag
+                    this._ime = true;
+                }
+
+                if ( this._ime ) {
+                    // An interruption occured
+                    this._engine._gpu.step( );
+                    this._engine._timer.step( );
+                    this._m[ 0 ] = 0;
                 }
 
             }

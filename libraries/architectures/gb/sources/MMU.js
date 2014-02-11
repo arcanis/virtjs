@@ -93,12 +93,16 @@ define( [
             if ( current === 0xFF00 )
                 return this._engine._io.keyMapping( current - 0xFF00 );
 
-            if ( [ 0xFF01, 0xFF02, 0xFF04, 0xFF06 ].indexOf( current ) !== - 1 )
+            if ( [ 0xFF01, 0xFF02 ].indexOf( current ) !== - 1 )
                 return [ [ 0 ], 0 ];
 
             // [SND] Sound binding [0xFF10;0xFF30[
             if ( current >= 0xFF10 && current < 0xFF40 )
                 return [ [ 0 ], 0 ];
+
+            // [TIM] Timer binding [0xFF04;0xFF08[
+            if ( current >= 0xFF04 && current < 0xFF08 )
+                return this._engine._timer.timerMapping( current - 0xFF04 );
 
             //       Empty area
             if ( current >= 0xFEA0 && current < 0xFF00 )
