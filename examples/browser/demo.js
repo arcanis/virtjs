@@ -34,7 +34,7 @@ require( [
     };
 
     var xhr = new XMLHttpRequest( );
-    xhr.open( 'GET', '../assets/gb/opus5.gb', true );
+    xhr.open( 'GET', '../assets/gb/tetris.gb', true );
     xhr.onload = start;
     xhr.responseType = 'arraybuffer';
     xhr.send( null );

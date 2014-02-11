@@ -93,12 +93,19 @@ define( [
             if ( current === 0xFF00 )
                 return this._engine._io.keyMapping( current - 0xFF00 );
 
+            if ( [ 0xFF01, 0xFF02, 0xFF04, 0xFF06 ].indexOf( current ) !== - 1 )
+                return [ [ 0 ], 0 ];
+
             // [SND] Sound binding [0xFF10;0xFF30[
-            if ( current >= 0xFF10 && current < 0xFF30 )
+            if ( current >= 0xFF10 && current < 0xFF40 )
+                return [ [ 0 ], 0 ];
+
+            //       Empty area
+            if ( current >= 0xFEA0 && current < 0xFF00 )
                 return [ [ 0 ], 0 ];
 
             // [GPU] Object attributes memory [0xFE00;0xFF00[
-            if ( current >= 0xFE00 && current < 0xFF00 )
+            if ( current >= 0xFE00 && current < 0xFEA0 )
                 return this._engine._gpu.oamMapping( current - 0xFE00 );
 
             //       Working RAM shadow [0xE000;0xFE00[

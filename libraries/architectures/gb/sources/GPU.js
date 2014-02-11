@@ -218,12 +218,12 @@ define( [
 
         },
 
-        _oamMapper : function ( address, value ) {
+        _oamMapper : function ( address, value, user ) {
 
             if ( typeof value === 'undefined' )
                 return this._oam[ address ];
 
-            if ( this._states._mode === 2 || this._states._mode === 3 )
+            if ( this._enableLCD && ( this._states._mode === 2 || this._states._mode === 3 ) )
                 return undefined;
 
             this._oam[ address ] = value;
@@ -238,7 +238,7 @@ define( [
             if ( typeof value === 'undefined' )
                 return this._vram[ address ];
 
-            if ( this._states._mode === 3 )
+            if ( this._enableLCD && ( this._states._mode === 3 ) )
                 return undefined;
 
             this._vram[ address ] = value;
@@ -359,13 +359,13 @@ define( [
 
         _hblank : function ( line ) {
 
-            if ( this._enableBackground ) {
+            if ( this._enableLCD && this._enableBackground ) {
                 this._backgroundScanline( this._scanline, line );
             } else for ( var x = 0, X = this._scanline.length; x < X; ++ x ) {
-                this._scanline[ x ] = 0x0000;
+                this._scanline[ x ] = 0x00FF;
             }
 
-            if ( this._enableSprites ) {
+            if ( this._enableLCD && this._enableSprites ) {
                 this._spritesScanline( this._scanline, line );
             }
 
