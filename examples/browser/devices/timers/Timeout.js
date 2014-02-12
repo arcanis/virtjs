@@ -6,9 +6,9 @@ define( function ( ) {
 
     Timer.prototype.nextTick = function ( callback ) {
 
-        window.setTimeout( function ( ) {
+        window.requestAnimationFrame( function ( ) {
             callback( );
-        }, 0 );
+        } );
 
     };
 
