@@ -13,24 +13,19 @@ define( [
 
             this._engine = engine;
 
-            this._instructions = new InstructionSet( this );
+            this._instructionSet = new InstructionSet( this );
             this._instructionMap = Object.keys( InstructionMap ).reduce( function ( remap, key ) {
 
-                remap[ key ] = InstructionMap[ key ].map( function ( instruction ) {
-
-                    if ( instruction === null || ! this._instructions[ instruction ] )
-                        return undefined;
-
-                    var bind = this._instructions[ instruction ].bind( this._instructions );
-                    bind.instruction = instruction;
-
-                    return bind;
-
+                remap[ key ] = InstructionMap[ key ].map( function ( name ) {
+                    return name ? this._instructionSet[ name ] : undefined;
                 }.bind( this ) );
 
                 return remap;
 
             }.bind( this ), { } );
+
+            // This line will setup the right branches when used by the build tool
+            Virtjs.DebugUtil.preprocessFunction( this, 'step', this._engine._options );
 
         },
 
@@ -83,10 +78,12 @@ define( [
                 this._pc[ 0 ] += 1;
 
                 var opcode = this._engine._mmu.readUint8( address );
-                var command = this._instructionMap.standard[ opcode ];
-                var instruction = command && command.instruction;
+                var instruction = this._instructionMap.standard[ opcode ];
 
-                command( );
+                if ( typeof preprocess !== 'undefined' && preprocess.events && preprocess.events.instruction )
+                    this.trigger( 'instruction', { address : address, opcode : opcode, instruction : instruction } );
+
+                instruction( );
 
             }
 
@@ -102,7 +99,13 @@ define( [
 
                 if ( firedInterruptions & 0x01 ) {
                     this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
-                    this._instructions.RST40( );
+                    this._instructionSet.RST40( );
+                } else if ( firedInterruptions & 0x04 ) {
+                    this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
+                    this._instructionSet.RST50( );
+                } else if ( firedInterruptions & 0x10 ) {
+                    this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
+                    this._instructionSet.RST60( );
                 } else {
                     // Instantly restore the master interruption flag
                     this._ime = true;

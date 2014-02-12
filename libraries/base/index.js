@@ -5,16 +5,18 @@ define( [
     './mixins/Emitter',
 
     './utils/Class',
+    './utils/Debug',
     './utils/Format',
     './utils/Log',
     './utils/Memory',
     './utils/Object'
 
-], function ( Engine, EmitterMixin, ClassUtil, FormatUtil, LogUtil, MemoryUtil, ObjectUtil ) {
+], function ( Engine, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, LogUtil, MemoryUtil, ObjectUtil ) {
 
     return {
 
         ClassUtil : ClassUtil,
+        DebugUtil : DebugUtil,
         FormatUtil : FormatUtil,
         LogUtil : LogUtil,
         MemoryUtil : MemoryUtil,

@@ -76,6 +76,10 @@ define( [
 
             }
 
+            if ( this._options.debug ) {
+                this._options.tracer.trigger( );
+            }
+
         },
 
         step : function ( ) {
@@ -85,6 +89,37 @@ define( [
             while ( this._continue ) {
                 this._cpu.step( );
             }
+
+        },
+
+        disassemble : function ( ) {
+
+            var instructions = [ ];
+
+            for ( var address = 0; address < this._rom.length; ) {
+
+                var opcode = this._rom[ address ];
+                var instruction = this._cpu._instructionMap.standard[ opcode ];
+
+                if ( instruction ) {
+
+                    instructions.push( {
+                        address : Virtjs.FormatUtil.address( address, 16 ),
+                        opcode : Virtjs.FormatUtil.hexadecimal( opcode, 8 ),
+                        instruction : instruction.instructionName
+                    } );
+
+                    address += instruction.instructionSize;
+
+                } else {
+
+                    address += 1;
+
+                }
+
+            }
+
+            return instructions;
 
         }
 

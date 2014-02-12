@@ -19,13 +19,23 @@ define( [
 
             // When a key is pressed, its associed bit is set to 0
             this._engine._options.keyboard.on( 'keydown', function ( key ) {
-                if ( ! ( this._keys[ key & 0xF0 ] & ( key & 0x0F ) ) ) return ;
+
+                if ( ! ( this._keys[ key & 0xF0 ] & ( key & 0x0F ) ) )
+                    return ;
+
                 this._keys[ key & 0xF0 ] &= key ^ 0x0F;
+
+                if ( key & this._column ) {
+                    this._engine._cpu._interruptions[ 1 ] |= 0x10;
+                }
+
             }.bind( this ) );
 
             // When a key is released, its associed bit is set to 1
             this._engine._options.keyboard.on( 'keyup', function ( key ) {
+
                 this._keys[ key & 0xF0 ] |= key & 0x0F;
+
             }.bind( this ) );
 
             // Bind mappers in order to keep the context when passing them around
@@ -37,10 +47,8 @@ define( [
 
             this._column = 0x00;
 
-            this._keys[ 0x00 ] = 0x0F;
             this._keys[ 0x10 ] = 0x0F;
             this._keys[ 0x20 ] = 0x0F;
-            this._keys[ 0x30 ] = 0x0F;
 
         },
 
@@ -55,8 +63,19 @@ define( [
 
         _keyMapper : function ( address, value ) {
 
-            if ( typeof value === 'undefined' )
-                return this._keys[ this._column ];
+            if ( typeof value === 'undefined' ) {
+
+                var keyline = this._column | 0x0F;
+
+                if ( this._column & 0x10 )
+                    keyline &= this._keys[ 0x10 ];
+
+                if ( this._column & 0x20 )
+                    keyline &= this._keys[ 0x20 ];
+
+                return keyline;
+
+            }
 
             this._column = value & 0x30;
 
