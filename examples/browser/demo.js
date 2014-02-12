@@ -7,7 +7,7 @@ require( [
     'architectures/gb/index',
 
     'devices/inputs/Keyboard',
-    'devices/screens/CanvasScanline',
+    'devices/screens/WebGLScanline',
     'devices/timers/Timeout'
 
 ], function ( Escodegen, Esprima, Virt, GB, Keyboard, Screen, Timer ) {
