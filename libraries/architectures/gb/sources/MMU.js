@@ -1,8 +1,6 @@
 define( [
 
-    'base'
-
-], function ( Virtjs ) {
+], function ( ) {
 
     return Virtjs.ClassUtil.extend( {
 

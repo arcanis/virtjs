@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+    <head>
+
+        <meta charset="utf-8" />
+        <title>Virt.js</title>
+
+        <link rel="stylesheet" href="vendors/Bootstrap-3.1.0/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="styles/debugger.css" />
+
+        <script src="vendors/JQuery-2.1.0.min.js"></script>
+
+        <script src="vendors/Escodegen-1.2.0.min.js"></script>
+        <script src="vendors/Esprima-140212.js"></script>
+
+        <script>var module = 'sources/debugger';</script>
+        <script src="vendors/Require-2.1.10.min.js"></script>
+        <script src="config.js"></script>
+
+    </head>
+
+    <body>
+
+        <table id="instructions-table" class="table table-bordered table-condensed">
+
+            <thead>
+                <tr>
+                    <th>Address</th>
+                    <th>Opcode</th>
+                    <th>Instruction</th>
+                </tr>
+            </thead>
+
+            <tbody id="instructions">
+
+            </tbody>
+
+        </table>
+
+    </body>
+
+</html>

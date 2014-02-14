@@ -1,6 +1,6 @@
-define( [
+/*global Virtjs, define, preprocess*/
 
-    'base',
+define( [
 
     './sources/CPU',
     './sources/GPU',
@@ -10,9 +10,13 @@ define( [
 
     './sources/bios'
 
-], function ( Virtjs, CPU, GPU, IO, MMU, Timer, bios ) {
+], function ( CPU, GPU, IO, MMU, Timer, bios ) {
 
-    return Virtjs.Engine.extend( {
+    Virtjs.engine.GameBoy = Virtjs.Engine.extend( [
+
+        Virtjs.EmitterMixin
+
+    ], {
 
         initialize : function ( ) {
 
@@ -25,6 +29,10 @@ define( [
             this._io  = new IO( this );
             this._mmu = new MMU( this );
             this._timer = new Timer( this );
+
+            // This line will setup the right branches when used by the build tool
+            Virtjs.DebugUtil.preprocessFunction( this, 'load', this._options );
+            Virtjs.DebugUtil.preprocessFunction( this, 'step', this._options );
 
         },
 
@@ -69,15 +77,15 @@ define( [
             for ( var t = 0, T = data.length; t < T; ++ t )
                 this._rom[ t ] = data[ t ];
 
-            if ( this._options.skipBios ) {
+            if ( typeof preprocess !== 'undefined' && preprocess.skipBios ) {
 
                 this._mmu._inBios = false;
-                this._cpu._pc[ 0 ] = 0x0100;
-
+                this._cpu._pc[ 0 ] = 0x0100
+;
             }
 
-            if ( this._options.debug ) {
-                this._options.tracer.trigger( );
+            if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'load' ) !== - 1 ) {
+                this.emit( 'load' );
             }
 
         },
@@ -86,8 +94,18 @@ define( [
 
             this._continue = true;
 
-            while ( this._continue ) {
-                this._cpu.step( );
+            if ( typeof preprocess !== 'undefined' && preprocess.maxSubIterations ) {
+
+                for ( var t = 0; this._continue && t < this._options.maxSubIterations; ++ t ) {
+                    this._cpu.step( );
+                }
+
+            } else {
+
+                while ( this._continue ) {
+                    this._cpu.step( );
+                }
+
             }
 
         },
@@ -95,6 +113,9 @@ define( [
         disassemble : function ( ) {
 
             var instructions = [ ];
+
+            instructions.addressSize = 16;
+            instructions.opcodeSize = 8;
 
             for ( var address = 0; address < this._rom.length; ) {
 
@@ -104,8 +125,8 @@ define( [
                 if ( instruction ) {
 
                     instructions.push( {
-                        address : Virtjs.FormatUtil.address( address, 16 ),
-                        opcode : Virtjs.FormatUtil.hexadecimal( opcode, 8 ),
+                        address : address,
+                        opcode : opcode,
                         instruction : instruction.instructionName
                     } );
 

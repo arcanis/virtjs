@@ -32,6 +32,22 @@ define( [
 
         engine : {
             // Plugins register here
+        },
+
+        input : {
+            // Plugins register here
+        },
+
+        screen : {
+            // Plugins register here
+        },
+
+        timer : {
+            // Plugins register here
+        },
+
+        debug : {
+            // Plugins register here
         }
 
     };

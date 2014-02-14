@@ -1,0 +1,14 @@
+.tracer-address, .tracer-opcode, .tracer-instruction {
+    font-family: monospace;
+}
+
+.tracer-current {
+    background: #5D81A5;
+    color: #FFFFFF;
+}
+
+#instructions-table {
+    height: 300px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+}

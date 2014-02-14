@@ -1,10 +1,8 @@
-define( [
+/*global Virtjs*/
 
-    'base'
+( function ( ) {
 
-], function ( Virtjs ) {
-
-    return Virtjs.ClassUtil.extend( [
+    Virtjs.input.Keyboard = Virtjs.ClassUtil.extend( [
 
         Virtjs.EmitterMixin
 
@@ -42,4 +40,4 @@ define( [
 
     } );
 
-} );
+} )( );

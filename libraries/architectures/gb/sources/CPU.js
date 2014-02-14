@@ -1,13 +1,17 @@
-define( [
+/*global Virtjs, define, preprocess*/
 
-    'base',
+define( [
 
     './cpu/InstructionMap',
     './cpu/InstructionSet'
 
-], function ( Virtjs, InstructionMap, InstructionSet ) {
+], function ( InstructionMap, InstructionSet ) {
 
-    return Virtjs.ClassUtil.extend( {
+    return Virtjs.ClassUtil.extend( [
+
+        Virtjs.EmitterMixin
+
+    ], {
 
         initialize : function ( engine ) {
 
@@ -80,8 +84,8 @@ define( [
                 var opcode = this._engine._mmu.readUint8( address );
                 var instruction = this._instructionMap.standard[ opcode ];
 
-                if ( typeof preprocess !== 'undefined' && preprocess.events && preprocess.events.instruction )
-                    this.trigger( 'instruction', { address : address, opcode : opcode, instruction : instruction } );
+                if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 )
+                    this.emit( 'instruction', { address : address, opcode : opcode, instruction : instruction } );
 
                 instruction( );
 

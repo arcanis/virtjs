@@ -1,37 +1,37 @@
+/*global Virtjs, require*/
+
 require( [
 
-    'Escodegen',
-    'Esprima',
-
-    'base',
     'architectures/gb/index',
 
     'devices/inputs/Keyboard',
     'devices/screens/WebGLScanline',
     'devices/timers/Timeout'
 
-], function ( Escodegen, Esprima, Virt, GB, Keyboard, Screen, Timer ) {
+], function ( ) {
 
-    var AZERTY = { 65 : GB.A, 90 : GB.B, 13 : GB.START, 32 : GB.SELECT
+    var GB = Virtjs.engine.GameBoy;
+
+    var AZERTY = { 65 : GB.A,    90 : GB.B,  13 : GB.START, 32 : GB.SELECT
                  , 37 : GB.LEFT, 38 : GB.UP, 39 : GB.RIGHT, 40 : GB.DOWN };
 
     var start = function ( ) {
 
         // Instanciates a few input / output devices which will be used by the emulator
-        var screen = new Screen( { className : 'screen' } );
+        var screen = new Virtjs.screen.WebGL( { className : 'screen' } );
         screen.open( document.body );
 
-        var keyboard = new Keyboard( AZERTY );
+        var keyboard = new Virtjs.input.Keyboard( AZERTY );
         keyboard.open( document.body );
 
-        var timer = new Timer( );
+        var timer = new Virtjs.input.RAFrame( );
 
         // Using these optional dependencies allows to customizes the actual source code without degrading performances.
-        Virt.DebugUtil.setEscodegen( window.escodegen );
-        Virt.DebugUtil.setEsprima( Esprima );
+        Virtjs.DebugUtil.setEscodegen( window.escodegen );
+        Virtjs.DebugUtil.setEsprima( window.esprima );
 
         // This done, we can ask Virt.js to create an emulator based on specified options
-        var engine = window.engine = Virt.create( GB, {
+        var engine = window.engine = Virtjs.create( GB, {
             screen : screen,
             timer : timer,
             keyboard : keyboard,

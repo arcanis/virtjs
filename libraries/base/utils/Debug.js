@@ -79,10 +79,22 @@ define( [
     return {
 
         setEsprima : function ( object ) {
-            Esprima = object; },
+
+            if ( ! object )
+                throw new Error( 'Cannot set Esprima reference to a falsy value' );
+
+            Esprima = object;
+
+        },
 
         setEscodegen : function ( object ) {
-            Escodegen = object; },
+
+            if ( ! object )
+                throw new Error( 'Cannot set Escodegen reference to a falsy value' );
+
+            Escodegen = object;
+
+        },
 
         preprocessFunction : function ( instance, member, environment ) {
 

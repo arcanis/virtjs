@@ -1,3 +1,5 @@
+/*global Virtjs, define, preprocess*/
+
 define( [
 
 ], function ( ) {
