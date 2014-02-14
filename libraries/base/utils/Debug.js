@@ -2,6 +2,8 @@ define( [
 
 ], function ( ) {
 
+    console.log( 'loaded' );
+
     var Esprima, Escodegen;
 
     var findBranches = function ( node, callback ) {

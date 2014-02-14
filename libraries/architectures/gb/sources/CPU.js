@@ -85,9 +85,10 @@ define( [
                 var instruction = this._instructionMap.standard[ opcode ];
 
                 if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 )
-                    this.emit( 'instruction', { address : address, opcode : opcode, instruction : instruction } );
+                    this.emit( 'instruction', { count : this._count, address : address, opcode : opcode, instruction : instruction } );
 
                 instruction( );
+                this._count += 1;
 
             }
 

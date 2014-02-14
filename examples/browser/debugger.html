@@ -22,21 +22,69 @@
 
     <body>
 
-        <table id="instructions-table" class="table table-bordered table-condensed">
+        <div id="tracer-interface">
 
-            <thead>
-                <tr>
-                    <th>Address</th>
-                    <th>Opcode</th>
-                    <th>Instruction</th>
-                </tr>
-            </thead>
+            <div id="toolbar" class="btn-group">
+                <button id="control-one" class="btn btn-default" accesskey="1">
+                    <span class="glyphicon glyphicon-step-forward"></span>
+                </button>
+                <button id="control-resume" class="btn btn-default" accesskey="2">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+                <button id="control-pause" class="btn btn-default" accesskey="3">
+                    <span class="glyphicon glyphicon-pause"></span>
+                </button>
+                <button id="control-fix" class="btn btn-default">
+                    <span class="glyphicon glyphicon-eye-open"></span>
+                </button>
+                <button class="btn btn-default" disabled>
+                    <strong>Status</strong> <span id="engine-status">/</span>
+                    &#8213;
+                    <strong>PC</strong> <span id="program-counter">/</span>
+                    &#8213;
+                    <strong>Counter</strong> <span id="instruction-count">/</span>
+                </button>
+            </div>
 
-            <tbody id="instructions">
+            <div id="instructions" class="table-fixed">
+                <div class="table-fixed-inner">
 
-            </tbody>
+                    <table class="table table-bordered table-condensed">
 
-        </table>
+                        <colgroup>
+                            <col width="200" />
+                            <col width="200" />
+                            <col width="*" />
+                        </colgroup>
+
+                        <thead class="fixed-header">
+                            <tr>
+
+                                <th><div>
+                                        Address
+                                </div></th>
+
+                                <th><div>
+                                        Opcode
+                                </div></th>
+
+                                <th><div>
+                                        Instruction
+                                </div></th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
 
     </body>
 

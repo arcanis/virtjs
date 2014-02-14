@@ -1,18 +1,26 @@
 define( [
 
-    '../utils/Class'
+    '../utils/Class',
+    '../utils/Debug'
 
-], function ( ClassUtil ) {
+], function ( ClassUtil, DebugUtil ) {
 
     return ClassUtil.extend( {
 
         initialize : function ( ) {
 
-            this._status = 'stopped';
+            // This line will setup the right branches when used by the build tool
+            DebugUtil.preprocessFunction( this, '_setStatus', this._options );
+
+            this._setStatus( 'stopped' );
+            this._waiting = false;
 
         },
 
-        start : function ( ) {
+        start : function ( autoResume ) {
+
+            if ( typeof autoResume === 'undefined' )
+                autoResume = true;
 
             if ( this._status !== 'stopped' )
                 return ;
@@ -20,8 +28,11 @@ define( [
             this.setup( );
             this.load.apply( this, arguments );
 
-            this._status = 'paused';
-            this.resume( );
+            this._setStatus( 'paused' );
+
+            if ( autoResume ) {
+                this.resume( );
+            }
 
         },
 
@@ -30,8 +41,11 @@ define( [
             if ( this._status !== 'paused' )
                 return ;
 
-            this._status = 'running';
-            this._nextTick( );
+            this._setStatus( 'running' );
+
+            if ( ! this._waiting ) {
+                this._nextTick( );
+            }
 
         },
 
@@ -40,7 +54,18 @@ define( [
             if ( this._status !== 'running' )
                 return ;
 
-            this._status = 'paused';
+            this._setStatus( 'paused' );
+
+        },
+
+        one : function ( ) {
+
+            if ( this._status !== 'paused' )
+                return ;
+
+            this._setStatus( 'running' );
+            this.step( );
+            this._setStatus( 'paused' );
 
         },
 
@@ -49,15 +74,35 @@ define( [
             if ( this._status !== 'running' && this._status !== 'paused' )
                 return ;
 
-            this._status = 'stopped';
+            this._setStatus( 'stopped' );
+
+        },
+
+        _setStatus : function ( status ) {
+
+            this._status = status;
+
+            if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'status' ) !== - 1 ) {
+                this.emit( 'status', { status : status } );
+            }
 
         },
 
         _nextTick : function ( ) {
 
-            this.step( );
+            if ( this._status !== 'running' ) {
 
-            this._options.timer.nextTick( this._nextTick.bind( this ) );
+                this._waiting = false;
+
+            } else {
+
+                this.step( );
+
+                this._waiting = true;
+
+                this._options.timer.nextTick( this._nextTick.bind( this ) );
+
+            }
 
         }
 

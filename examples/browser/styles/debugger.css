@@ -1,14 +1,105 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    padding: 40px;
+
+    border-top: 10px solid transparent;
+}
+
 .tracer-address, .tracer-opcode, .tracer-instruction {
     font-family: monospace;
+}
+
+.tracer-row {
+    transition: background 1s;
 }
 
 .tracer-current {
     background: #5D81A5;
     color: #FFFFFF;
+
+    transition: none;
 }
 
-#instructions-table {
-    height: 300px;
+.table-fixed {
+    position: relative;
+
+    display: flex;
+}
+
+.table-fixed > .table-fixed-inner {
+    overflow-x: hidden;
     overflow-y: scroll;
-    scroll-behavior: smooth;
+}
+
+.table-fixed table > .fixed-header > tr > th {
+    padding: 0;
+}
+
+.table-fixed table > .fixed-header > tr > th > * {
+    position: absolute;
+    top: 0;
+}
+
+/* --- --- --- --- --- --- --- --- --- --- --- --- --- --- */
+
+#tracer-interface {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+}
+
+#toolbar {
+    flex: none;
+    display: flex;
+
+    margin-bottom: 20px;
+}
+
+#toolbar > * {
+    border-top-width: 5px;
+}
+
+#toolbar.ready > * {
+    border-color: #99BFD5;
+}
+
+#toolbar > *:last-child {
+    flex: auto;
+}
+
+#toolbar > *[disabled] {
+    opacity: 1;
+
+    font-family: monospace;
+    text-align: left;
+}
+
+#instructions {
+    padding-top: 30px;
+}
+
+#instructions .table-fixed-inner {
+    border-top: 1px solid #CCC;
+}
+
+#instructions table {
+    table-layout: fixed;
+}
+
+#instructions .fixed-header th {
+    border: 0;
+
+    line-height: 20px;
+}
+
+#instructions tbody > tr:first-child td {
+    border-top: 0;
+}
+
+#instructions th > *, #instructions td {
+    padding: 5px;
 }

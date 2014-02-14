@@ -9,6 +9,7 @@
             this._engine = engine;
 
             this._tbody = this._options.element || document.createElement( 'tbody' );
+            this._comment = document.createComment( 'Processing instructions ...' );
             this._rows = { };
 
             this._current = null;
@@ -26,6 +27,8 @@
         },
 
         _onLoad : function ( e ) {
+
+            this._tbody.parentNode.replaceChild( this._comment, this._tbody );
 
             var instructions = this._engine.disassemble( );
 
@@ -58,6 +61,8 @@
 
             }.bind( this ) );
 
+            this._comment.parentNode.replaceChild( this._tbody, this._comment );
+
         },
 
         _onInstruction : function ( e ) {
@@ -69,6 +74,16 @@
 
             var current = this._current = this._rows[ e.address ];
             current.className += ' tracer-current ';
+
+            var scrollableParent = this._current;
+            for ( ; scrollableParent && scrollableParent.clientHeight >= scrollableParent.scrollHeight; scrollableParent = scrollableParent.parentNode ) ;
+            scrollableParent = scrollableParent || document.body;
+
+            if ( scrollableParent.scrollTop > current.offsetTop )
+                current.scrollIntoView( true );
+
+            if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < current.offsetTop + current.offsetHeight )
+                current.scrollIntoView( false );
 
             this._count += 1;
 
