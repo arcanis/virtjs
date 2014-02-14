@@ -5,8 +5,8 @@ require( [
     'architectures/gb/index',
 
     'devices/inputs/Keyboard',
-    'devices/screens/WebGLScanline',
-    'devices/timers/Timeout'
+    'devices/screens/WebGL',
+    'devices/timers/RAFrame'
 
 ], function ( ) {
 
@@ -24,7 +24,7 @@ require( [
         var keyboard = new Virtjs.input.Keyboard( AZERTY );
         keyboard.open( document.body );
 
-        var timer = new Virtjs.input.RAFrame( );
+        var timer = new Virtjs.timer.RAFrame( );
 
         // Using these optional dependencies allows to customizes the actual source code without degrading performances.
         Virtjs.DebugUtil.setEscodegen( window.escodegen );
