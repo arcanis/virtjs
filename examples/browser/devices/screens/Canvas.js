@@ -8,12 +8,8 @@
 
             this._lines = [ ];
 
-            this._canvas = document.createElement( 'canvas' );
+            this._canvas = this._options.element || document.createElement( 'canvas' );
             this._context = this._canvas.getContext( '2d' );
-
-            if ( this._options.className ) {
-                this._canvas.className = this._options.className;
-            }
 
         },
 

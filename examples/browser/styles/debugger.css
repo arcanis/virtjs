@@ -3,10 +3,14 @@ html, body {
 }
 
 body {
+    display: flex;
+
     padding: 40px;
 
     border-top: 10px solid transparent;
 }
+
+/* --- --- --- --- --- --- --- --- --- --- --- --- --- --- */
 
 .tracer-address, .tracer-opcode, .tracer-instruction {
     font-family: monospace;
@@ -44,6 +48,31 @@ body {
 }
 
 /* --- --- --- --- --- --- --- --- --- --- --- --- --- --- */
+
+#viewer-interface {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+
+    margin-right: 20px;
+}
+
+#display {
+    flex: none;
+
+    margin-bottom: 20px;
+}
+
+#registers {
+    flex: auto;
+
+    border: 1px solid #CCC;
+    border-radius: 4px;
+}
+
+#registers .register {
+    font-family: monospace;
+}
 
 #tracer-interface {
     display: flex;

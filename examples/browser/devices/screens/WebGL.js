@@ -30,7 +30,7 @@
 
         initialize : function ( ) {
 
-            this._canvas2D = document.createElement( 'canvas' );
+            this._canvas2D = this._options.element || document.createElement( 'canvas' );
             this._context2D = this._canvas2D.getContext( '2d' );
 
             this._canvas = document.createElement( 'canvas' );
@@ -46,10 +46,6 @@
             this._vertexIndexBuffer = this._createBuffer( this._context.ELEMENT_ARRAY_BUFFER, 4, new Uint16Array( [ 0, 1, 3, 2 ] ) );
 
             this._linkShaders( this._fragmentShader, this._vertexShader );
-
-            if ( this._options.className ) {
-                this._canvas.className = this._options.className;
-            }
 
         },
 

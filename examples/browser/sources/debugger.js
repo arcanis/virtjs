@@ -20,8 +20,7 @@ require( [
 
         // Instanciates a few input / output devices which will be used by the emulator
 
-        var screen = new Virtjs.screen.WebGL( { className : 'screen' } );
-        // screen.open( document.body );
+        var screen = new Virtjs.screen.WebGL( { element : document.querySelector( '#display canvas' ) } );
 
         var keyboard = new Virtjs.input.Keyboard( AZERTY );
         keyboard.open( document.body );
@@ -73,6 +72,28 @@ require( [
         engine._cpu.on( 'instruction', function ( e ) {
             programCounter.innerText = Virtjs.FormatUtil.address( e.address, 16 );
             instructionCount.innerText = e.count;
+        } );
+
+        // But also know what are the current register values
+
+        var registerA = document.querySelector( '#register-a' );
+        var registerB = document.querySelector( '#register-b' );
+        var registerC = document.querySelector( '#register-c' );
+        var registerD = document.querySelector( '#register-d' );
+        var registerE = document.querySelector( '#register-e' );
+        var registerH = document.querySelector( '#register-h' );
+        var registerL = document.querySelector( '#register-l' );
+        var registerF = document.querySelector( '#register-f' );
+
+        engine._cpu.on( 'instruction', function ( e ) {
+            registerA.innerText = Virtjs.FormatUtil.binary( engine._cpu._a[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._a[ 0 ], 8 ) + ')';
+            registerB.innerText = Virtjs.FormatUtil.binary( engine._cpu._b[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._b[ 0 ], 8 ) + ')';
+            registerC.innerText = Virtjs.FormatUtil.binary( engine._cpu._c[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._c[ 0 ], 8 ) + ')';
+            registerD.innerText = Virtjs.FormatUtil.binary( engine._cpu._d[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._d[ 0 ], 8 ) + ')';
+            registerE.innerText = Virtjs.FormatUtil.binary( engine._cpu._e[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._e[ 0 ], 8 ) + ')';
+            registerH.innerText = Virtjs.FormatUtil.binary( engine._cpu._h[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._h[ 0 ], 8 ) + ')';
+            registerL.innerText = Virtjs.FormatUtil.binary( engine._cpu._l[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._l[ 0 ], 8 ) + ')';
+            registerF.innerText = Virtjs.FormatUtil.binary( engine._cpu._f[ 0 ], 8 ) + ' (' + Virtjs.FormatUtil.hexadecimal( engine._cpu._f[ 0 ], 8 ) + ')';
         } );
 
         // Some controls, maybe ?

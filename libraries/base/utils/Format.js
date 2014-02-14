@@ -26,6 +26,18 @@ define( [
 
             return '0x' + str;
 
+        },
+
+        binary : function ( value, bits ) {
+
+            var str = value.toString( 2 ).toUpperCase( );
+
+            if ( typeof bits !== 'undefined' )
+                while ( str.length < bits )
+                    str = '0' + str;
+
+            return '0b' + str;
+
         }
 
     };
