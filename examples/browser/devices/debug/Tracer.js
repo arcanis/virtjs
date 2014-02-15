@@ -86,7 +86,7 @@
         _onToggleBreakpoint : function ( e ) {
 
             var address = e.currentTarget.value;
-            this._breakpoints[ address ] ^= ! this._breakpoints[ address ];
+            this._breakpoints[ address ] = ! this._breakpoints[ address ];
 
         },
 
@@ -178,7 +178,6 @@
             } else {
 
                 console.warn( 'Jumping to ' + Virtjs.FormatUtil.address( e.address, 16 ) + ', which has not been disassembled' );
-
             }
 
             this._skipBreakpoint = false;
