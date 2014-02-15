@@ -792,7 +792,7 @@ define( [
 
                 this._cpu._m[ 0 ] = 3;
 
-            }, 1 ],
+            }, 2 ],
 
             LDAIOC : [ function ( ) {
 
@@ -5369,7 +5369,7 @@ define( [
 
                 this._cpu._m[ 0 ] = 5;
 
-            }, 1 ],
+            }, 3 ],
 
             CALLNZnn : [ function ( ) {
 
