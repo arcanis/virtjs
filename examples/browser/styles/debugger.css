@@ -73,6 +73,10 @@ body {
     margin-bottom: 20px;
 }
 
+#display canvas {
+    width: 100%;
+}
+
 #registers {
     flex: auto;
 

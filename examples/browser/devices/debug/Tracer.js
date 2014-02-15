@@ -146,28 +146,40 @@
             }
 
             if ( this._currentRow ) {
+
                 var previousRow = this._currentRow;
                 previousRow.className = previousRow.className.replace( /\btracer-current\b/g, '' );
+
             }
 
-            var currentRow = this._currentRow = this._rows[ e.address ];
-            currentRow.className += ' tracer-current ';
+            if ( this._rows[ e.address ] ) {
 
-            var scrollableParent = this._currentRow;
-            for ( ; scrollableParent && scrollableParent.clientHeight >= scrollableParent.scrollHeight; scrollableParent = scrollableParent.parentNode ) ;
-            scrollableParent = scrollableParent || document.documentElement;
+                var currentRow = this._currentRow = this._rows[ e.address ];
+                currentRow.className += ' tracer-current ';
 
-            if ( scrollableParent.scrollTop > currentRow.offsetTop ) {
-                currentRow.scrollIntoView( true );
-            } else if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < currentRow.offsetTop + currentRow.offsetHeight ) {
-                currentRow.scrollIntoView( false );
+                var scrollableParent = this._currentRow;
+                for ( ; scrollableParent && scrollableParent.clientHeight >= scrollableParent.scrollHeight; scrollableParent = scrollableParent.parentNode ) ;
+                scrollableParent = scrollableParent || document.documentElement;
+
+                if ( scrollableParent.scrollTop > currentRow.offsetTop ) {
+                    currentRow.scrollIntoView( true );
+                } else if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < currentRow.offsetTop + currentRow.offsetHeight ) {
+                    currentRow.scrollIntoView( false );
+                }
+
+                if ( this._breakpoints[ e.address ] && ! this._skipBreakpoint ) {
+                    e.break( );
+                }
+
+                if ( this._breakDelay !== 0 && -- this._breakDelay === 0 ) {
+                    e.break( );
+                }
+
+            } else {
+
+                console.warn( 'Jumping to ' + Virtjs.FormatUtil.address( e.address, 16 ) + ', which has not been disassembled' );
+
             }
-
-            if ( this._breakpoints[ e.address ] && ! this._skipBreakpoint )
-                e.break( );
-
-            if ( this._breakDelay !== 0 && -- this._breakDelay === 0 )
-                e.break( );
 
             this._skipBreakpoint = false;
 

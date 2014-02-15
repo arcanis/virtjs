@@ -141,7 +141,7 @@ require( [
 
         engine._cpu.on( 'instruction', function ( e ) {
 
-            if ( e.count !== breakAt - 1 )
+            if ( e.count !== breakAt )
                 return ;
 
             breakAt = null;
