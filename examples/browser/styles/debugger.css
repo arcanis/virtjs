@@ -12,6 +12,16 @@ body {
 
 /* --- --- --- --- --- --- --- --- --- --- --- --- --- --- */
 
+.tracer-breakpoint {
+    text-align: center;
+}
+
+.tracer-breakpoint input[type="checkbox"] {
+    margin: 0;
+
+    vertical-align: middle;
+}
+
 .tracer-address, .tracer-opcode, .tracer-instruction {
     font-family: monospace;
 }
@@ -100,11 +110,18 @@ body {
     flex: auto;
 }
 
-#toolbar > *[disabled] {
+#toolbar > *.disabled {
     opacity: 1;
 
     font-family: monospace;
     text-align: left;
+
+    pointer-events: auto;
+    cursor: default;
+}
+
+#toolbar > *.disabled a {
+    cursor: pointer;
 }
 
 #instructions {

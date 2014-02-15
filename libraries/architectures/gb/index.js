@@ -33,6 +33,7 @@ define( [
             // This line will setup the right branches when used by the build tool
             Virtjs.DebugUtil.preprocessFunction( this, 'load', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._options );
+            Virtjs.DebugUtil.preprocessFunction( this, 'setMaxSubIterations', this._options );
 
         },
 
@@ -94,15 +95,15 @@ define( [
 
             this._continue = true;
 
-            if ( typeof preprocess !== 'undefined' && preprocess.maxSubIterations ) {
+            if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations !== 'undefined' ) {
 
-                for ( var t = 0; this._continue && t < this._options.maxSubIterations; ++ t ) {
+                for ( var t = 0; this._status === 'running' && this._continue && t < this._options.maxSubIterations; ++ t ) {
                     this._cpu.step( );
                 }
 
             } else {
 
-                while ( this._continue ) {
+                while ( this._status === 'running' && this._continue ) {
                     this._cpu.step( );
                 }
 
@@ -141,6 +142,15 @@ define( [
             }
 
             return instructions;
+
+        },
+
+        setMaxSubIterations : function ( maxSubIterations ) {
+
+            if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations === 'undefined' )
+                throw new Error( 'Cannot change the max sub iteration number of this engine - please set maxSubIterations to non-nil at creation' );
+
+            this._options.maxSubIterations = maxSubIterations;
 
         }
 

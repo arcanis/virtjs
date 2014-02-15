@@ -74,6 +74,7 @@ require( [
             instructionCount.innerText = e.count;
         } );
 
+
         // But also know what are the current register values
 
         var registerA = document.querySelector( '#register-a' );
@@ -98,16 +99,60 @@ require( [
 
         // Some controls, maybe ?
 
+        var breakAt;
+
         var oneControl = document.querySelector( '#control-one' );
         var resumeControl = document.querySelector( '#control-resume' );
         var pauseControl = document.querySelector( '#control-pause' );
 
         oneControl.addEventListener( 'click', function ( ) {
-            engine.one( ); } );
+            tracer.one( ); } );
+
         resumeControl.addEventListener( 'click', function ( ) {
-            engine.resume( ); } );
+            tracer.continue( ); } );
+
         pauseControl.addEventListener( 'click', function ( ) {
-            engine.pause( ); } );
+            tracer.pause( ); } );
+
+        instructionCount.addEventListener( 'click', function ( ) {
+
+            var current = parseInt( instructionCount.innerText, 10 );
+
+            if ( isNaN( current ) )
+                return ;
+
+            var request = parseInt( prompt( 'Continue until which instruction #?', current ), 10 );
+
+            if ( isNaN( request ) )
+                return ;
+
+            if ( request <= current )
+                return ;
+
+            breakAt = request;
+
+            tracer.disable( );
+
+            engine.setMaxSubIterations( Infinity );
+
+            engine.resume( );
+
+        } );
+
+        engine._cpu.on( 'instruction', function ( e ) {
+
+            if ( e.count !== breakAt - 1 )
+                return ;
+
+            breakAt = null;
+
+            tracer.enable( );
+
+            engine.setMaxSubIterations( 1 );
+
+            e.break( );
+
+        } );
 
         // Shortcuts, ofc
 

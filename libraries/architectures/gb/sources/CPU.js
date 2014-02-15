@@ -79,14 +79,23 @@ define( [
             } else {
 
                 var address = this._pc[ 0 ];
-                this._pc[ 0 ] += 1;
 
                 var opcode = this._engine._mmu.readUint8( address );
                 var instruction = this._instructionMap.standard[ opcode ];
 
-                if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 )
-                    this.emit( 'instruction', { count : this._count, address : address, opcode : opcode, instruction : instruction } );
+                if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 ) {
 
+                    var breakRequested = false, breakFn = function ( ) { breakRequested = true; };
+                    this.emit( 'instruction', { count : this._count, address : address, opcode : opcode, instruction : instruction, break : breakFn } );
+
+                    if ( breakRequested ) {
+                        this._engine.pause( );
+                        return ;
+                    }
+
+                }
+
+                this._pc[ 0 ] += 1;
                 instruction( );
                 this._count += 1;
 

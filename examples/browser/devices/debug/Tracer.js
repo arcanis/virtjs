@@ -12,17 +12,81 @@
             this._comment = document.createComment( 'Processing instructions ...' );
             this._rows = { };
 
-            this._current = null;
-            this._count = 0;
+            this._enabled = true;
+            this._skipBreakpoint = false;
+            this._breakDelay = 0;
+
+            this._bufferedInstruction = null;
+            this._currentRow = null;
+
+            this._breakpoints = { };
 
             this._engine.on( 'load', this._onLoad.bind( this ) );
             this._engine._cpu.on( 'instruction', this._onInstruction.bind( this ) );
+
+            // We will need to keep a context on this function to bind it latter
+            this._onToggleBreakPoint_ = this._onToggleBreakpoint.bind( this );
 
         },
 
         open : function ( element ) {
 
             element.appendChild( element );
+
+        },
+
+        disable : function ( ) {
+
+            if ( ! this._enabled )
+                return ;
+
+            this._enabled = false;
+
+        },
+
+        enable : function ( ) {
+
+            if ( this.enabled )
+                return ;
+
+            this._enabled = true;
+            this._skipBreakpoint = false;
+            this._breakDelay = 0;
+
+            if ( this._bufferedInstruction ) {
+                this._onInstruction( this._bufferedInstruction );
+                this._bufferedInstruction = null;
+            }
+
+        },
+
+        one : function ( ) {
+
+            this._skipBreakpoint = true;
+            this._breakDelay = 2;
+
+            this._engine.resume( );
+
+        },
+
+        continue : function ( ) {
+
+            this._skipBreakpoint = true;
+
+            this._engine.resume( );
+
+        },
+
+        pause : function ( ) {
+
+            this._breakDelay = 1;
+
+        },
+
+        _onToggleBreakpoint : function ( e ) {
+
+            var address = e.currentTarget.value;
+            this._breakpoints[ address ] ^= ! this._breakpoints[ address ];
 
         },
 
@@ -41,6 +105,15 @@
                 var row = this._rows[ infos.address ] = document.createElement( 'tr' );
                 this._tbody.appendChild( row );
                 row.className = 'tracer-row';
+
+                var breakpointBox = document.createElement( 'input' );
+                breakpointBox.addEventListener( 'change', this._onToggleBreakPoint_ );
+                breakpointBox.type = 'checkbox';
+                breakpointBox.value = infos.address;
+                var breakPoint = document.createElement( 'td' );
+                breakPoint.className = 'tracer-breakpoint';
+                breakPoint.appendChild( breakpointBox );
+                row.appendChild( breakPoint );
 
                 var addressText = Virtjs.FormatUtil.address( infos.address, instructions.addressSize );
                 var address = document.createElement( 'td' );
@@ -67,25 +140,36 @@
 
         _onInstruction : function ( e ) {
 
-            if ( this._current ) {
-                var previous = this._current;
-                previous.className = previous.className.replace( /\btracer-current\b/g, '' );
+            if ( ! this._enabled ) {
+                this._bufferedInstruction = e;
+                return ;
             }
 
-            var current = this._current = this._rows[ e.address ];
-            current.className += ' tracer-current ';
+            if ( this._currentRow ) {
+                var previousRow = this._currentRow;
+                previousRow.className = previousRow.className.replace( /\btracer-current\b/g, '' );
+            }
 
-            var scrollableParent = this._current;
+            var currentRow = this._currentRow = this._rows[ e.address ];
+            currentRow.className += ' tracer-current ';
+
+            var scrollableParent = this._currentRow;
             for ( ; scrollableParent && scrollableParent.clientHeight >= scrollableParent.scrollHeight; scrollableParent = scrollableParent.parentNode ) ;
-            scrollableParent = scrollableParent || document.body;
+            scrollableParent = scrollableParent || document.documentElement;
 
-            if ( scrollableParent.scrollTop > current.offsetTop )
-                current.scrollIntoView( true );
+            if ( scrollableParent.scrollTop > currentRow.offsetTop ) {
+                currentRow.scrollIntoView( true );
+            } else if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < currentRow.offsetTop + currentRow.offsetHeight ) {
+                currentRow.scrollIntoView( false );
+            }
 
-            if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < current.offsetTop + current.offsetHeight )
-                current.scrollIntoView( false );
+            if ( this._breakpoints[ e.address ] && ! this._skipBreakpoint )
+                e.break( );
 
-            this._count += 1;
+            if ( this._breakDelay !== 0 && -- this._breakDelay === 0 )
+                e.break( );
+
+            this._skipBreakpoint = false;
 
         }
 
