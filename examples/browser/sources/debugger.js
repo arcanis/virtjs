@@ -1,4 +1,4 @@
-/*global Virtjs, require, $*/
+/*global Virtjs, Query, require, $*/
 
 require( [
 
@@ -286,7 +286,7 @@ require( [
     };
 
     var xhr = new XMLHttpRequest( );
-    xhr.open( 'GET', '../assets/gb/tetris.gb', true );
+    xhr.open( 'GET', '../assets/gb/' + ( Query.rom || 'tetris.gb' ), true );
     xhr.onload = start;
     xhr.responseType = 'arraybuffer';
     xhr.send( null );
