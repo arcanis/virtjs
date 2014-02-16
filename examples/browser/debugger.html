@@ -31,38 +31,44 @@
 
             <div id="registers">
                 <table class="table">
-                    <tr>
-                        <th>a</th>
-                        <td><span id="register-a" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>b</th>
-                        <td><span id="register-b" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>c</th>
-                        <td><span id="register-c" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>d</th>
-                        <td><span id="register-d" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>e</th>
-                        <td><span id="register-e" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>h</th>
-                        <td><span id="register-h" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>l</th>
-                        <td><span id="register-l" class="register"></span></td>
-                    </tr>
-                    <tr>
-                        <th>f</th>
-                        <td><span id="register-f" class="register"></span></td>
-                    </tr>
+                    <colgroup>
+                        <col />
+                        <col width="*" />
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>a</th>
+                            <td><span id="register-a" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>b</th>
+                            <td><span id="register-b" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>c</th>
+                            <td><span id="register-c" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>d</th>
+                            <td><span id="register-d" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>e</th>
+                            <td><span id="register-e" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>h</th>
+                            <td><span id="register-h" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>l</th>
+                            <td><span id="register-l" class="register">/</span></td>
+                        </tr>
+                        <tr>
+                            <th>f</th>
+                            <td><span id="register-f" class="register">/</span></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -80,8 +86,9 @@
                 <button id="control-pause" class="btn btn-default" accesskey="3">
                     <span class="glyphicon glyphicon-pause"></span>
                 </button>
-                <button id="control-fix" class="btn btn-default">
+                <button id="control-watch" class="btn btn-default active">
                     <span class="glyphicon glyphicon-eye-open"></span>
+                    <span class="glyphicon glyphicon-eye-close"></span>
                 </button>
                 <div class="btn btn-default disabled">
                     <strong>Status</strong> <span id="engine-status">/</span>

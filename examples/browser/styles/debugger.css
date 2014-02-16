@@ -65,6 +65,8 @@ body {
     flex-direction: column;
 
     margin-right: 20px;
+
+    width: 200px;
 }
 
 #display {
@@ -82,6 +84,10 @@ body {
 
     border: 1px solid #CCC;
     border-radius: 4px;
+}
+
+#registers th {
+    width: 20px;
 }
 
 #registers .register {
@@ -152,4 +158,20 @@ body {
 
 #instructions th > *, #instructions td {
     padding: 5px;
+}
+
+#control-watch .glyphicon-eye-open {
+    display: none;
+}
+
+#control-watch .glyphicon-eye-close {
+    display: inline;
+}
+
+#control-watch.active .glyphicon-eye-open {
+    display: inline;
+}
+
+#control-watch.active .glyphicon-eye-close {
+    display: none;
 }

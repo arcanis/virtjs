@@ -13,6 +13,8 @@
             this._rows = { };
 
             this._enabled = true;
+            this._domEnabled = true;
+
             this._skipBreakpoint = false;
             this._breakDelay = 0;
 
@@ -20,6 +22,7 @@
             this._currentRow = null;
 
             this._breakpoints = { };
+            this._warnings = { };
 
             this._engine.on( 'load', this._onLoad.bind( this ) );
             this._engine._cpu.on( 'instruction', this._onInstruction.bind( this ) );
@@ -40,6 +43,8 @@
             if ( ! this._enabled )
                 return ;
 
+            this.disableDOM( );
+
             this._enabled = false;
 
         },
@@ -53,9 +58,30 @@
             this._skipBreakpoint = false;
             this._breakDelay = 0;
 
+            this.enableDOM( );
+
+        },
+
+        disableDOM : function ( ) {
+
+            if ( ! this._domEnabled )
+                return ;
+
+            this._onInstruction( null );
+
+            this._domEnabled = false;
+
+        },
+
+        enableDOM : function ( ) {
+
+            if ( this._domEnabled )
+                return ;
+
+            this._domEnabled = true;
+
             if ( this._bufferedInstruction ) {
                 this._onInstruction( this._bufferedInstruction );
-                this._bufferedInstruction = null;
             }
 
         },
@@ -140,31 +166,33 @@
 
         _onInstruction : function ( e ) {
 
-            if ( ! this._enabled ) {
-                this._bufferedInstruction = e;
-                return ;
-            }
-
             if ( this._currentRow ) {
-
                 var previousRow = this._currentRow;
                 previousRow.className = previousRow.className.replace( /\btracer-current\b/g, '' );
-
             }
+
+            if ( ! e )
+                return ;
+
+            this._bufferedInstruction = e;
 
             if ( this._rows[ e.address ] ) {
 
-                var currentRow = this._currentRow = this._rows[ e.address ];
-                currentRow.className += ' tracer-current ';
+                if ( this._domEnabled ) {
 
-                var scrollableParent = this._currentRow;
-                for ( ; scrollableParent && scrollableParent.clientHeight >= scrollableParent.scrollHeight; scrollableParent = scrollableParent.parentNode ) ;
-                scrollableParent = scrollableParent || document.documentElement;
+                    var currentRow = this._currentRow = this._rows[ e.address ];
+                    currentRow.className += ' tracer-current ';
 
-                if ( scrollableParent.scrollTop > currentRow.offsetTop ) {
-                    currentRow.scrollIntoView( true );
-                } else if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < currentRow.offsetTop + currentRow.offsetHeight ) {
-                    currentRow.scrollIntoView( false );
+                    var scrollableParent = this._currentRow;
+                    for ( ; scrollableParent && scrollableParent.clientHeight >= scrollableParent.scrollHeight; scrollableParent = scrollableParent.parentNode ) ;
+                    scrollableParent = scrollableParent || document.documentElement;
+
+                    if ( scrollableParent.scrollTop > currentRow.offsetTop ) {
+                        currentRow.scrollIntoView( true );
+                    } else if ( scrollableParent.scrollTop + scrollableParent.offsetHeight < currentRow.offsetTop + currentRow.offsetHeight ) {
+                        currentRow.scrollIntoView( false );
+                    }
+
                 }
 
                 if ( this._breakpoints[ e.address ] && ! this._skipBreakpoint ) {
@@ -175,9 +203,11 @@
                     e.break( );
                 }
 
-            } else {
+            } else if ( ! this._warnings[ e.address ] ) {
 
                 console.warn( 'Jumping to ' + Virtjs.FormatUtil.address( e.address, 16 ) + ', which has not been disassembled' );
+
+                this._warnings[ e.address ] = true;
             }
 
             this._skipBreakpoint = false;
