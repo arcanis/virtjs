@@ -1,0 +1,12 @@
+{
+    "name"        : "virtjs-examples",
+    "version"     : "0.0.1",
+
+    "description" : "Virt.js example files",
+
+    "dependencies": {
+        "requirejs" : "*",
+        "esprima"   : "*",
+        "escodegen" : "*"
+    }
+}

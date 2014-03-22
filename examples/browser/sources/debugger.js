@@ -9,9 +9,7 @@ require( [
     'devices/timers/RAFrame',
     'devices/debug/Tracer'
 
-], function ( ) {
-
-    var GB = Virtjs.engine.GameBoy;
+], function ( GB ) {
 
     var AZERTY = { 65 : GB.A,    90 : GB.B,  13 : GB.START, 32 : GB.SELECT
                  , 37 : GB.LEFT, 38 : GB.UP, 39 : GB.RIGHT, 40 : GB.DOWN };
@@ -27,17 +25,12 @@ require( [
 
         var timer = new Virtjs.timer.RAFrame( );
 
-        // Using these optional dependencies allows to customizes the actual source code without degrading performances.
-
-        Virtjs.DebugUtil.setEscodegen( window.escodegen );
-        Virtjs.DebugUtil.setEsprima( window.esprima );
-
         // This done, we can ask Virt.js to create an emulator based on specified options
 
         var engine = window.engine = Virtjs.create( GB, {
 
             // Customize devices
-            screen    : screen,
+            screen   : screen,
             timer    : timer,
             keyboard : keyboard,
 
@@ -57,7 +50,7 @@ require( [
         // We're in debugger.js, so let's create a debugger
 
         var instructionTbody = document.querySelector( '#instructions tbody' );
-        var tracer = new Virtjs.debug.Tracer( engine, { element : instructionTbody } );
+        var tracer = window.tracer = new Virtjs.debug.Tracer( engine, { element : instructionTbody } );
 
         // We want to keep track of where we are
 
@@ -281,7 +274,7 @@ require( [
 
         // Finally, we start the engine. Its clock will be managed by the `Timer` instance.
 
-        engine.start( xhr.response );
+        engine.start( xhr.response, Query.autostart === 'true' );
 
     };
 

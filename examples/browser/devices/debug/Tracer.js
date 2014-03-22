@@ -20,6 +20,7 @@
 
             this._bufferedInstruction = null;
             this._currentRow = null;
+            this._currentAddress = null;
 
             this._breakpoints = { };
             this._warnings = { };
@@ -153,10 +154,10 @@
                 opcode.appendChild( document.createTextNode( opcodeText ) );
                 row.appendChild( opcode );
 
-                var instruction = document.createElement( 'td' );
-                instruction.className = 'tracer-instruction';
-                instruction.appendChild( document.createTextNode( infos.instruction ) );
-                row.appendChild( instruction );
+                var label = document.createElement( 'td' );
+                label.className = 'tracer-label';
+                label.appendChild( document.createTextNode( infos.label ) );
+                row.appendChild( label );
 
             }.bind( this ) );
 
@@ -205,10 +206,16 @@
 
             } else if ( ! this._warnings[ e.address ] ) {
 
-                console.warn( 'Jumping to ' + Virtjs.FormatUtil.address( e.address, 16 ) + ', which has not been disassembled' );
+                if ( this._currentAddress !== null ) {
+                    console.warn( 'Jumping from ' + Virtjs.FormatUtil.address( this._currentAddress, 16 ) + ' to ' + Virtjs.FormatUtil.address( e.address, 16 ) + ', which has not been disassembled' );
+                } else {
+                    console.warn( 'Jumping to ' + Virtjs.FormatUtil.address( e.address, 16 ) + ', which has not been disassembled' );
+                }
 
                 this._warnings[ e.address ] = true;
             }
+
+            this._currentAddress = e.address;
 
             this._skipBreakpoint = false;
 

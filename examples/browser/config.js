@@ -9,7 +9,7 @@ require( {
 
     map : {
         '*' : {
-            'base' : '../../libraries/base/index',
+            'virtjs' : '../../libraries/base/index',
             'architectures' : '../../libraries/architectures/'
         }
     },
@@ -20,10 +20,10 @@ require( {
             exports : 'escodegen' },
 
         'sources/debugger' : {
-            deps : [ 'base' ] },
+            deps : [ 'virtjs' ] },
 
         'architectures/gb/index' : {
-            deps : [ 'base' ] },
+            deps : [ 'virtjs' ] },
 
         'devices/inputs/Keyboard' : {
             exports : 'Virtjs.input.Keyboard' },
@@ -39,7 +39,7 @@ require( {
 
     }
 
-}, [ 'base', 'require' ], function ( Virtjs, require ) {
+}, [ 'virtjs', 'require' ], function ( Virtjs, require ) {
 
     window.Virtjs = Virtjs;
 

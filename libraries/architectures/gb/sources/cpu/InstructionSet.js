@@ -10,6 +10,63 @@ define( [
 
             this._cpu = cpu;
 
+            this.makeInstruction( 'LDrr_ab', { from : 'a', to : 'b' } );
+            this.makeInstruction( 'LDrr_ac', { from : 'a', to : 'c' } );
+            this.makeInstruction( 'LDrr_ad', { from : 'a', to : 'd' } );
+            this.makeInstruction( 'LDrr_ae', { from : 'a', to : 'e' } );
+            this.makeInstruction( 'LDrr_ah', { from : 'a', to : 'h' } );
+            this.makeInstruction( 'LDrr_al', { from : 'a', to : 'l' } );
+
+            this.makeInstruction( 'LDrr_ba', { from : 'b', to : 'a' } );
+            this.makeInstruction( 'LDrr_bc', { from : 'b', to : 'c' } );
+            this.makeInstruction( 'LDrr_bd', { from : 'b', to : 'd' } );
+            this.makeInstruction( 'LDrr_be', { from : 'b', to : 'e' } );
+            this.makeInstruction( 'LDrr_bh', { from : 'b', to : 'h' } );
+            this.makeInstruction( 'LDrr_bl', { from : 'b', to : 'l' } );
+
+            this.makeInstruction( 'LDrr_ca', { from : 'c', to : 'a' } );
+            this.makeInstruction( 'LDrr_cb', { from : 'c', to : 'b' } );
+            this.makeInstruction( 'LDrr_cd', { from : 'c', to : 'd' } );
+            this.makeInstruction( 'LDrr_ce', { from : 'c', to : 'e' } );
+            this.makeInstruction( 'LDrr_ch', { from : 'c', to : 'h' } );
+            this.makeInstruction( 'LDrr_cl', { from : 'c', to : 'l' } );
+
+            this.makeInstruction( 'LDrr_da', { from : 'd', to : 'a' } );
+            this.makeInstruction( 'LDrr_db', { from : 'd', to : 'b' } );
+            this.makeInstruction( 'LDrr_dc', { from : 'd', to : 'c' } );
+            this.makeInstruction( 'LDrr_de', { from : 'd', to : 'e' } );
+            this.makeInstruction( 'LDrr_dh', { from : 'd', to : 'h' } );
+            this.makeInstruction( 'LDrr_dl', { from : 'd', to : 'l' } );
+
+            this.makeInstruction( 'LDrr_ea', { from : 'e', to : 'a' } );
+            this.makeInstruction( 'LDrr_eb', { from : 'e', to : 'b' } );
+            this.makeInstruction( 'LDrr_ec', { from : 'e', to : 'c' } );
+            this.makeInstruction( 'LDrr_ed', { from : 'e', to : 'd' } );
+            this.makeInstruction( 'LDrr_eh', { from : 'e', to : 'h' } );
+            this.makeInstruction( 'LDrr_el', { from : 'e', to : 'l' } );
+
+            this.makeInstruction( 'LDrr_ha', { from : 'h', to : 'a' } );
+            this.makeInstruction( 'LDrr_hb', { from : 'h', to : 'b' } );
+            this.makeInstruction( 'LDrr_hc', { from : 'h', to : 'c' } );
+            this.makeInstruction( 'LDrr_hd', { from : 'h', to : 'd' } );
+            this.makeInstruction( 'LDrr_he', { from : 'h', to : 'e' } );
+            this.makeInstruction( 'LDrr_hl', { from : 'h', to : 'l' } );
+
+            this.makeInstruction( 'LDrr_la', { from : 'l', to : 'a' } );
+            this.makeInstruction( 'LDrr_lb', { from : 'l', to : 'b' } );
+            this.makeInstruction( 'LDrr_lc', { from : 'l', to : 'c' } );
+            this.makeInstruction( 'LDrr_ld', { from : 'l', to : 'd' } );
+            this.makeInstruction( 'LDrr_le', { from : 'l', to : 'e' } );
+            this.makeInstruction( 'LDrr_lh', { from : 'l', to : 'h' } );
+
+            this.makeInstruction( 'LDrHLm_a', { to : 'a' } );
+            this.makeInstruction( 'LDrHLm_b', { to : 'b' } );
+            this.makeInstruction( 'LDrHLm_c', { to : 'c' } );
+            this.makeInstruction( 'LDrHLm_d', { to : 'd' } );
+            this.makeInstruction( 'LDrHLm_e', { to : 'e' } );
+            this.makeInstruction( 'LDrHLm_h', { to : 'h' } );
+            this.makeInstruction( 'LDrHLm_l', { to : 'h' } );
+
             Object.keys( this.instructions ).forEach( function ( name ) {
 
                 var definition = this.instructions[ name ];
@@ -19,6 +76,54 @@ define( [
                 this[ name ].instructionSize = definition[ 1 ];
 
             }.bind( this ) );
+
+        },
+
+        instructionsBis : {
+
+            _LDr8r8 : function ( ) {
+
+                var to = this._cpu[ '_' + preprocess.to ];
+                var from = this._cpu[ '_' + preprocess.from ];
+
+                to[ 0 ] = from[ 0 ];
+
+                this._cpu._m[ 0 ] = 1;
+
+            },
+
+            _LDr8m8 : function ( ) {
+
+                var to = this._cpu[ '_' + preprocess.to ];
+                var address = this[ '_' + preprocess.from ]( );
+
+                to[ 0 ] = this._cpu._engine.readUint8( address );
+
+                this._cpu._m[ 0 ] = 1;
+
+            },
+
+            _LDm8r8 : function ( ) {
+
+                var from = this._cpu[ '_' + preprocess.from ];
+                var address = this[ '_' + preprocess.to ]( );
+
+                this._cpu._engine.writeUint8( address, from[ 0 ] );
+
+                this._cpu._m[ 0 ] = 1;
+
+            },
+
+            _LDr8n8 : function ( ) {
+
+                var to = this._cpu[ '_' + preprocess.to ];
+
+                to[ 0 ] = this._cpu._engine._mmu.readUint8( this._cpu._pc[ 0 ] );
+
+                this._cpu._pc[ 0 ] += 1;
+                this._cpu._m[ 0 ] = 1;
+
+            }
 
         },
 

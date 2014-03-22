@@ -7,7 +7,7 @@ var Query = ( function ( ) {
         var parts = parameter.split( '=' );
 
         var key = decodeURIComponent( parts[ 0 ] );
-        var value = decodeURIComponent( parts[ 1 ] );
+        var value = decodeURIComponent( parts[ 1 ] || 'true' );
 
         map[ key ] = value;
 

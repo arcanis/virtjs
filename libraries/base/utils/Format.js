@@ -4,9 +4,21 @@ define( [
 
     return {
 
+        decimal : function ( value, length ) {
+
+            var str = value.toString( 10 );
+
+            if ( typeof length !== 'undefined' )
+                while ( str.length < length )
+                    str = '0' + str;
+
+            return str;
+
+        },
+
         address : function ( address, bits ) {
 
-            var str = address.toString( 16 ).toUpperCase( );
+            var str = address.toString( 16 ).toLowerCase( );
 
             if ( typeof bits !== 'undefined' )
                 while ( str.length < Math.ceil( bits / 4 ) )
@@ -18,7 +30,7 @@ define( [
 
         hexadecimal : function ( value, bits ) {
 
-            var str = value.toString( 16 ).toUpperCase( );
+            var str = value.toString( 16 ).toLowerCase( );
 
             if ( typeof bits !== 'undefined' )
                 while ( str.length < Math.ceil( bits / 4 ) )
@@ -30,7 +42,7 @@ define( [
 
         binary : function ( value, bits ) {
 
-            var str = value.toString( 2 ).toUpperCase( );
+            var str = value.toString( 2 );
 
             if ( typeof bits !== 'undefined' )
                 while ( str.length < bits )

@@ -1,6 +1,6 @@
 define( [
 
-    'base'
+    'virtjs'
 
 ], function ( Virtjs ) {
 

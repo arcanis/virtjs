@@ -1,6 +1,10 @@
+/*global define*/
+
 define( [
 
-], function ( ) {
+    'virtjs'
+
+], function ( Virtjs ) {
 
     return Virtjs.ClassUtil.extend( {
 
@@ -17,6 +21,17 @@ define( [
 
             // BIOS flag
             this._inBios = true;
+
+        },
+
+        readInt8 : function ( address ) {
+
+            var n = this.readUint8( address );
+
+            if ( n > 0x7f )
+                n -= 0x100;
+
+            return n;
 
         },
 

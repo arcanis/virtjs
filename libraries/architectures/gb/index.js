@@ -1,6 +1,8 @@
-/*global Virtjs, define, preprocess*/
+/*global module, Virtjs, define, preprocess*/
 
 define( [
+
+    'virtjs',
 
     './sources/CPU',
     './sources/GPU',
@@ -10,9 +12,9 @@ define( [
 
     './sources/bios'
 
-], function ( CPU, GPU, IO, MMU, Timer, bios ) {
+], function ( Virtjs, CPU, GPU, IO, MMU, Timer, bios ) {
 
-    Virtjs.engine.GameBoy = Virtjs.Engine.extend( [
+    return Virtjs.Engine.extend( [
 
         Virtjs.EmitterMixin
 
@@ -67,21 +69,28 @@ define( [
 
             this._mmu._inBios = true;
 
-            this._cpu._a[ 0 ] = 0x01;
-            this._cpu._c[ 0 ] = 0x13;
-            this._cpu._e[ 0 ] = 0xD8;
-
-            this._cpu._pc[ 0 ] = 0x0000;
-            this._cpu._sp[ 0 ] = 0xFFFE;
-
             var data = new Uint8Array( buffer );
             for ( var t = 0, T = data.length; t < T; ++ t )
                 this._rom[ t ] = data[ t ];
 
             if ( typeof preprocess !== 'undefined' && preprocess.skipBios ) {
 
+                this._cpu._a[ 0 ] = 0x11; // 0x01 : DMG  |  0x11 : CGB  |  0xFF : MGB
+                this._cpu._f[ 0 ] = 0xb0;
+
+                this._cpu._b[ 0 ] = 0x00;
+                this._cpu._c[ 0 ] = 0x13;
+
+                this._cpu._d[ 0 ] = 0x00;
+                this._cpu._e[ 0 ] = 0xD8;
+
+                this._cpu._h[ 0 ] = 0x01;
+                this._cpu._l[ 0 ] = 0x4d;
+
+                this._cpu._pc[ 0 ] = 0x0100;
+                this._cpu._sp[ 0 ] = 0xfffe;
+
                 this._mmu._inBios = false;
-                this._cpu._pc[ 0 ] = 0x0100
 ;
             }
 
@@ -121,23 +130,24 @@ define( [
             for ( var address = 0; address < this._rom.length; ) {
 
                 var opcode = this._rom[ address ];
-                var instruction = this._cpu._instructionMap.standard[ opcode ];
+                var instruction = this._cpu._instructionMap.unprefixed[ opcode ];
 
-                if ( instruction ) {
-
-                    instructions.push( {
-                        address : address,
-                        opcode : opcode,
-                        instruction : instruction.instructionName
-                    } );
-
-                    address += instruction.instructionSize;
-
-                } else {
-
-                    address += 1;
-
+                try {
+                    var infos = instruction ? instruction.xDefinition.debug.call( this._cpu, address + 1 ) : null;
+                } catch ( e ) {
+                    var infos = { size : 1, label : '<corrupted : ' + e.message + '>' };
                 }
+
+                var label = infos ? infos.label : '-';
+                var size  = infos ? infos.size : 1;
+
+                instructions.push( {
+                    address : address,
+                    opcode : opcode,
+                    label : label
+                } );
+
+                address += size;
 
             }
 

@@ -17,7 +17,9 @@ define( [
 
         },
 
-        start : function ( autoResume ) {
+        start : function ( ) {
+
+            var autoResume = arguments[ this.load.length ];
 
             if ( typeof autoResume === 'undefined' )
                 autoResume = true;

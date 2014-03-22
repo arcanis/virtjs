@@ -1,8 +1,10 @@
-/*global Virtjs, define, preprocess*/
+/*global define, preprocess*/
 
 define( [
 
-], function ( ) {
+    'virtjs'
+
+], function ( Virtjs ) {
 
     return Virtjs.ClassUtil.extend( {
 

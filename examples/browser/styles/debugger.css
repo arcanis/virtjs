@@ -22,7 +22,7 @@ body {
     vertical-align: middle;
 }
 
-.tracer-address, .tracer-opcode, .tracer-instruction {
+.tracer-address, .tracer-opcode, .tracer-label {
     font-family: monospace;
 }
 

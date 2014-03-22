@@ -2,9 +2,8 @@ define( [
 
 ], function ( ) {
 
-    console.log( 'loaded' );
-
-    var Esprima, Escodegen;
+    var Esprima   = typeof window !== 'undefined' ? window.esprima : require( 'esprima' );
+    var Escodegen = typeof window !== 'undefined' ? window.escodegen : require( 'escodegen' );
 
     var findBranches = function ( node, callback ) {
 
@@ -80,28 +79,7 @@ define( [
 
     return {
 
-        setEsprima : function ( object ) {
-
-            if ( ! object )
-                throw new Error( 'Cannot set Esprima reference to a falsy value' );
-
-            Esprima = object;
-
-        },
-
-        setEscodegen : function ( object ) {
-
-            if ( ! object )
-                throw new Error( 'Cannot set Escodegen reference to a falsy value' );
-
-            Escodegen = object;
-
-        },
-
-        preprocessFunction : function ( instance, member, environment ) {
-
-            if ( typeof Esprima === 'undefined' || typeof Escodegen === 'undefined' )
-                return ;
+        preprocessFunction : function ( instance, member, preprocess ) {
 
             var ast = Esprima.parse( '(' + instance[ member ].toString( ) + ')' );
 
@@ -116,7 +94,7 @@ define( [
                 if ( usesUndeclaredVariables( node.test, [ 'this', 'arguments', 'preprocess' ] ) )
                     throw new Error( 'Preprocessed branches cannot access other variables than `preprocess`' );
 
-                var test = Escodegen.generate( node.test ), preprocess = environment;
+                var test = Escodegen.generate( node.test );
                 return eval( test ) ? node.consequent : node.alternate;
 
             } ) ) );

@@ -1,10 +1,12 @@
-/*global Virtjs, define, preprocess*/
+/*global define, preprocess*/
 
 define( [
 
+    'virtjs',
+
     './gpu/StateMachine'
 
-], function ( StateMachine ) {
+], function ( Virtjs, StateMachine ) {
 
     return Virtjs.ClassUtil.extend( {
 
