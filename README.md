@@ -10,7 +10,6 @@
 
 ## Current architectures
 
-- Chip8
 - Game Boy
 
 ## Maintainer
