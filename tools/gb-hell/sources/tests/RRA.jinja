@@ -1,0 +1,8 @@
+{## RRA ##}
+
+{% for carry in [0, 1] %}
+    {% asmfor "a", relevant8Bits %}
+        {{set_carry(carry)}}
+        rra
+    {% endasmfor %}
+{% endfor %}
