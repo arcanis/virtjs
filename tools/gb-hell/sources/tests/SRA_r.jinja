@@ -1,0 +1,9 @@
+{## SRA r ##}
+
+{% for r in r8 %}
+    {% set r_ = (r8 | except(r))[0] %}
+    {% asmfor r, relevant8Bits %}
+        ld {{r}}, {{r_}}
+        sra {{r}}
+    {% endasmfor %}
+{% endfor %}

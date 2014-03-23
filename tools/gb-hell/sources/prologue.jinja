@@ -1,6 +1,7 @@
 {% macro set_carry(carry) %}
-    {% if carry %}
-        scf
+    scf
+    {% if not carry %}
+        ccf
     {% endif %}
 {% endmacro %}
 
