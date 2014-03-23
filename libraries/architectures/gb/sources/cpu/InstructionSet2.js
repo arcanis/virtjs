@@ -2689,7 +2689,31 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SBC_r_n)' );
+                    var carryIn = ( this._f[ 0 ] & 0x10 ) ? 1 : 0;
+
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] -= this._engine._mmu.readUint8( this._pc[ 0 ] );
+                    this._pc[ 0 ] += 1;
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] -= carryIn;
+                    var rAfterCarry = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 2;
+
+                    // Set flags
+
+                    this._f[ 0 ] |= 0x40;
+
+                    if ( rAfterCarry === 0 )                             this._f[ 0 ] |=   0x80;
+                    else                                                 this._f[ 0 ] &= ~ 0x80;
+
+                    if      ( ( rAfter & 0xF ) > ( rBefore & 0xF ) )     this._f[ 0 ] |=   0x20;
+                    else if ( ( rAfterCarry & 0xF ) > ( rAfter & 0xF ) ) this._f[ 0 ] |=   0x20;
+                    else                                                 this._f[ 0 ] &= ~ 0x20;
+
+                    if ( rAfter > rBefore )                              this._f[ 0 ] |=   0x10;
+                    else if ( rAfterCarry > rAfter )                     this._f[ 0 ] |=   0x10;
+                    else                                                 this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -2712,7 +2736,30 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SBC_r_r)' );
+                    var carryIn = ( this._f[ 0 ] & 0x10 ) ? 1 : 0;
+
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] -= preprocess.parameters[ 1 ][ 0 ];
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] -= carryIn;
+                    var rAfterCarry = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] |= 0x40;
+
+                    if ( rAfterCarry === 0 )                             this._f[ 0 ] |=   0x80;
+                    else                                                 this._f[ 0 ] &= ~ 0x80;
+
+                    if      ( ( rAfter & 0xF ) > ( rBefore & 0xF ) )     this._f[ 0 ] |=   0x20;
+                    else if ( ( rAfterCarry & 0xF ) > ( rAfter & 0xF ) ) this._f[ 0 ] |=   0x20;
+                    else                                                 this._f[ 0 ] &= ~ 0x20;
+
+                    if ( rAfter > rBefore )                              this._f[ 0 ] |=   0x10;
+                    else if ( rAfterCarry > rAfter )                     this._f[ 0 ] |=   0x10;
+                    else                                                 this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -2735,7 +2782,31 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SBC_r_rrm)' );
+                    var carryIn = ( this._f[ 0 ] & 0x10 ) ? 1 : 0;
+
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] -= this._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] );
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] -= carryIn;
+                    var rAfterCarry = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 2;
+
+                    // Set flags
+
+                    this._f[ 0 ] |= 0x40;
+
+                    if ( rAfterCarry === 0 )                             this._f[ 0 ] |=   0x80;
+                    else                                                 this._f[ 0 ] &= ~ 0x80;
+
+
+                    if      ( ( rAfter & 0xF ) > ( rBefore & 0xF ) )     this._f[ 0 ] |=   0x20;
+                    else if ( ( rAfterCarry & 0xF ) > ( rAfter & 0xF ) ) this._f[ 0 ] |=   0x20;
+                    else                                                 this._f[ 0 ] &= ~ 0x20;
+
+                    if ( rAfter > rBefore )                              this._f[ 0 ] |=   0x10;
+                    else if ( rAfterCarry > rAfter )                     this._f[ 0 ] |=   0x10;
+                    else                                                 this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -2885,7 +2956,24 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SUB_rrm)' );
+                    var aBefore = this._a[ 0 ];
+                    this._a[ 0 ] -= this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    var aAfter = this._a[ 0 ];
+
+                    this._m[ 0 ] = 2;
+
+                    // Set flags
+
+                    this._f[ 0 ] |= 0x40;
+
+                    if ( aAfter === 0 )                         this._f[ 0 ] |=   0x80;
+                    else                                        this._f[ 0 ] &= ~ 0x80;
+
+                    if ( ( aBefore & 0xF ) < ( aAfter & 0xF ) ) this._f[ 0 ] |=   0x20;
+                    else                                        this._f[ 0 ] &= ~ 0x20;
+
+                    if ( aBefore < aAfter )                     this._f[ 0 ] |=   0x10;
+                    else                                        this._f[ 0 ] &= ~ 0x10;
 
                 },
 
