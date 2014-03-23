@@ -1,0 +1,45 @@
+{% macro set_carry(carry) %}
+    ld a, {{carry}}
+    rra
+{% endmacro %}
+
+{% macro r16cpy(to, from) %}
+    {% if to != from %}
+        {% if to == "sp" %}
+            ld {{to}}, {{from}}
+        {% elif from == "sp" %}
+            ld {{to}}, [{{from}}+0]
+        {% else %}
+            ld {{to[0]}}, {{from[0]}}
+            ld {{to[1]}}, {{from[1]}}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro asmfor_init(target, value) %}
+    ld {{target}}, {{value}}
+{% endmacro %}
+
+SECTION "TestRom", ROM0[$0100]
+
+    nop
+    jp Start
+
+    DB $CE,$ED,$66,$66,$CC,$0D,$00,$0B
+    DB $03,$73,$00,$83,$00,$0C,$00,$0D
+    DB $00,$08,$11,$1F,$88,$89,$00,$0E
+    DB $DC,$CC,$6E,$E6,$DD,$DD,$D9,$99
+    DB $BB,$BB,$67,$63,$6E,$0E,$EC,$CC
+    DB $DD,$DC,$99,$9F,$BB,$B9,$33,$3E
+
+    DB "Hell",$00,$00,$00,$00,$00,$00,$00
+
+    DB "    "
+
+SECTION "Program Start", ROM0[$0150]
+
+    DB $00{% for n in relevant8Bits %},{{n}}{% endfor %}
+
+Start::
+
+    ld a, 0

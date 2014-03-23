@@ -2,6 +2,8 @@ ROM	= hell.gb
 OBJECTS	= $(ROM:.gb=.o)
 SOURCES	= $(OBJECTS:.o=.asm)
 
+TESTS	= $(shell find sources/tests -type f)
+
 all:		$(ROM)
 
 $(ROM):		$(OBJECTS)
@@ -11,8 +13,8 @@ $(ROM):		$(OBJECTS)
 %.o:		%.asm
 		rgbasm -o $@ $^
 
-hell.asm:	hell.js hell.jinja
-		node hell.js > $@
+hell.asm:	sources/compile.js sources/prologue.jinja sources/epilogue.jinja $(TESTS)
+		node sources/compile.js sources/prologue.jinja $(TESTS) sources/epilogue.jinja > $@
 
 clean:
 		rm -f $(SOURCES) $(OBJECTS)

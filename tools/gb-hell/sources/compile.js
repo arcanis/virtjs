@@ -1,19 +1,18 @@
 /*global require, process, __dirname*/
 
+var Fs   = require( 'fs' );
 var Swig = require( 'swig' );
 
 var range_8b = [ ];
 for ( var t = 0; t < 0xFF; ++ t )
     range_8b.push( t );
 
-Swig.setFilter( 'head', function ( source ) {
-    console.error( source[ 0 ] );
-    return source[ 0 ];
-} );
-
-Swig.setFilter( 'except', function ( source, nope ) {
+Swig.setFilter( 'except', function ( source ) {
+    var nope = Array.prototype.slice.call( arguments, 1 );
     return source.filter( function ( value ) {
-        return nope.indexOf( value ) === - 1;
+        return nope.every( function ( possibility ) {
+            return possibility.indexOf( value ) === - 1;
+        } );
     } );
 } );
 
@@ -71,12 +70,18 @@ Swig.setTag( 'asmfor', function ( string, line, parser, types, stack, options ) 
 
 }, true, false );
 
-process.stdout.write( Swig.renderFile( __dirname + '/hell.jinja', {
+var files = process.argv.slice( 2 );
+var concatenation = files.map( function ( path ) { return Fs.readFileSync( __dirname + '/../' + path ); } ).join( '' );
+var rendering = Swig.compile( concatenation )( {
 
     r8  : [ 'a', 'b', 'c', 'd', 'e', 'h', 'l' ],
-    r16 : [ 'af', 'bc', 'de', 'hl' ],
+    r16 : [ 'bc', 'de', 'hl' ],
 
-    relevant8Bits  : [ 0x00,   0x0F,   0xF0,   0xFF,   0xAA,   0x55 ],
-    relevant16Bits : [ 0x0000, 0x00FF, 0xFF00, 0xFFFF, 0xAAAA, 0x5555 ]
+    relevant8Bits  : [ 0x00,   0x0F,   0xF0,   0xFF,   0xAA,   0x55   ],
+    relevant16Bits : [ 0x0000, 0x00FF, 0xFF00, 0xFFFF, 0xAAAA, 0x5555 ],
 
-} ) );
+    addresses      : [ 0x0151, 0x0152, 0x0153, 0x0154, 0x0155, 0x0156 ]
+
+} );
+
+process.stdout.write( rendering );

@@ -1,0 +1,12 @@
+{## ADD r, n ##}
+{# 'r' can only be 'a' #}
+
+{% set r = "a" %}
+
+{% for n in relevant8Bits %}
+    {% set r_ = (r8 | except(r))[0] %}
+    {% asmfor r_, relevant8Bits %}
+        ld {{r}}, {{r_}}
+        add {{r}}, {{n}}
+    {% endasmfor %}
+{% endfor %}

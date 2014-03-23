@@ -1,0 +1,24 @@
+{## ADC r1, r2 ##}
+{# 'r1' can only be 'a' #}
+
+{% set r1 = "a" %}
+
+{% for carry in [0, 1] %}
+    {% for r2 in r8 | except(r1) %}
+        {% set r1_ = (r8 | except(r1, r2))[0] %}
+        {% asmfor r1_, relevant8Bits %}
+            {% asmfor r2, relevant8Bits %}
+                {{set_carry(carry)}}
+                ld {{r1}}, {{r1_}}
+                adc {{r1}}, {{r2}}
+            {% endasmfor %}
+        {% endasmfor %}
+    {% endfor %}
+
+    {% set r1_ = (r8 | except(r1))[0] %}
+    {% asmfor r1_, relevant8Bits %}
+        {{set_carry(carry)}}
+        ld {{r1}}, {{r1_}}
+        adc {{r1}}, {{r1}}
+    {% endasmfor %}
+{% endfor %}
