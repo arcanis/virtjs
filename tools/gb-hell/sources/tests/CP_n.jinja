@@ -1,0 +1,9 @@
+{## CP n ##}
+
+{% for r in r8 | except("a") %}
+    {% for n in relevant8Bits %}
+        {% asmfor "a", relevant8Bits %}
+            cp {{n}}
+        {% endasmfor %}
+    {% endfor %}
+{% endfor %}

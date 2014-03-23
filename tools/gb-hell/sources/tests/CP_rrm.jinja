@@ -1,0 +1,10 @@
+{## CP rrm ##}
+{# 'rrm' can only be 'hl' #}
+
+{% set rrm = "hl" %}
+
+{% asmfor rrm, addresses %}
+    {% asmfor "a", relevant8Bits %}
+        cp [{{rrm}}]
+    {% endasmfor %}
+{% endasmfor %}
