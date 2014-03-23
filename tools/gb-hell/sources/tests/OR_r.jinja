@@ -1,13 +1,16 @@
 {## OR r ##}
 
 {% for r in r8 | except("a") %}
+    {% set a_ = (r8 | except(r, "a"))[0] %}
     {% asmfor r, relevant8Bits %}
-        {% asmfor "a", relevant8Bits %}
+        {% asmfor a_, relevant8Bits %}
+            ld a, {{a_}}
             or {{r}}
         {% endasmfor %}
     {% endasmfor %}
 {% endfor %}
 
-{% asmfor "a", relevant8Bits %}
+{% asmfor "b", relevant8Bits %}
+    ld a, b
     or a
 {% endasmfor %}

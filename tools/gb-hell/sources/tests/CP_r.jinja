@@ -1,13 +1,16 @@
 {## CP r ##}
 
 {% for r in r8 | except("a") %}
+    {% set a_ = (r8 | except("a", r))[0] %}
     {% asmfor r, relevant8Bits %}
-        {% asmfor "a", relevant8Bits %}
+        {% asmfor a_, relevant8Bits %}
+            ld a, {{a_}}
             cp {{r}}
         {% endasmfor %}
     {% endasmfor %}
 {% endfor %}
 
-{% asmfor "a", relevant8Bits %}
+{% asmfor "b", relevant8Bits %}
+    ld a, b
     cp a
 {% endasmfor %}

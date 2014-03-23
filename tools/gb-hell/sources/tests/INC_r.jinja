@@ -1,7 +1,9 @@
 {## INC r ##}
 
 {% for r in r8 %}
-    {% asmfor r, relevant8Bits %}
+    {% set r_ = (r8 | except(r))[0] %}
+    {% asmfor r_, relevant8Bits %}
+        ld {{r}}, {{r_}}
         inc {{r}}
     {% endasmfor %}
 {% endfor %}

@@ -2,7 +2,8 @@
 
 {% for r in r8 | except("a") %}
     {% for n in relevant8Bits %}
-        {% asmfor "a", relevant8Bits %}
+        {% asmfor "b", relevant8Bits %}
+            ld a, b
             cp {{n}}
         {% endasmfor %}
     {% endfor %}
