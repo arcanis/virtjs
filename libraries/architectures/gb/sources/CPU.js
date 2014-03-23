@@ -96,8 +96,6 @@ define( [
 
             }.bind( this ) );
 
-            console.log( this._instructionSets );
-
             // This line will setup the right branches when used by the build tool
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._engine._options );
 
