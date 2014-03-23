@@ -1,0 +1,13 @@
+{## AND r ##}
+
+{% for r in r8 | except("a") %}
+    {% asmfor r, relevant8Bits %}
+        {% asmfor "a", relevant8Bits %}
+            and {{r}}
+        {% endasmfor %}
+    {% endasmfor %}
+{% endfor %}
+
+{% asmfor "a", relevant8Bits %}
+    and a
+{% endasmfor %}
