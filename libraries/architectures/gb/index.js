@@ -130,7 +130,7 @@ define( [
             for ( var address = 0; address < this._rom.length; ) {
 
                 var opcode = this._rom[ address ];
-                var instruction = this._cpu._instructionMap.unprefixed[ opcode ];
+                var instruction = this._cpu._instructionMaps.unprefixed[ opcode ];
 
                 try {
                     var infos = instruction ? instruction.xDefinition.debug.call( this._cpu, address + 1 ) : null;

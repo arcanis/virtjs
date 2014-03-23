@@ -52,10 +52,12 @@ define( [
             // Instructions are optimized : instead of using a dictionnary or a switch case to select the right opcode, we use a pointer to function table
             // Each entry in InstructionMap is mapped to a function in InstructionSet, which is binded on the CPU. This way, we do not keep the instructions in the same file than the rest of the CPU. It would be too much code ;)
 
+            this._instructionSets = { };
             this._instructionMaps = { };
 
             Object.keys( InstructionMaps ).forEach( function ( namespace ) {
 
+                var instructionSet = this._instructionSets[ namespace ] = { };
                 var instructionMap = this._instructionMaps[ namespace ] = [ ];
 
                 InstructionMaps[ namespace ].forEach( function ( prototype, index ) {
@@ -83,7 +85,8 @@ define( [
                         return newDefinition;
                     }.bind( this ), { } );
 
-                    // We save the new instruction command into the instruction map
+                    // We save the new instruction inside the instruction set, and its command into the instruction map
+                    instructionSet[ prototype ] = instruction;
                     instructionMap[ index ] = instruction.command;
 
                     // And finally, we plug a custom function member to be able to fetch the new definition from the command
@@ -92,6 +95,8 @@ define( [
                 }.bind( this ) );
 
             }.bind( this ) );
+
+            console.log( this._instructionSets );
 
             // This line will setup the right branches when used by the build tool
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._engine._options );
