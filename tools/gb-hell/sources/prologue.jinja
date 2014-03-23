@@ -39,8 +39,15 @@ SECTION "TestRom", ROM0[$0100]
 
 SECTION "Program Start", ROM0[$0150]
 
-    DB $00{% for n in relevant8Bits %},{{n}}{% endfor %}
-
 Start::
 
     ld a, 0
+
+    {# 49152 is 0xC000, the working RAM #}
+    ld hl, 49152
+
+    {# Sets a few bytes in the working RAM that we'll use later #}
+    {% for n in relevant8Bits %}
+        ld [hl], {{n}}
+        inc hl
+    {% endfor %}
