@@ -3101,7 +3101,15 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (BIT_n_r)' );
+                    var test = ( preprocess.parameters[ 1 ][ 0 ] & ( 1 << preprocess.parameters[ 0 ] ) ) === 0;
+
+                    this._m[ 0 ] = 2;
+
+                    this._f[ 0 ] &= ~ 0x40;
+                    this._f[ 0 ] |=   0x20;
+
+                    if ( test ) this._f[ 0 ] |=   0x80;
+                    else        this._f[ 0 ] &= ~ 0x80;
 
                 },
 
@@ -3124,7 +3132,16 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (BIT_n_rrm)' );
+                    var value = this._engine._readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    var test = ( preprocess.parameters[ 1 ][ 0 ] & ( 1 << value ) ) === 0;
+
+                    this._m[ 0 ] = 4;
+
+                    this._f[ 0 ] &= ~ 0x40;
+                    this._f[ 0 ] |=   0x20;
+
+                    if ( test ) this._f[ 0 ] |=   0x80;
+                    else        this._f[ 0 ] &= ~ 0x80;
 
                 },
 
@@ -3147,7 +3164,9 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RES_n_r)' );
+                    preprocess.parameters[ 1 ][ 0 ] &= ~ ( 1 << preprocess.parameters[ 0 ] );
+
+                    this._m[ 0 ] = 2;
 
                 },
 
@@ -3170,7 +3189,10 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RES_n_rrm)' );
+                    var newValue = this._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] ) & ~ ( 1 << preprocess.parameters[ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 1 ][ 0 ], newValue );
+
+                    this._m[ 0 ] = 4;
 
                 },
 
@@ -3387,7 +3409,9 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SET_n_r)' );
+                    preprocess.parameters[ 1 ][ 0 ] |= 1 << preprocess.parameters[ 0 ];
+
+                    this._m[ 0 ] = 2;
 
                 },
 
@@ -3410,7 +3434,10 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SET_n_rrm)' );
+                    var newValue = this._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] ) | ( 1 << preprocess.parameters[ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 1 ][ 0 ], newValue );
+
+                    this._m[ 0 ] = 4;
 
                 },
 

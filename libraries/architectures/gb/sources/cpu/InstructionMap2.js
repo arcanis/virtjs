@@ -585,7 +585,8 @@ define( [
             'SET_n:7_r:e',
             'SET_n:7_r:h',
             'SET_n:7_r:l',
-            'SET_n:7_rrm:hl'
+            'SET_n:7_rrm:hl',
+            'SET_n:7_r:a'
 
         ]
 
