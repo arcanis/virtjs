@@ -2073,9 +2073,12 @@ define( [
 
                 debug : function ( address ) {
 
+                    var opcode = this._engine._mmu.readUint8( address );
+                    var instruction = this._instructionMap.cbprefixed[ opcode ];
+
                     return {
-                        size : 1,
-                        label : 'prefix cb'
+                        size : 2,
+                        label : instruction.xDefinition.debug.call( this, address + 1 ).label
                     };
 
                 }
@@ -2279,7 +2282,6 @@ define( [
                     var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
                     var leftMostBit = this._a[ 0 ] & 0x80 ? 1 : 0;
 
-                    var aBefore = this._a[ 0 ];
                     this._a[ 0 ] <<= 1;
                     this._a[ 0 ] |= carry << 0;
 
@@ -2314,7 +2316,6 @@ define( [
 
                     var leftMostBit = this._a[ 0 ] & 0x80 ? 1 : 0;
 
-                    var aBefore = this._a[ 0 ];
                     this._a[ 0 ] <<= 1;
                     this._a[ 0 ] |= leftMostBit << 0;
 
@@ -2350,7 +2351,6 @@ define( [
                     var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
                     var rightMostBit = this._a[ 0 ] & 0x01 ? 1 : 0;
 
-                    var aBefore = this._a[ 0 ];
                     this._a[ 0 ] >>= 1;
                     this._a[ 0 ] |= carry << 7;
 
@@ -2385,7 +2385,6 @@ define( [
 
                     var rightMostBit = this._a[ 0 ] & 0x01 ? 1 : 0;
 
-                    var aBefore = this._a[ 0 ];
                     this._a[ 0 ] >>= 1;
                     this._a[ 0 ] |= rightMostBit << 7;
 
@@ -3215,7 +3214,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RLC_r)' );
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] <<= 1;
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rBefore & 0x80 ) this._f[ 0 ] |=   0x10;
+                    else                  this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3237,7 +3251,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RLC_rrm)' );
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], rrmBefore << 1 );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rrmBefore & 0x80 ) this._f[ 0 ] |=   0x10;
+                    else                    this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3259,7 +3288,24 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RL_r)' );
+                    var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
+
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] = ( rBefore << 1 ) | ( carry << 0 );
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rBefore & 0x80 ) this._f[ 0 ] |=   0x10;
+                    else                  this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3281,7 +3327,24 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RL_rrm)' );
+                    var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
+
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], ( rrmBefore << 1 ) | ( carry << 0 ) );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rrmBefore & 0x80 ) this._f[ 0 ] |=   0x10;
+                    else                    this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3303,7 +3366,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RRC_r)' );
+                    var r = preprocess.parameters[ 0 ];
+                    var rightMostBit = r[ 0 ] & 0x01 ? 1 : 0;
+
+                    r[ 0 ] >>= 1;
+                    r[ 0 ] |= rightMostBit << 7;
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+                    this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rightMostBit ) this._f[ 0 ] |=   0x10;
+                    else                this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3347,22 +3425,21 @@ define( [
 
                 command : function ( ) {
 
-                    var carryIn = ( this._f[ 0 ] & 0x10 ) ? 1 : 0;
+                    var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
 
                     var rBefore = preprocess.parameters[ 0 ][ 0 ];
-                    preprocess.parameters[ 0 ][ 0 ] >>= 1;
-                    preprocess.parameters[ 0 ][ 0 ] |= carryIn << 7;
+                    preprocess.parameters[ 0 ][ 0 ] = ( carry << 7 ) | ( rBefore >> 1 );
                     var rAfter = preprocess.parameters[ 0 ][ 0 ];
 
-                    this._m[ 0 ] = 2;
+                    this._m[ 0 ] = 1;
 
                     // Set flags
 
-                    this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
 
-                    if ( rAfter === 0 )   this._f[ 0 ] |=   0x80;
-                    else                  this._f[ 0 ] &= ~ 0x80;
+                    if ( rAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                this._f[ 0 ] &= ~ 0x80;
 
                     if ( rBefore & 0x01 ) this._f[ 0 ] |=   0x10;
                     else                  this._f[ 0 ] &= ~ 0x10;
@@ -3387,7 +3464,24 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RR_rrm)' );
+                    var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
+
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], ( carry << 7 ) | ( rrmBefore >> 1 ) );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rrmBefore & 0x01 ) this._f[ 0 ] |=   0x10;
+                    else                    this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3460,7 +3554,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SLA_r)' );
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] <<= 1;
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rBefore & 0x80 ) this._f[ 0 ] |=   0x10;
+                    else                  this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3482,7 +3591,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SLA_rrm)' );
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], rrmBefore << 1 );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                    this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rrmBefore & 0x80 ) this._f[ 0 ] |=   0x10;
+                    else                    this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3504,7 +3628,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SRA_r)' );
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] = ( rBefore >> 1 ) | ( rBefore & 0x80 );
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rBefore & 0x01 ) this._f[ 0 ] |=   0x10;
+                    else                  this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3526,7 +3665,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SRA_rrm)' );
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], ( rrmBefore >> 1 ) | ( rrmBefore & 0x80 ) );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                    this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rrmBefore & 0x01 ) this._f[ 0 ] |=   0x10;
+                    else                    this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3559,11 +3713,11 @@ define( [
                     this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x20;
 
-                    if ( rAfter === 0 ) this._f[ 0 ] |=   0x80;
-                    else                this._f[ 0 ] &= ~ 0x80;
+                    if ( rAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
 
-                    if ( rBefore & 1 )  this._f[ 0 ] |=   0x10;
-                    else                this._f[ 0 ] &= ~ 0x10;
+                    if ( rBefore & 0x01 ) this._f[ 0 ] |=   0x10;
+                    else                  this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3596,11 +3750,11 @@ define( [
                     this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x20;
 
-                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
-                    else                  this._f[ 0 ] &= ~ 0x80;
+                    if ( rrmAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                    this._f[ 0 ] &= ~ 0x80;
 
-                    if ( rrmBefore & 1 )  this._f[ 0 ] |=   0x10;
-                    else                  this._f[ 0 ] &= ~ 0x10;
+                    if ( rrmBefore & 0x01 ) this._f[ 0 ] |=   0x10;
+                    else                    this._f[ 0 ] &= ~ 0x10;
 
                 },
 
