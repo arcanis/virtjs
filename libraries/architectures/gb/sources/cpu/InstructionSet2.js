@@ -781,37 +781,29 @@ define( [
 
                 command : function ( ) {
 
-                    var aBefore = this._a[ 0 ];
-
                     var correction = 0;
 
-                    if ( aBefore > 0x99 || ( this._f[ 0 ] & 0x10 ) === 0x10 ) {
-                        correction |= 0x60;
-                        this._f[ 0 ] |= 0x10;
-                    } else {
-                        this._f[ 0 ] &= ~ 0x10;
-                    }
+                    correction |= ( this._f[ 0 ] & 0x20 ) === 0x20 ? 0x06 : 0x00;
+                    correction |= ( this._f[ 0 ] & 0x10 ) === 0x10 ? 0x60 : 0x00;
 
-                    if ( ( aBefore & 0x0F ) > 0x09 || ( this._f[ 0 ] & 0x20 ) === 0x20 )
-                        correction |= 0x06;
-
-                    if ( ( this._f[ 0 ] & 0x40 ) === 0x00 ) {
-                        this._a[ 0 ] += correction;
-                    } else {
+                    if ( ( this._f[ 0 ] & 0x40 ) === 0x40 ) {
                         this._a[ 0 ] -= correction;
+                    } else {
+                        correction |= ( this._a[ 0 ] & 0x0F ) > 0x09 ? 0x06 : 0x00;
+                        correction |= ( this._a[ 0 ] & 0xFF ) > 0x99 ? 0x60 : 0x00;
+                        this._a[ 0 ] += correction;
                     }
-
-                    var aAfter = this._a[ 0 ];
 
                     this._m[ 0 ] = 1;
 
                     // Set flags
 
-                    if ( aAfter === 0 )                this._f[ 0 ] |=   0x80;
-                    else                               this._f[ 0 ] &= ~ 0x80;
+                    this._f[ 0 ] &= ~ 0x20;
 
-                    if ( ( aBefore ^ aAfter ) & 0x10 ) this._f[ 0 ] |=   0x20;
-                    else                               this._f[ 0 ] &= ~ 0x20;
+                    if ( this._a[ 0 ] === 0 )             this._f[ 0 ] |=   0x80;
+                    else                                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( ( correction & 0x60 ) === 0x60 ) this._f[ 0 ] |=   0x10;
 
                 },
 
