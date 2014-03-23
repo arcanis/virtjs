@@ -16,59 +16,8 @@ Swig.setFilter( 'except', function ( source ) {
     } );
 } );
 
-Swig.setTag( 'asmfor', function ( string, line, parser, types, stack, options ) {
-
-    var expectedStates = [ [ types.VAR, types.STRING ], types.COMMA, types.VAR ];
-    var states         = [ ];
-
-    var finalize = function ( ) {
-        this.out.push( states[ 0 ] );
-        this.out.push( states[ 2 ] );
-        this.out.push( states[ 4 ] );
-    };
-
-    var monitor = function ( type ) {
-        parser.on( type, function ( token ) {
-
-            var expected = [ ].concat( expectedStates[ states.length ] ).indexOf( type ) !== - 1;
-            if ( ! expected ) return true;
-
-            if ( type === types.VAR ) {
-                states.push( '_ctx.' + token.match );
-            } else {
-                states.push( token.match );
-            }
-
-            if ( states.length === expectedStates.length )
-                finalize.call( this );
-
-            return undefined;
-
-        } );
-    };
-
-    monitor( types.VAR );
-    monitor( types.STRING );
-    monitor( types.COMMA );
-    monitor( types.NUMBER );
-
-    return true;
-
-}, function ( compiler, args, content, parents, options, blockName ) {
-
-    var target = args[ 0 ];
-    var from = args[ 1 ];
-
-    var block = compiler( content, parents, options, blockName );
-
-    return [
-        '( function ( ) { ' + from + '.map( function ( value ) {',
-            '_output += _ctx.asmfor_init( ' + target + ', value );',
-            block,
-        '} ); } )( );'
-    ].join( '' );
-
-}, true, false );
+var asmforTag = new ( require( './asmfor' ) )( );
+Swig.setTag( 'asmfor', asmforTag.parse.bind( asmforTag ), asmforTag.compile.bind( asmforTag ), true, false );
 
 var files = process.argv.slice( 2 );
 var concatenation = files.map( function ( path ) { return Fs.readFileSync( __dirname + '/../' + path ); } ).join( '' );

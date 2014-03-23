@@ -1,6 +1,7 @@
 {% macro set_carry(carry) %}
-    ld a, {{carry}}
-    rra
+    {% if carry %}
+        scf
+    {% endif %}
 {% endmacro %}
 
 {% macro r16cpy(to, from) %}
