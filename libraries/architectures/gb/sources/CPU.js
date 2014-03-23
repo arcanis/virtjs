@@ -66,12 +66,14 @@ define( [
 
                         instructions[ name ] = Object.create( instructions[ name.replace( /:[^_]+/g, '' ) ] );
 
-                        var preprocessVariables = { parameters : name.split( /_/ ).map( function ( part ) {
-                            return part.split( ':' )[ 1 ];
-                        } ).filter( function ( parameter ) {
-                            return parameter !== undefined;
-                        } ).map( function ( register ) {
-                            return this[ '_' + register ];
+                        var preprocessVariables = { parameters : name.split( /_/ ).filter( function ( part ) {
+                            return part.indexOf( ':' ) !== - 1;
+                        } ).map( function ( part ) {
+                            return part.split( ':' );
+                        } ).map( function ( specialization ) {
+                            if ( specialization[ 0 ] === 'n' )
+                                return parseInt( specialization[ 1 ] );
+                            return this[ '_' + specialization[ 1 ] ];
                         }.bind( this ) ) };
 
                         Virtjs.DebugUtil.preprocessFunction( instructions[ name ], 'command', preprocessVariables );

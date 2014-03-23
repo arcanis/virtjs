@@ -3097,11 +3097,11 @@ define( [
         cbprefixed : {
 
             // ex: BIT 0, b
-            BIT_0_r : {
+            BIT_n_r : {
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (BIT_0_r)' );
+                    throw new Error( 'Unimplemented (BIT_n_r)' );
 
                 },
 
@@ -3109,8 +3109,9 @@ define( [
 
                     return {
                         size : 2,
-                        label : 'bit 0 ' + [
-                            preprocess.parameters[ 0 ].xRegister
+                        label : 'bit ' + [
+                            preprocess.parameters[ 0 ],
+                            preprocess.parameters[ 1 ].xRegister
                         ].join( ', ' )
                     };
 
@@ -3119,11 +3120,11 @@ define( [
             },
 
             // ex: BIT 0, (de)
-            BIT_0_rrm : {
+            BIT_n_rrm : {
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (BIT_0_rrm)' );
+                    throw new Error( 'Unimplemented (BIT_n_rrm)' );
 
                 },
 
@@ -3131,316 +3132,9 @@ define( [
 
                     return {
                         size : 2,
-                        label : 'bit 0 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 1, b
-            BIT_1_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_1_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 1 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 1, (de)
-            BIT_1_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_1_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 1 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 2, b
-            BIT_2_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_2_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 2 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 2, (de)
-            BIT_2_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_2_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 2 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 3, b
-            BIT_3_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_3_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 3 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 3, (de)
-            BIT_3_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_3_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 3 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 4, b
-            BIT_4_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_4_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 4 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 4, (de)
-            BIT_4_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_4_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 4 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 5, b
-            BIT_5_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_5_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 5 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 5, (de)
-            BIT_5_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_5_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 5 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 6, b
-            BIT_6_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_6_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 6 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 6, (de)
-            BIT_6_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_6_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 6 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 7, b
-            BIT_7_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_7_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 7 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: BIT 7, (de)
-            BIT_7_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (BIT_7_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'bit 7 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
+                        label : 'bit ' + [
+                            preprocess.parameters[ 0 ],
+                            '(' + preprocess.parameters[ 1 ].xRegister + ')'
                         ].join( ', ' )
                     };
 
@@ -3449,11 +3143,11 @@ define( [
             },
 
             // ex: RES 0, b
-            RES_0_r : {
+            RES_n_r : {
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RES_0_r)' );
+                    throw new Error( 'Unimplemented (RES_n_r)' );
 
                 },
 
@@ -3461,8 +3155,9 @@ define( [
 
                     return {
                         size : 2,
-                        label : 'res 0 ' + [
-                            preprocess.parameters[ 0 ].xRegister
+                        label : 'res ' + [
+                            preprocess.parameters[ 0 ],
+                            preprocess.parameters[ 1 ].xRegister
                         ].join( ', ' )
                     };
 
@@ -3471,11 +3166,11 @@ define( [
             },
 
             // ex: RES 0, (de)
-            RES_0_rrm : {
+            RES_n_rrm : {
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RES_0_rrm)' );
+                    throw new Error( 'Unimplemented (RES_n_rrm)' );
 
                 },
 
@@ -3483,316 +3178,9 @@ define( [
 
                     return {
                         size : 2,
-                        label : 'res 0 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 1, b
-            RES_1_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_1_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 1 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 1, (de)
-            RES_1_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_1_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 1 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 2, b
-            RES_2_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_2_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 2 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 2, (de)
-            RES_2_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_2_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 2 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 3, b
-            RES_3_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_3_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 3 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 3, (de)
-            RES_3_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_3_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 3 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 4, b
-            RES_4_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_4_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 4 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 4, (de)
-            RES_4_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_4_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 4 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 5, b
-            RES_5_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_5_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 5 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 5, (de)
-            RES_5_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_5_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 5 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 6, b
-            RES_6_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_6_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 6 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 6, (de)
-            RES_6_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_6_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 6 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 7, b
-            RES_7_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_7_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 7 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: RES 7, (de)
-            RES_7_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (RES_7_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'res 7 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
+                        label : 'res ' + [
+                            preprocess.parameters[ 0 ],
+                            '(' + preprocess.parameters[ 1 ].xRegister + ')'
                         ].join( ', ' )
                     };
 
@@ -3995,11 +3383,11 @@ define( [
             },
 
             // ex: SET 0, b
-            SET_0_r : {
+            SET_n_r : {
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SET_0_r)' );
+                    throw new Error( 'Unimplemented (SET_n_r)' );
 
                 },
 
@@ -4007,8 +3395,9 @@ define( [
 
                     return {
                         size : 2,
-                        label : 'set 0 ' + [
-                            preprocess.parameters[ 0 ].xRegister
+                        label : 'set ' + [
+                            preprocess.parameters[ 0 ],
+                            preprocess.parameters[ 1 ].xRegister
                         ].join( ', ' )
                     };
 
@@ -4017,11 +3406,11 @@ define( [
             },
 
             // ex: SET 0, (de)
-            SET_0_rrm : {
+            SET_n_rrm : {
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SET_0_rrm)' );
+                    throw new Error( 'Unimplemented (SET_n_rrm)' );
 
                 },
 
@@ -4029,316 +3418,9 @@ define( [
 
                     return {
                         size : 2,
-                        label : 'set 0 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 1, b
-            SET_1_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_1_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 1 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 1, (de)
-            SET_1_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_1_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 1 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 2, b
-            SET_2_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_2_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 2 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 2, (de)
-            SET_2_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_2_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 2 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 3, b
-            SET_3_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_3_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 3 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 3, (de)
-            SET_3_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_3_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 3 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 4, b
-            SET_4_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_4_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 4 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 4, (de)
-            SET_4_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_4_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 4 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 5, b
-            SET_5_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_5_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 5 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 5, (de)
-            SET_5_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_5_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 5 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 6, b
-            SET_6_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_6_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 6 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 6, (de)
-            SET_6_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_6_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 6 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 7, b
-            SET_7_r : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_7_r)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 7 ' + [
-                            preprocess.parameters[ 0 ].xRegister
-                        ].join( ', ' )
-                    };
-
-                }
-
-            },
-
-            // ex: SET 7, (de)
-            SET_7_rrm : {
-
-                command : function ( ) {
-
-                    throw new Error( 'Unimplemented (SET_7_rrm)' );
-
-                },
-
-                debug : function ( address ) {
-
-                    return {
-                        size : 2,
-                        label : 'set 7 ' + [
-                            '(' + preprocess.parameters[ 0 ].xRegister + ')'
+                        label : 'set ' + [
+                            preprocess.parameters[ 0 ],
+                            '(' + preprocess.parameters[ 1 ].xRegister + ')'
                         ].join( ', ' )
                     };
 
