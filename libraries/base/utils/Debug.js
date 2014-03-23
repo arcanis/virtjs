@@ -79,14 +79,29 @@ define( [
 
     return {
 
-        preprocessFunction : function ( instance, member, preprocess ) {
+        preprocessFunction : function ( /* ( instance, member | function ), preprocess */ ) {
 
-            var ast = Esprima.parse( '(' + instance[ member ].toString( ) + ')' );
+            if ( arguments.length <= 2 ) {
+
+                var fn         = arguments[ 0 ];
+                var preprocess = arguments[ 1 ];
+
+            } else {
+
+                var instance   = arguments[ 0 ];
+                var method     = arguments[ 1 ];
+
+                var fn         = instance[ method ];
+                var preprocess = arguments[ 2 ];
+
+            }
+
+            var ast = Esprima.parse( '(' + fn.toString( ) + ')' );
 
             if ( usesUndeclaredVariables( ast ) )
                 throw new Error( 'Preprocessed functions cannot make use of non-local variables' );
 
-            instance[ member ] = eval( Escodegen.generate( findBranches( ast, function ( node ) {
+            var newFn = eval( Escodegen.generate( findBranches( ast, function ( node ) {
 
                 if ( ! usesPreprocessVariable( node.test ) )
                     return node;
@@ -98,6 +113,11 @@ define( [
                 return eval( test ) ? node.consequent : node.alternate;
 
             } ) ) );
+
+            if ( instance )
+                instance[ method ] = newFn;
+
+            return newFn;
 
         }
 

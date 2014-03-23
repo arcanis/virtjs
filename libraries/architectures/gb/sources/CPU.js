@@ -7,7 +7,7 @@ define( [
     './cpu/InstructionMap2',
     './cpu/InstructionSet2'
 
-], function ( Virtjs, InstructionMap, InstructionSet ) {
+], function ( Virtjs, InstructionMaps, InstructionSets ) {
 
     return Virtjs.ClassUtil.extend( [
 
@@ -52,46 +52,46 @@ define( [
             // Instructions are optimized : instead of using a dictionnary or a switch case to select the right opcode, we use a pointer to function table
             // Each entry in InstructionMap is mapped to a function in InstructionSet, which is binded on the CPU. This way, we do not keep the instructions in the same file than the rest of the CPU. It would be too much code ;)
 
-            this._instructionSet = new InstructionSet( this );
-            this._instructionMap = Object.keys( InstructionMap ).reduce( function ( remap, namespace ) {
+            this._instructionMaps = { };
 
-                var instructions = this._instructionSet[ namespace ];
+            Object.keys( InstructionMaps ).forEach( function ( namespace ) {
 
-                remap[ namespace ] = InstructionMap[ namespace ].map( function ( name ) {
+                var instructionMap = this._instructionMaps[ namespace ] = [ ];
 
-                    if ( name === null )
-                        return null;
+                InstructionMaps[ namespace ].forEach( function ( prototype, index ) {
 
-                    if ( ! instructions[ name ] && name.indexOf( ':' ) !== - 1 ) {
+                    if ( ! prototype ) return ;
 
-                        instructions[ name ] = Object.create( instructions[ name.replace( /:[^_]+/g, '' ) ] );
+                    // We obtain the generic name by removing all compile-time arguments
+                    var generalization = prototype.replace( /:[^_]*/g, '' );
+                    var definition = InstructionSets[ namespace ][ generalization ];
 
-                        var preprocessVariables = { parameters : name.split( /_/ ).filter( function ( part ) {
-                            return part.indexOf( ':' ) !== - 1;
-                        } ).map( function ( part ) {
-                            return part.split( ':' );
-                        } ).map( function ( specialization ) {
-                            if ( specialization[ 0 ] === 'n' )
-                                return parseInt( specialization[ 1 ] );
-                            return this[ '_' + specialization[ 1 ] ];
-                        }.bind( this ) ) };
+                    // We convert the compile-time arguments into an array which will be used by the newly crafted instructions
+                    var resolvedArguments = { parameters : prototype.split( /_/ ).filter( function ( part ) {
+                        return part.indexOf( ':' ) !== - 1;
+                    } ).map( function ( part ) {
+                        return part.split( ':' );
+                    } ).map( function ( specialization ) {
+                        if ( specialization[ 0 ] === 'n' )
+                            return parseInt( specialization[ 1 ] );
+                        return this[ '_' + specialization[ 1 ] ];
+                    }.bind( this ) ) };
 
-                        Virtjs.DebugUtil.preprocessFunction( instructions[ name ], 'command', preprocessVariables );
-                        Virtjs.DebugUtil.preprocessFunction( instructions[ name ], 'debug', preprocessVariables );
+                    // We copy each method of the original instruction, recompiling it with the preprocessor then binding it onto the CPU
+                    var instruction = Object.keys( definition ).reduce( function ( newDefinition, method ) {
+                        newDefinition[ method ] = Virtjs.DebugUtil.preprocessFunction( definition[ method ], resolvedArguments ).bind( this );
+                        return newDefinition;
+                    }.bind( this ), { } );
 
-                    }
+                    // We save the new instruction command into the instruction map
+                    instructionMap[ index ] = instruction.command;
 
-                    var instruction = instructions[ name ];
-                    var binding = instruction.command.bind( this );
-                    binding.xDefinition = instruction;
-
-                    return binding;
+                    // And finally, we plug a custom function member to be able to fetch the new definition from the command
+                    instruction.command.xDefinition = instruction;
 
                 }.bind( this ) );
 
-                return remap;
-
-            }.bind( this ), { } );
+            }.bind( this ) );
 
             // This line will setup the right branches when used by the build tool
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._engine._options );
@@ -122,7 +122,7 @@ define( [
                 var address = this._pc[ 0 ];
 
                 var opcode = this._engine._mmu.readUint8( address );
-                var instruction = this._instructionMap.unprefixed[ opcode ];
+                var instruction = this._instructionMaps.unprefixed[ opcode ];
 
                 if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 ) {
 
@@ -152,13 +152,13 @@ define( [
 
                 if ( firedInterruptions & 0x01 ) {
                     this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
-                    this._instructionSet.unprefixed.RST_40H.command.call( this );
+                    this._instructionSets.unprefixed.RST_40H.command.call( this );
                 } else if ( firedInterruptions & 0x04 ) {
                     this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
-                    this._instructionSet.unprefixed.RST_50H.command.call( this );
+                    this._instructionSets.unprefixed.RST_50H.command.call( this );
                 } else if ( firedInterruptions & 0x10 ) {
                     this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
-                    this._instructionSet.unprefixed.RST_60H.command.call( this );
+                    this._instructionSets.unprefixed.RST_60H.command.call( this );
                 }
 
                 if ( ! this._ime ) {

@@ -4,8 +4,11 @@ define( [
 
 ], function ( ObjectUtil ) {
 
+    var instance = 0;
+
     var Class = function ( dynamics, statics ) {
 
+        this._instance = instance ++;
         this._options = arguments[ this.initialize.length ] || { };
 
         this.initialize.apply( this, arguments );

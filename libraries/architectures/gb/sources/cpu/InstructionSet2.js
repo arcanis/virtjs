@@ -6,11 +6,7 @@ define( [
 
 ], function ( Virtjs ) {
 
-    return Virtjs.ClassUtil.extend( {
-
-        initialize : function ( ) {
-
-        },
+    return {
 
         unprefixed : {
 
@@ -2071,7 +2067,7 @@ define( [
                     var opcode = this._engine._mmu.readUint8( this._pc[ 0 ] );
                     this._pc[ 0 ] += 1;
 
-                    var instruction = this._instructionMap.cbprefixed[ opcode ];
+                    var instruction = this._instructionMaps.cbprefixed[ opcode ];
                     instruction( );
 
                 },
@@ -3838,6 +3834,6 @@ define( [
 
         }
 
-    } );
+    };
 
 } );
