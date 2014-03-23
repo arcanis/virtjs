@@ -1,0 +1,7 @@
+{## DEC rr ##}
+
+{% for rr in r16 %}
+    {% asmfor rr, relevant16Bits %}
+        dec {{rr}}
+    {% endasmfor %}
+{% endfor %}

@@ -1,0 +1,7 @@
+{## DEC r ##}
+
+{% for r in r8 %}
+    {% asmfor r, relevant8Bits %}
+        dec {{r}}
+    {% endasmfor %}
+{% endfor %}
