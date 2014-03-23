@@ -639,7 +639,12 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (CPL)' );
+                    this._a[ 0 ] = ~ this._a[ 0 ];
+
+                    // Set flags
+
+                    this._f[ 0 ] |= 0x40;
+                    this._f[ 0 ] |= 0x20;
 
                 },
 
@@ -2530,7 +2535,10 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RST_28H)' );
+                    this._sp[ 0 ] -= 2;
+                    this._engine._mmu.writeUint16( this._sp[ 0 ], this._pc[ 0 ] );
+
+                    this._pc[ 0 ] = 0x28;
 
                     this._m[ 0 ] = 4;
 
@@ -3131,8 +3139,8 @@ define( [
 
                 command : function ( ) {
 
-                    var value = this._engine._readUint8( preprocess.parameters[ 0 ][ 0 ] );
-                    var test = ( preprocess.parameters[ 1 ][ 0 ] & ( 1 << value ) ) === 0;
+                    var value = this._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] );
+                    var test = ( value & ( 1 << preprocess.parameters[ 0 ][ 0 ] ) ) === 0;
 
                     this._m[ 0 ] = 4;
 
