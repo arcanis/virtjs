@@ -1,0 +1,12 @@
+{## LDD r, rrm ##}
+{# 'r' can only be 'a' #}
+{# 'rrm' can only be 'hl' #}
+
+{% set r = "a" %}
+{% set rrm = "hl" %}
+
+ld {{rrm}}, {{addresses | back}}
+
+{% for address in addresses %}
+    ld {{r}}, [{{rrm}}-]
+{% endfor %}
