@@ -280,7 +280,7 @@ define( [
 
             // F0
             'LDH_r:a_nm',
-            'POP_rr:af',
+            'POP_AF',
             'LD_r:a_rm:c',
             'DI',
             null,

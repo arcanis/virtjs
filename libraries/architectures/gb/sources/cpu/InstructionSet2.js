@@ -2039,7 +2039,7 @@ define( [
 
                 command : function ( ) {
 
-                    preprocess.parameters[ 0 ][ 0 ] = this._engine._mmu.readUint16( this._sp[ 0 ], preprocess.parameters[ 0 ][ 0 ] );
+                    preprocess.parameters[ 0 ][ 0 ] = this._engine._mmu.readUint16( this._sp[ 0 ] );
                     this._sp[ 0 ] += 2;
 
                     this._m[ 0 ] = 3;
@@ -2053,6 +2053,29 @@ define( [
                         label : 'pop ' + [
                             preprocess.parameters[ 0 ].xRegister
                         ].join( ', ' )
+                    };
+
+                }
+
+            },
+
+            // ex: POP af
+            POP_AF : {
+
+                command : function ( ) {
+
+                    this._af[ 0 ] = this._engine._mmu.readUint16( this._sp[ 0 ] ) & 0xfff0;
+                    this._sp[ 0 ] += 2;
+
+                    this._m[ 0 ] = 3;
+
+                },
+
+                debug : function ( address ) {
+
+                    return {
+                        size : 1,
+                        label : 'pop af'
                     };
 
                 }
