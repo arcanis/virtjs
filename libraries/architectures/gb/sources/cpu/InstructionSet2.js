@@ -2276,8 +2276,12 @@ define( [
 
                 command : function ( ) {
 
+                    var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
+                    var leftMostBit = this._a[ 0 ] & 0x80 ? 1 : 0;
+
                     var aBefore = this._a[ 0 ];
                     this._a[ 0 ] <<= 1;
+                    this._a[ 0 ] |= carry << 0;
 
                     this._m[ 0 ] = 1;
 
@@ -2287,8 +2291,8 @@ define( [
                     this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x80;
 
-                    if ( aBefore & 0x80 ) this._f[ 0 ] |=   0x10;
-                    else                  this._f[ 0 ] &= ~ 0x10;
+                    if ( leftMostBit ) this._f[ 0 ] |=   0x10;
+                    else               this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -2308,11 +2312,11 @@ define( [
 
                 command : function ( ) {
 
-                    var carryIn = ( this._f[ 0 ] & 0x10 ) ? 1 : 0;
+                    var leftMostBit = this._a[ 0 ] & 0x80 ? 1 : 0;
 
                     var aBefore = this._a[ 0 ];
                     this._a[ 0 ] <<= 1;
-                    this._a[ 0 ] += carryIn;
+                    this._a[ 0 ] |= leftMostBit << 0;
 
                     this._m[ 0 ] = 1;
 
@@ -2322,8 +2326,8 @@ define( [
                     this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x80;
 
-                    if ( aBefore & 0x80 ) this._f[ 0 ] |=   0x10;
-                    else                  this._f[ 0 ] &= ~ 0x10;
+                    if ( leftMostBit ) this._f[ 0 ] |=   0x10;
+                    else               this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -2344,6 +2348,7 @@ define( [
                 command : function ( ) {
 
                     var carry = this._f[ 0 ] & 0x10 ? 1 : 0;
+                    var rightMostBit = this._a[ 0 ] & 0x01 ? 1 : 0;
 
                     var aBefore = this._a[ 0 ];
                     this._a[ 0 ] >>= 1;
@@ -2357,8 +2362,8 @@ define( [
                     this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x80;
 
-                    if ( aBefore & 0x01 ) this._f[ 0 ] |=   0x10;
-                    else                  this._f[ 0 ] &= ~ 0x10;
+                    if ( rightMostBit ) this._f[ 0 ] |=   0x10;
+                    else                this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -2378,11 +2383,11 @@ define( [
 
                 command : function ( ) {
 
-                    var carryIn = ( this._f[ 0 ] & 0x40 ) ? 1 : 0;
+                    var rightMostBit = this._a[ 0 ] & 0x01 ? 1 : 0;
 
                     var aBefore = this._a[ 0 ];
                     this._a[ 0 ] >>= 1;
-                    this._a[ 0 ] += carryIn;
+                    this._a[ 0 ] |= rightMostBit << 7;
 
                     this._m[ 0 ] = 1;
 
@@ -2392,8 +2397,8 @@ define( [
                     this._f[ 0 ] &= ~ 0x40;
                     this._f[ 0 ] &= ~ 0x80;
 
-                    if ( aBefore & 0x01 ) this._f[ 0 ] |=   0x10;
-                    else                  this._f[ 0 ] &= ~ 0x10;
+                    if ( rightMostBit ) this._f[ 0 ] |=   0x10;
+                    else                this._f[ 0 ] &= ~ 0x10;
 
                 },
 
