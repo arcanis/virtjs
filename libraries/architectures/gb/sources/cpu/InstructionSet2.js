@@ -669,7 +669,7 @@ define( [
 
                     // Set flags
 
-                    this._f[ 0 ] = 0x40;
+                    this._f[ 0 ] |= 0x40;
 
                     if ( cmp === 0 )                   this._f[ 0 ] |=   0x80;
                     else                               this._f[ 0 ] &= ~ 0x80;
@@ -701,15 +701,15 @@ define( [
                 command : function ( ) {
 
                     var a = this._a[ 0 ];
-                    var r = preprocess.parameters[ 0 ];
+                    var r = preprocess.parameters[ 0 ][ 0 ];
 
                     var cmp = ( a - r ) & 0xFF;
 
-                    this._m[ 0 ] = 2;
+                    this._m[ 0 ] = 1;
 
                     // Set flags
 
-                    this._f[ 0 ] = 0x40;
+                    this._f[ 0 ] |= 0x40;
 
                     if ( cmp === 0 )                   this._f[ 0 ] |=   0x80;
                     else                               this._f[ 0 ] &= ~ 0x80;
@@ -740,7 +740,25 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (CP_rrm)' );
+                    var a = this._a[ 0 ];
+                    var r = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    var cmp = ( a - r ) & 0xFF;
+
+                    this._m[ 0 ] = 2;
+
+                    // Set flags
+
+                    this._f[ 0 ] |= 0x40;
+
+                    if ( cmp === 0 )                   this._f[ 0 ] |=   0x80;
+                    else                               this._f[ 0 ] &= ~ 0x80;
+
+                    if ( ( cmp & 0xF ) > ( a & 0xF ) ) this._f[ 0 ] |=   0x20;
+                    else                               this._f[ 0 ] &= ~ 0x20;
+
+                    if ( cmp > a )                     this._f[ 0 ] |=   0x10;
+                    else                               this._f[ 0 ] &= ~ 0x10;
 
                 },
 
