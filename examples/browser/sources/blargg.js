@@ -54,7 +54,7 @@ require( [
         } );
 
         var start = function ( ) {
-            engine.start( xhr.response, false ); };
+            engine.start( xhr.response ); };
 
         var xhr = new XMLHttpRequest( );
         xhr.open( 'GET', '../assets/gb/' + rom, true );
