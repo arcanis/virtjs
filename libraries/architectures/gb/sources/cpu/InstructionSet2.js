@@ -1428,7 +1428,7 @@ define( [
 
                 command : function ( ) {
 
-                    preprocess.parameters[ 0 ][ 0 ] = this._cpu._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] );
+                    preprocess.parameters[ 0 ][ 0 ] = this._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] );
 
                     preprocess.parameters[ 1 ][ 0 ] -= 1;
 
