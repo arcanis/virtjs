@@ -232,7 +232,7 @@ define( [
             'CALL_NZ_nn',
             'PUSH_rr:bc',
             'ADD_r:a_n',
-            'RST_00H',
+            'RST_n:0x00',
             'RET_Z',
             'RET',
             'JP_Z_nn',
@@ -240,7 +240,7 @@ define( [
             'CALL_Z_nn',
             'CALL_nn',
             'ADC_r:a_n',
-            'RST_08H',
+            'RST_n:0x08',
 
             // D0
             'RET_NC',
@@ -250,7 +250,7 @@ define( [
             'CALL_NC_nn',
             'PUSH_rr:de',
             'SUB_n',
-            'RST_10H',
+            'RST_n:0x10',
             'RET_C',
             'RETI',
             'JP_C_nn',
@@ -258,7 +258,7 @@ define( [
             'CALL_C_nn',
             null,
             'SBC_r:a_n',
-            'RST_18H',
+            'RST_n:0x18',
 
             // E0
             'LDH_nm_r:a',
@@ -268,7 +268,7 @@ define( [
             null,
             'PUSH_rr:hl',
             'AND_n',
-            'RST_20H',
+            'RST_n:0x20',
             'ADD_rr:sp_sn',
             'JP_rr:hl',
             'LD_nnm_r:a',
@@ -276,7 +276,7 @@ define( [
             null,
             null,
             'XOR_n',
-            'RST_28H',
+            'RST_n:0x28',
 
             // F0
             'LDH_r:a_nm',
@@ -286,7 +286,7 @@ define( [
             null,
             'PUSH_rr:af',
             'OR_n',
-            'RST_30H',
+            'RST_n:0x30',
             'LDHL_rr:sp_sn',
             'LD_rr:sp_rr:hl',
             'LD_r:a_nnm',
@@ -294,7 +294,7 @@ define( [
             null,
             null,
             'CP_n',
-            'RST_38H'
+            'RST_n:0x38'
 
         ],
 
