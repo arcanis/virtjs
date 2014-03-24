@@ -3795,9 +3795,9 @@ define( [
 
                 command : function ( ) {
 
-                    var rBefore = preprocess.parameters[ 0 ];
-                    preprocess.parameters[ 0 ] = ( rBefore << 4 ) | ( rBefore >> 4 );
-                    var rAfter = preprocess.parameters[ 0 ];
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
+                    preprocess.parameters[ 0 ][ 0 ] = ( rBefore << 4 ) | ( rBefore >> 4 );
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
 
                     this._m[ 0 ] = 2;
 
