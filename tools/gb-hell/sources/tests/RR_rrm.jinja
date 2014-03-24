@@ -1,0 +1,10 @@
+{## RR rrm ##}
+{# 'rrm' can only be 'hl' #}
+
+{% set rrm = "hl" %}
+
+{% asmfor rrm, addresses %}
+    ld b, [{{rrm}}]
+    rr [{{rrm}}]
+    ld [{{rrm}}], b
+{% endasmfor %}

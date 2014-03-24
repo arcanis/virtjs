@@ -1,0 +1,12 @@
+{## SET n, rrm ##}
+{# 'rrm' can only be 'hl' #}
+
+{% set rrm = "hl" %}
+
+{% asmfor rrm, addresses %}
+    ld b, [{{rrm}}]
+    {% for n in [0, 1, 2, 3, 4, 5, 6, 7] %}
+        set {{n}}, [{{rrm}}]
+    {% endfor %}
+    ld [{{rrm}}], b
+{% endasmfor %}

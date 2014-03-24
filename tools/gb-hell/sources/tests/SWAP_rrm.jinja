@@ -1,0 +1,9 @@
+{## SWAP rrm ##}
+{# 'rrm' can only be 'hl' #}
+
+{% set rrm = "hl" %}
+
+{% asmfor rrm, addresses %}
+    swap [{{rrm}}]
+    swap [{{rrm}}]
+{% endasmfor %}
