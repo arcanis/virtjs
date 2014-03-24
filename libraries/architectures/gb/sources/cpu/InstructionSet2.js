@@ -3233,8 +3233,8 @@ define( [
 
                 command : function ( ) {
 
-                    var rBefore = preprocess.parameters[ 0 ][ 0 ];
-                    preprocess.parameters[ 0 ][ 0 ] <<= 1;
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ], leftMostBit = rBefore & 0x80 ? 1 : 0;
+                    preprocess.parameters[ 0 ][ 0 ] = ( rBefore << 1 ) | ( leftMostBit << 0 );
                     var rAfter = preprocess.parameters[ 0 ][ 0 ];
 
                     this._m[ 0 ] = 1;
@@ -3247,8 +3247,8 @@ define( [
                     if ( rAfter === 0 ) this._f[ 0 ] |=   0x80;
                     else                this._f[ 0 ] &= ~ 0x80;
 
-                    if ( rBefore & 0x80 ) this._f[ 0 ] |=   0x10;
-                    else                  this._f[ 0 ] &= ~ 0x10;
+                    if ( leftMostBit )  this._f[ 0 ] |=   0x10;
+                    else                this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3385,11 +3385,9 @@ define( [
 
                 command : function ( ) {
 
-                    var r = preprocess.parameters[ 0 ];
-                    var rightMostBit = r[ 0 ] & 0x01 ? 1 : 0;
-
-                    r[ 0 ] >>= 1;
-                    r[ 0 ] |= rightMostBit << 7;
+                    var rBefore = preprocess.parameters[ 0 ][ 0 ], rightMostBit = rBefore & 0x01 ? 1 : 0;
+                    preprocess.parameters[ 0 ][ 0 ] = ( rBefore >> 1 ) | ( rightMostBit << 7 );
+                    var rAfter = preprocess.parameters[ 0 ][ 0 ];
 
                     this._m[ 0 ] = 1;
 
@@ -3397,7 +3395,9 @@ define( [
 
                     this._f[ 0 ] &= ~ 0x20;
                     this._f[ 0 ] &= ~ 0x40;
-                    this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                this._f[ 0 ] &= ~ 0x80;
 
                     if ( rightMostBit ) this._f[ 0 ] |=   0x10;
                     else                this._f[ 0 ] &= ~ 0x10;
