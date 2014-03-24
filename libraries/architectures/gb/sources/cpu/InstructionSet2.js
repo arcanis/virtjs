@@ -3151,7 +3151,7 @@ define( [
                 command : function ( ) {
 
                     var value = this._engine._mmu.readUint8( preprocess.parameters[ 1 ][ 0 ] );
-                    var test = ( value & ( 1 << preprocess.parameters[ 0 ][ 0 ] ) ) === 0;
+                    var test = ( value & ( 1 << preprocess.parameters[ 0 ] ) ) === 0;
 
                     this._m[ 0 ] = 4;
 
@@ -3270,8 +3270,8 @@ define( [
 
                 command : function ( ) {
 
-                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
-                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], rrmBefore << 1 );
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] ), leftMostBit = rrmBefore & 0x80 ? 1 : 0;
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], ( rrmBefore << 1 ) | ( leftMostBit << 0 ) );
                     var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
 
                     this._m[ 0 ] = 1;
@@ -3281,8 +3281,8 @@ define( [
                     this._f[ 0 ] &= ~ 0x20;
                     this._f[ 0 ] &= ~ 0x40;
 
-                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
-                    else                  this._f[ 0 ] &= ~ 0x80;
+                    if ( rrmAfter === 0 )   this._f[ 0 ] |=   0x80;
+                    else                    this._f[ 0 ] &= ~ 0x80;
 
                     if ( rrmBefore & 0x80 ) this._f[ 0 ] |=   0x10;
                     else                    this._f[ 0 ] &= ~ 0x10;
@@ -3422,7 +3422,22 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (RRC_rrm)' );
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] ), rightMostBit = rrmBefore & 0x01 ? 1 : 0;
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], ( rrmBefore >> 1 ) | ( rightMostBit << 7 ) );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 1;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
+
+                    if ( rightMostBit )   this._f[ 0 ] |=   0x10;
+                    else                  this._f[ 0 ] &= ~ 0x10;
 
                 },
 
@@ -3830,7 +3845,20 @@ define( [
 
                 command : function ( ) {
 
-                    throw new Error( 'Unimplemented (SWAP_rrm)' );
+                    var rrmBefore = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+                    this._engine._mmu.writeUint8( preprocess.parameters[ 0 ][ 0 ], ( rrmBefore << 4 ) | ( rrmBefore >> 4 ) );
+                    var rrmAfter = this._engine._mmu.readUint8( preprocess.parameters[ 0 ][ 0 ] );
+
+                    this._m[ 0 ] = 2;
+
+                    // Set flags
+
+                    this._f[ 0 ] &= ~ 0x10;
+                    this._f[ 0 ] &= ~ 0x20;
+                    this._f[ 0 ] &= ~ 0x40;
+
+                    if ( rrmAfter === 0 ) this._f[ 0 ] |=   0x80;
+                    else                  this._f[ 0 ] &= ~ 0x80;
 
                 },
 
