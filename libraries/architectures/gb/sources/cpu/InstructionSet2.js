@@ -2090,7 +2090,7 @@ define( [
                 debug : function ( address ) {
 
                     var opcode = this._engine._mmu.readUint8( address );
-                    var instruction = this._instructionMap.cbprefixed[ opcode ];
+                    var instruction = this._instructionMaps.cbprefixed[ opcode ];
 
                     return {
                         size : 2,
