@@ -1,0 +1,8 @@
+{## SWAP r ##}
+
+{% for r in r8 %}
+    {% asmfor r, relevant8Bits %}
+        swap {{r}}
+        swap {{r}}
+    {% endasmfor %}
+{% endfor %}
