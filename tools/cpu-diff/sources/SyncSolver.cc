@@ -72,14 +72,11 @@ bool SyncSolver::next( void )
         return false;
     }
 
-    if ( data[ 1 ] != control[ 1 ] ) {
-        m_DataBuffer.push_front( data );
-        m_ControlBuffer.push_front( control );
+    m_LineIndex += 1;
+    this->compare( m_LineIndex, data, control );
+
+    if ( data[ 1 ] != control[ 1 ] )
         return this->resync( );
-    } else {
-        m_LineIndex += 1;
-        this->compare( m_LineIndex, data, control );
-    }
 
     return true;
 }
