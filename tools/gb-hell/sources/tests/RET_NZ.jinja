@@ -1,0 +1,17 @@
+{## RET NZ ##}
+
+{% for zero in [0, 1] %}
+
+    {{set_zero(zero)}}
+    ld sp, $c420
+
+    call ret_nz_test{{zero}}
+    jp ret_nz_end{{zero}}
+
+ret_nz_test{{zero}}:
+    ret nz
+    ret
+
+ret_nz_end{{zero}}:
+
+{% endfor %}

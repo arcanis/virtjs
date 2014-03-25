@@ -5,6 +5,14 @@
     {% endif %}
 {% endmacro %}
 
+{% macro set_zero(zero) %}
+    {% if zero %}
+        and 0
+    {% else %}
+        or 1
+    {% endif %}
+{% endmacro %}
+
 {% macro r16cpy(to, from) %}
     {% if to != from %}
         {% if to == "sp" %}
@@ -21,6 +29,38 @@
 {% macro asmfor_init(target, value) %}
     ld {{target}}, {{value}}
 {% endmacro %}
+
+SECTION "Rst00", ROM0[$0000]
+
+    ret
+
+SECTION "Rst08", ROM0[$0008]
+
+    ret
+
+SECTION "Rst10", ROM0[$0010]
+
+    ret
+
+SECTION "Rst18", ROM0[$0018]
+
+    ret
+
+SECTION "Rst20", ROM0[$0020]
+
+    ret
+
+SECTION "Rst28", ROM0[$0028]
+
+    ret
+
+SECTION "Rst30", ROM0[$0030]
+
+    ret
+
+SECTION "Rst38", ROM0[$0038]
+
+    ret
 
 SECTION "TestRom", ROM0[$0100]
 

@@ -1,0 +1,19 @@
+{## JR Z sn ##}
+
+{% for zero in [0, 1] %}
+
+    {{set_zero(zero)}}
+
+jr_z_sn_enter{{zero}}:
+    jr z, jr_z_sn_start{{zero}}
+
+jr_z_sn_end{{zero}}:
+    jr z, jr_z_sn_exit{{zero}}
+jr_z_sn_next{{zero}}:
+    jr z, jr_z_sn_end{{zero}}
+jr_z_sn_start{{zero}}:
+    jr z, jr_z_sn_next{{zero}}
+
+jr_z_sn_exit{{zero}}:
+
+{% endfor %}

@@ -1,0 +1,19 @@
+{## JP Z sn ##}
+
+{% for zero in [0, 1] %}
+
+    {{set_zero(zero)}}
+
+jp_z_sn_enter{{zero}}:
+    jp z, jp_z_sn_start{{zero}}
+
+jp_z_sn_end{{zero}}:
+    jp z, jp_z_sn_exit{{zero}}
+jp_z_sn_next{{zero}}:
+    jp z, jp_z_sn_end{{zero}}
+jp_z_sn_start{{zero}}:
+    jp z, jp_z_sn_next{{zero}}
+
+jp_z_sn_exit{{zero}}:
+
+{% endfor %}

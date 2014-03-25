@@ -1,0 +1,19 @@
+{## JP NZ sn ##}
+
+{% for zero in [0, 1] %}
+
+    {{set_zero(zero)}}
+
+jp_nz_sn_enter{{zero}}:
+    jp nz, jp_nz_sn_start{{zero}}
+
+jp_nz_sn_end{{zero}}:
+    jp nz, jp_nz_sn_exit{{zero}}
+jp_nz_sn_next{{zero}}:
+    jp nz, jp_nz_sn_end{{zero}}
+jp_nz_sn_start{{zero}}:
+    jp nz, jp_nz_sn_next{{zero}}
+
+jp_nz_sn_exit{{zero}}:
+
+{% endfor %}

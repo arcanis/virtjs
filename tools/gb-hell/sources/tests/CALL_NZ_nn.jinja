@@ -1,0 +1,25 @@
+{## CALL NZ nn ##}
+
+{% for zero in [0, 1] %}
+    {{set_zero(zero)}}
+
+    ld sp, $c420
+    jp call_nz_nn_boot_{{zero}}
+
+    {% for t in [0, 9, 1, 8, 2, 7, 3, 6, 4, 5] %}
+
+call_nz_nn_step{{t}}_{{zero}}:
+        push af
+        call call_nz_nn_step{{t + 1}}_{{zero}}
+        pop af
+        ret
+
+    {% endfor %}
+
+call_nz_nn_step10_{{zero}}:
+    ret
+
+call_nz_nn_boot_{{zero}}:
+    call call_nz_nn_step0_{{zero}}
+
+{% endfor %}
