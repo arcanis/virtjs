@@ -549,7 +549,7 @@ define( [
 
                     this._m[ 0 ] = 3;
 
-                    if ( ( this._f[ 0 ] & 0x10 ) === 0x10 ) {
+                    if ( ( this._f[ 0 ] & 0x80 ) === 0x80 ) {
 
                         this._sp[ 0 ] -= 2;
 
