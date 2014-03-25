@@ -143,28 +143,36 @@ define( [
                 instruction( );
                 this._count += 1;
 
+                this._engine._gpu.step( );
+
             }
 
-            this._engine._gpu.step( );
             this._engine._timer.step( );
             this._m[ 0 ] = 0;
 
+            var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
+            firedInterruptions &= 0x01 | 0x04 | 0x10;
+
+            if ( firedInterruptions )
+                this._halt = false;
+
             if ( this._ime && this._interruptions[ 0 ] && this._interruptions[ 1 ] ) {
 
-                var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
+                if ( firedInterruptions ) {
 
-                if ( firedInterruptions & 0x01 ) {
-                    this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
-                    this._instructionSets.unprefixed['RST_n:0x40'].command.call( this );
-                } else if ( firedInterruptions & 0x04 ) {
-                    this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
-                    this._instructionSets.unprefixed['RST_n:0x50'].command.call( this );
-                } else if ( firedInterruptions & 0x10 ) {
-                    this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
-                    this._instructionSets.unprefixed['RST_n:0x60'].command.call( this );
-                }
+                    this._halt = false;
+                    this._ime = false;
 
-                if ( ! this._ime ) {
+                    if ( firedInterruptions & 0x01 ) {
+                        this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
+                        this._instructionSets.unprefixed['RST_n:0x40'].command.call( this );
+                    } else if ( firedInterruptions & 0x04 ) {
+                        this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
+                        this._instructionSets.unprefixed['RST_n:0x50'].command.call( this );
+                    } else if ( firedInterruptions & 0x10 ) {
+                        this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
+                        this._instructionSets.unprefixed['RST_n:0x60'].command.call( this );
+                    }
 
                     this._engine._gpu.step( );
                     this._engine._timer.step( );
