@@ -10,7 +10,7 @@
 
 call_z_nn_step{{t}}_{{zero}}:
         push af
-        call call_z_nn_step{{t + 1}}_{{zero}}
+        call z, call_z_nn_step{{t + 1}}_{{zero}}
         pop af
         ret
 
@@ -20,6 +20,6 @@ call_z_nn_step10_{{zero}}:
     ret
 
 call_z_nn_boot_{{zero}}:
-    call call_z_nn_step0_{{zero}}
+    call z, call_z_nn_step0_{{zero}}
 
 {% endfor %}

@@ -10,7 +10,7 @@
 
 call_c_nn_step{{t}}_{{carry}}:
         push af
-        call call_c_nn_step{{t + 1}}_{{carry}}
+        call c, call_c_nn_step{{t + 1}}_{{carry}}
         pop af
         ret
 
@@ -20,6 +20,6 @@ call_c_nn_step10_{{carry}}:
     ret
 
 call_c_nn_boot_{{carry}}:
-    call call_c_nn_step0_{{carry}}
+    call c, call_c_nn_step0_{{carry}}
 
 {% endfor %}
