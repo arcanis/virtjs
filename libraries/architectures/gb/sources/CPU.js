@@ -155,13 +155,13 @@ define( [
 
                 if ( firedInterruptions & 0x01 ) {
                     this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
-                    this._instructionSets.unprefixed.RST_40H.command.call( this );
+                    this._instructionSets.unprefixed['RST_n:0x40'].command.call( this );
                 } else if ( firedInterruptions & 0x04 ) {
                     this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
-                    this._instructionSets.unprefixed.RST_50H.command.call( this );
+                    this._instructionSets.unprefixed['RST_n:0x50'].command.call( this );
                 } else if ( firedInterruptions & 0x10 ) {
                     this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
-                    this._instructionSets.unprefixed.RST_60H.command.call( this );
+                    this._instructionSets.unprefixed['RST_n:0x60'].command.call( this );
                 }
 
                 if ( ! this._ime ) {
