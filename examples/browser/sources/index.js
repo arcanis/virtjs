@@ -17,13 +17,15 @@ require( [
 
         // Instanciates a few input / output devices which will be used by the emulator
 
+        var fpsMeter = new window.FPSMeter( );
+
         var screen = new Virtjs.screen.WebGL( { className : 'screen' } );
         screen.open( document.body );
 
         var keyboard = new Virtjs.input.Keyboard( AZERTY );
         keyboard.open( document.body );
 
-        var timer = new Virtjs.timer.RAFrame( );
+        var timer = new Virtjs.timer.RAFrame( { fpsMeter : fpsMeter } );
 
         // This done, we can ask Virt.js to create an emulator based on specified options
 
