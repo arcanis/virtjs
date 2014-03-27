@@ -17,7 +17,7 @@ define( [
             this._clock = 0;
             this._line = 0;
 
-            this._mode = 2;
+            this._mode = 0x02;
             this._state = this._oam;
 
         },
@@ -27,6 +27,25 @@ define( [
             this._clock += cycles;
 
             this._state( );
+
+        },
+
+        _setMode : function ( mode ) {
+
+            this._gpu._stat[ 0 ] = ( this._gpu._stat[ 0 ] & 0xFC ) | mode;
+            this._mode = mode;
+
+            switch ( mode ) {
+                case 0x00 : this._state = this._hblank; break ;
+                case 0x01 : this._state = this._vblank; break ;
+                case 0x02 : this._state = this._oam;    break ;
+                case 0x03 : this._state = this._vram;   break ;
+            }
+
+            // The 0x03 (VRAM) mode doesn't trigger interruptions
+            if ( mode !== 0x03 && this._gpu._stat[ 0 ] & ( 1 << ( 3 + mode ) ) ) {
+                this._gpu._engine._cpu._interruptions[ 1 ] |= 0x02;
+            }
 
         },
 
@@ -40,15 +59,13 @@ define( [
 
             if ( this._line < 144 ) {
 
-                this._mode = 2;
-                this._state = this._oam;
+                this._setMode( 0x02 );
 
             } else {
 
                 this._gpu._vblank( );
 
-                this._mode = 1;
-                this._state = this._vblank;
+                this._setMode( 0x01 );
 
             }
 
@@ -67,8 +84,7 @@ define( [
 
             this._line = 0;
 
-            this._mode = 2;
-            this._state = this._oam;
+            this._setMode( 0x02 );
 
         },
 
@@ -79,8 +95,7 @@ define( [
 
             this._clock = 0;
 
-            this._mode = 3;
-            this._state = this._vram;
+            this._setMode( 0x03 );
 
         },
 
@@ -93,8 +108,7 @@ define( [
 
             this._gpu._hblank( this._line );
 
-            this._mode = 0;
-            this._state = this._hblank;
+            this._setMode( 0x00 );
 
         }
 

@@ -116,70 +116,76 @@ define( [
 
         step : function ( ) {
 
-            if ( this._halt ) {
+            if ( this._stop ) {
+
+                this._continue = false;
 
                 this._m[ 0 ] = 1;
 
             } else {
 
-                var address = this._pc[ 0 ];
+                if ( this._halt ) {
 
-                var opcode = this._engine._mmu.readUint8( address );
-                var instruction = this._instructionMaps.unprefixed[ opcode ];
+                    this._m[ 0 ] = 1;
 
-                if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 ) {
+                } else {
 
-                    var breakRequested = false, breakFn = function ( ) { breakRequested = true; };
-                    this.emit( 'instruction', { count : this._count, address : address, opcode : opcode, instruction : instruction, break : breakFn } );
+                    var address = this._pc[ 0 ];
 
-                    if ( breakRequested ) {
-                        this._engine.pause( );
-                        return ;
+                    var opcode = this._engine._mmu.readUint8( address );
+                    var instruction = this._instructionMaps.unprefixed[ opcode ];
+
+                    if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'instruction' ) !== - 1 ) {
+
+                        var breakRequested = false, breakFn = function ( ) { breakRequested = true; };
+                        this.emit( 'instruction', { count : this._count, address : address, opcode : opcode, instruction : instruction, break : breakFn } );
+
+                        if ( breakRequested ) {
+                            this._engine.pause( );
+                            return ;
+                        }
+
                     }
+
+                    this._pc[ 0 ] += 1;
+                    instruction( );
+                    this._count += 1;
 
                 }
 
-                this._pc[ 0 ] += 1;
-                instruction( );
-                this._count += 1;
-
-                this._engine._gpu.step( );
-
             }
 
+            this._engine._gpu.step( );
             this._engine._timer.step( );
             this._m[ 0 ] = 0;
 
             var firedInterruptions = this._interruptions[ 0 ] & this._interruptions[ 1 ];
-            firedInterruptions &= 0x01 | 0x04 | 0x10;
+            firedInterruptions &= 0x01 | 0x02 | 0x04 | 0x10;
 
-            if ( firedInterruptions )
+            if ( firedInterruptions && ( this._halt || this._stop ) ) {
                 this._halt = false;
+                this._stop = false;
+            }
 
-            if ( this._ime && this._interruptions[ 0 ] && this._interruptions[ 1 ] ) {
+            if ( this._ime && firedInterruptions ) {
 
-                if ( firedInterruptions ) {
+                this._ime = false;
 
-                    this._halt = false;
-                    this._ime = false;
-
-                    if ( firedInterruptions & 0x01 ) {
-                        this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
-                        this._instructionSets.unprefixed['RST_n:0x40'].command.call( this );
-                    } else if ( firedInterruptions & 0x04 ) {
-                        this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
-                        this._instructionSets.unprefixed['RST_n:0x50'].command.call( this );
-                    } else if ( firedInterruptions & 0x10 ) {
-                        this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
-                        this._instructionSets.unprefixed['RST_n:0x60'].command.call( this );
-                    }
-
-                    this._engine._gpu.step( );
-                    this._engine._timer.step( );
-
-                    this._m[ 0 ] = 0;
-
+                if ( firedInterruptions & 0x01 ) {
+                    this._interruptions[ 1 ] &= 0x01 ^ 0xFF;
+                    this._instructionSets.unprefixed['RST_n:0x40'].command.call( this );
+                } else if ( firedInterruptions & 0x04 ) {
+                    this._interruptions[ 1 ] &= 0x04 ^ 0xFF;
+                    this._instructionSets.unprefixed['RST_n:0x50'].command.call( this );
+                } else if ( firedInterruptions & 0x10 ) {
+                    this._interruptions[ 1 ] &= 0x10 ^ 0xFF;
+                    this._instructionSets.unprefixed['RST_n:0x60'].command.call( this );
                 }
+
+                this._engine._gpu.step( );
+                this._engine._timer.step( );
+
+                this._m[ 0 ] = 0;
 
             }
 

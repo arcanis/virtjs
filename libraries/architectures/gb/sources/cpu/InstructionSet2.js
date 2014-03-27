@@ -2624,7 +2624,7 @@ define( [
 
                 command : function ( ) {
 
-                    console.warn( 'Warning : STOP_0 is a stub' );
+                    this._stop = true;
 
                     this._pc[ 0 ] += 1;
 

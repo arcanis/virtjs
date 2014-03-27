@@ -49,6 +49,9 @@ define( [
             // We're using 2 bytes per pixel to store both the palette color and the palette index
             this._scanline = new Uint16Array( 160 );
 
+            // LCD status register
+            this._stat = new Uint8Array( 1 );
+
             // Bind mappers in order to keep the context when passing them around
             this._settingsMapper_           = this._settingsMapper.bind( this );
             this._lcdStatusMapper_          = this._lcdStatusMapper.bind( this );
@@ -175,10 +178,9 @@ define( [
         _lcdStatusMapper : function ( address, value, user ) {
 
             if ( typeof value === 'undefined' )
-                return this._states._mode;
+                return this._stat[ 0 ];
 
-            if ( value & 3 )
-                throw new Error( 'Invalid write at ' + Virtjs.FormatUtil.address( user, 16 ) );
+            this._stat[ 0 ] = ( this._stat[ 0 ] & 0x03 ) | ( value & 0xF8 );
 
             return undefined;
 
