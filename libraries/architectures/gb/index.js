@@ -4,6 +4,8 @@ define( [
 
     'virtjs',
 
+    './sources/mbc/Table',
+
     './sources/CPU',
     './sources/GPU',
     './sources/IO',
@@ -12,7 +14,7 @@ define( [
 
     './sources/bios'
 
-], function ( Virtjs, CPU, GPU, IO, MMU, Timer, bios ) {
+], function ( Virtjs, MBCTable, CPU, GPU, IO, MMU, Timer, bios ) {
 
     return Virtjs.Engine.extend( [
 
@@ -32,6 +34,9 @@ define( [
             this._mmu = new MMU( this );
             this._timer = new Timer( this );
 
+            // It kinda sucks, be the load function will not be able to access the MBCTable anymore after being preprocessed, so we keep it safe here
+            this._mbcTable = MBCTable;
+
             // This line will setup the right branches when used by the build tool
             Virtjs.DebugUtil.preprocessFunction( this, 'load', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._options );
@@ -44,14 +49,11 @@ define( [
             // BIOS
             this._bios = new Uint8Array( bios );
 
-            // ROM
-            this._rom = new Uint8Array( 32768 );
+            // Cartridge (instanciated by .load)
+            this._cartridge = null;
 
             // Working RAM
             this._wram = new Uint8Array( 8192 );
-
-            // External RAM
-            this._eram = new Uint8Array( 8192 );
 
             // Zero-page RAM
             this._zram = new Uint8Array( 128 );
@@ -70,8 +72,8 @@ define( [
             this._mmu._inBios = true;
 
             var data = new Uint8Array( buffer );
-            for ( var t = 0, T = data.length; t < T; ++ t )
-                this._rom[ t ] = data[ t ];
+            var mbcType = data[ 0x0147 ];
+            this._cartridge = new ( this._mbcTable[ mbcType ] )( data.buffer );
 
             if ( typeof preprocess !== 'undefined' && preprocess.skipBios ) {
 

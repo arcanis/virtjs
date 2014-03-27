@@ -1,4 +1,4 @@
-/*global define*/
+/*global preprocess, define*/
 
 define( [
 
@@ -6,7 +6,11 @@ define( [
 
 ], function ( Virtjs ) {
 
-    return Virtjs.ClassUtil.extend( {
+    return Virtjs.ClassUtil.extend( [
+
+        Virtjs.EmitterMixin
+
+    ], {
 
         initialize : function ( engine ) {
 
@@ -14,6 +18,10 @@ define( [
 
             // Bind mappers in order to keep the context when passing them around
             this._biosMapper_ = this._biosMapper.bind( this );
+
+            // These lines will setup the right branches when used by the build tool
+            Virtjs.DebugUtil.preprocessFunction( this, 'readUint8', this._engine._options );
+            Virtjs.DebugUtil.preprocessFunction( this, 'writeUint8', this._engine._options );
 
         },
 
@@ -42,11 +50,22 @@ define( [
             if ( typeof mapping[ 0 ] === 'function' )
                 return mapping[ 0 ].call( null, mapping[ 1 ], undefined, address );
 
-            return mapping[ 0 ][ mapping[ 1 ] ];
+            if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'read' ) !== - 1 ) {
+                var value = mapping[ 0 ][ mapping[ 1 ] ], overrideFn = function ( newValue ) { value = newValue; };
+                this.emit( 'read', { address : address, value : value, override : overrideFn } );
+                return value;
+            } else {
+                return mapping[ 0 ][ mapping[ 1 ] ];
+            }
 
         },
 
         writeUint8 : function ( address, value ) {
+
+            if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'write' ) !== - 1 ) {
+                var overrideFn = function ( newValue ) { value = newValue; };
+                this.emit( 'write', { address : address, value : value, override : overrideFn } );
+            }
 
             var mapping = this.mapAddress( address );
 
@@ -137,7 +156,7 @@ define( [
 
             //       External RAM [0xA000;0xC000[
             if ( current >= 0xA000 && current < 0xC000 )
-                return [ this._engine._eram, current & 0x1FFF ];
+                return this._engine._cartridge.ramMapping( current - 0xA000 );
 
             // [GPU] Graphics VRAM [0x8000;0xA000[
             if ( current >= 0x8000 && current < 0xA000 )
@@ -149,7 +168,7 @@ define( [
 
             //       ROM [0x0000;0x8000[
             if ( current < 0x8000 )
-                return [ this._engine._rom, current ];
+                return this._engine._cartridge.romMapping( current );
 
             return [ Virtjs.MemoryUtil.unaddressable( 16 ), 0 ];
 
