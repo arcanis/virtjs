@@ -15,13 +15,15 @@
     ].join( '\n' );
 
     var vertexShaderCode = [
+        'uniform mat4 uMatrix;',
+        '',
         'attribute vec3 aVertexPosition;',
         'attribute vec2 aVertexTexture;',
         '',
         'varying vec2 vTextureCoordinates;',
         '',
         'void main( void ) {',
-        '    gl_Position = vec4( aVertexPosition, 1.0 );',
+        '    gl_Position = uMatrix * vec4(aVertexPosition, 1);',
         '    vTextureCoordinates = aVertexTexture;',
         '}'
     ].join( '\n' );
@@ -47,22 +49,30 @@
 
             this._linkShaders( this._fragmentShader, this._vertexShader );
 
-        },
-
-        open : function ( element ) {
-
-            element.appendChild( this._canvas );
+            // Expose the canvas
+            this.canvas = this._canvas;
 
         },
 
-        setSize : function ( width, height ) {
+        setInputSize : function ( width, height ) {
+
+            this._canvas2D.width = this._canvas2D.width = width;
+            this._canvas2D.height = this._canvas2D.height = height;
+
+            this._data = this._context2D.getImageData( 0, 0, width, height );
+
+            this._updateViewport( );
+
+        },
+
+        setOutputSize : function ( width, height ) {
 
             this._context.viewport( 0, 0, width, height );
 
-            this._canvas.width = this._canvas2D.width = width;
-            this._canvas.height = this._canvas2D.height = height;
+            this._canvas.width = width;
+            this._canvas.height = height;
 
-            this._data = this._context2D.getImageData( 0, 0, width, height );
+            this._updateViewport( );
 
         },
 
@@ -123,6 +133,14 @@
 
         },
 
+        _createOrthoMatrix : function ( left, right, bottom, top, near, far ) {
+
+            var lr = 1 / ( left - right ), bt = 1 / ( bottom - top ), nf = 1 / ( near - far );
+
+            return [ - 2 * lr, 0, 0, 0, 0, - 2 * bt, 0, 0, 0, 0, 2 * nf, 0, ( left + right ) * lr, ( bottom + top ) * bt, ( near + far ) * nf, 1 ];
+
+        },
+
         _linkShaders : function ( ) {
 
             var shaderProgram = this._shaderProgram = this._context.createProgram( );
@@ -135,7 +153,9 @@
 
             this._context.useProgram( shaderProgram );
 
-            this._samplerUniform = this._context.getUniformLocation(shaderProgram, "uSample");
+            this._matrixLocation = this._context.getUniformLocation( shaderProgram, 'uMatrix' );
+
+            this._samplerUniform = this._context.getUniformLocation( shaderProgram, 'uSample' );
             this._context.uniform1i( this._samplerUniform, 0 );
 
             this._vertexPositionAttribute = this._context.getAttribLocation( shaderProgram, 'aVertexPosition' );
@@ -146,8 +166,24 @@
 
         },
 
+        _updateViewport : function ( ) {
+
+            var widthRatio = this._canvas.width / this._canvas2D.width;
+            var heightRatio = this._canvas.height / this._canvas2D.height;
+
+            var ratio = Math.min( widthRatio, heightRatio );
+
+            var viewportWidth = widthRatio / ratio;
+            var viewportHeight = heightRatio / ratio;
+
+            var matrix = this._createOrthoMatrix( - viewportWidth, viewportWidth, - viewportHeight, viewportHeight, - 100, 100 );
+            this._context.uniformMatrix4fv( this._matrixLocation, false, matrix );
+
+        },
+
         _draw : function ( ) {
 
+            this._context.clearColor( 0.0, 0.0, 0.0, 1.0 );
             this._context.clear( this._context.COLOR_BUFFER_BIT | this._context.DEPTH_BUFFER_BIT );
 
             this._context.bindBuffer( this._vertexPositionBuffer.bufferTarget, this._vertexPositionBuffer );

@@ -14,7 +14,7 @@
 
         },
 
-        open : function ( element ) {
+        listen : function ( element ) {
 
             element.addEventListener( 'keydown', function ( e ) {
 

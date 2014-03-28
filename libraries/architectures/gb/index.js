@@ -26,7 +26,7 @@ define( [
 
             Virtjs.Engine.prototype.initialize.apply( this, arguments );
 
-            this._options.screen.setSize( 160, 144 );
+            this._options.screen.setInputSize( 160, 144 );
 
             this._cpu = new CPU( this );
             this._gpu = new GPU( this );

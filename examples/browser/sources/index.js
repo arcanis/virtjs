@@ -13,43 +13,44 @@ require( [
     var AZERTY = { 65 : GB.A,    90 : GB.B,  13 : GB.START, 32 : GB.SELECT
                  , 37 : GB.LEFT, 38 : GB.UP, 39 : GB.RIGHT, 40 : GB.DOWN };
 
-    var start = function ( ) {
+    // Emulator external devices
 
-        // Instanciates a few input / output devices which will be used by the emulator
+    var fpsMeter = new window.FPSMeter( );
 
-        var fpsMeter = new window.FPSMeter( );
+    var screen = new Virtjs.screen.WebGL( );
+    screen.canvas.className = 'screen';
+    document.body.appendChild( screen.canvas );
 
-        var screen = new Virtjs.screen.WebGL( { className : 'screen' } );
-        screen.open( document.body );
+    var keyboard = new Virtjs.input.Keyboard( AZERTY );
+    keyboard.listen( document.body );
 
-        var keyboard = new Virtjs.input.Keyboard( AZERTY );
-        keyboard.open( document.body );
+    var timer = new Virtjs.timer.RAFrame( { fpsMeter : fpsMeter } );
 
-        var timer = new Virtjs.timer.RAFrame( { fpsMeter : fpsMeter } );
+    // A few plugs
 
-        // This done, we can ask Virt.js to create an emulator based on specified options
+    var resize = function ( ) {
+        screen.setOutputSize( window.innerWidth, window.innerHeight ); };
 
-        var engine = window.engine = Virtjs.create( GB, {
+    window.addEventListener( 'resize', resize );
+    resize( );
 
-            // Customize devices
-            screen   : screen,
-            timer    : timer,
-            keyboard : keyboard,
+    // Emulator engine
 
-            // Directly skips the bios
-            skipBios : true
+    var engine = window.engine = Virtjs.create( GB, {
 
-        } );
+        screen   : screen,
+        timer    : timer,
+        keyboard : keyboard,
 
-        // Finally, we start the engine. Its clock will be managed by the `Timer` instance.
+        skipBios : true
 
-        engine.start( xhr.response );
+    } );
 
-    };
+    // ROM loader
 
     var xhr = new XMLHttpRequest( );
     xhr.open( 'GET', '../assets/gb/' + ( Query.rom || 'tetris.gb' ), true );
-    xhr.onload = start;
+    xhr.addEventListener( 'load', function ( ) { engine.start( xhr.response ); } );
     xhr.responseType = 'arraybuffer';
     xhr.send( null );
 
