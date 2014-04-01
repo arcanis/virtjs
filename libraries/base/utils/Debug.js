@@ -101,7 +101,7 @@ define( [
             if ( usesUndeclaredVariables( ast ) )
                 throw new Error( 'Preprocessed functions cannot make use of non-local variables' );
 
-            var newFn = eval( Escodegen.generate( findBranches( ast, function ( node ) {
+            var newFn = eval( ( instance ? 'instance.' + method + ' = ' : '' ) + Escodegen.generate( findBranches( ast, function ( node ) {
 
                 if ( ! usesPreprocessVariable( node.test ) )
                     return node;
@@ -113,9 +113,6 @@ define( [
                 return eval( test ) ? node.consequent : node.alternate;
 
             } ) ) );
-
-            if ( instance )
-                instance[ method ] = newFn;
 
             return newFn;
 

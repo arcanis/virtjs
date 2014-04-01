@@ -76,14 +76,14 @@
 
         },
 
-        setPixel : function ( x, y, color ) {
+        setPixel : function ( x, y, r, g, b ) {
 
             var target = this._data.data;
             var index = ( y * this._canvas2D.width + x ) * 4;
 
-            target[ index + 0 ] = color[ 0 ];
-            target[ index + 1 ] = color[ 1 ];
-            target[ index + 2 ] = color[ 2 ];
+            target[ index + 0 ] = r;
+            target[ index + 1 ] = g;
+            target[ index + 2 ] = b;
             target[ index + 3 ] = 255;
 
         },
@@ -96,7 +96,7 @@
 
         },
 
-        _createTexture : function (  ) {
+        _createTexture : function ( ) {
 
             var texture = this._context.createTexture( );
 

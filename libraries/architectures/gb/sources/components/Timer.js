@@ -41,9 +41,9 @@ define( [
 
         },
 
-        step : function ( ) {
+        step : function ( time ) {
 
-            this._buffers[ 0 ] += this._engine._cpu._m[ 0 ];
+            this._buffers[ 0 ] += time;
 
             if ( this._buffers[ 0 ] >= 4 ) {
 
@@ -64,7 +64,7 @@ define( [
                     this._buffers[ 2 ] = 0;
                     if ( this._clocks[ 1 ] === 0 ) {
                         this._clocks[ 1 ] = this._counterLimits[ 0 ];
-                        this._engine._cpu._interruptions[ 1 ] |= 0x04;
+                        this._engine.environment.pendingInterrupts |= 0x04;
                     }
                 }
 

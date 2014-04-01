@@ -4,17 +4,15 @@ define( [
 
     'virtjs',
 
-    './sources/mbc/Table',
+    './sources/components/CPU',
+    './sources/components/GPU',
+    './sources/components/IO',
+    './sources/components/MMU',
+    './sources/components/Timer',
+    './sources/tables/mbcTypes',
+    './sources/Environment'
 
-    './sources/CPU',
-    './sources/GPU',
-    './sources/IO',
-    './sources/MMU',
-    './sources/Timer',
-
-    './sources/bios'
-
-], function ( Virtjs, MBCTable, CPU, GPU, IO, MMU, Timer, bios ) {
+], function ( Virtjs, CPU, GPU, IO, MMU, Timer, mbcTypes, Environment ) {
 
     return Virtjs.Engine.extend( [
 
@@ -26,75 +24,44 @@ define( [
 
             Virtjs.Engine.prototype.initialize.apply( this, arguments );
 
+            // Set screen size
+
             this._options.screen.setInputSize( 160, 144 );
 
-            this._cpu = new CPU( this );
-            this._gpu = new GPU( this );
-            this._io  = new IO( this );
-            this._mmu = new MMU( this );
-            this._timer = new Timer( this );
+            // No environment at the beginning - we need to load() one later on
 
-            // It kinda sucks, be the load function will not be able to access the MBCTable anymore after being preprocessed, so we keep it safe here
-            this._mbcTable = MBCTable;
+            this.environment = null;
 
-            // This line will setup the right branches when used by the build tool
+            // Instanciate engine components
+
+            this.cpu   = new CPU   ( this );
+            this.gpu   = new GPU   ( this );
+            this.io    = new IO    ( this );
+            this.mmu   = new MMU   ( this );
+            this.timer = new Timer ( this );
+
+            // These functions will be reinstrumented /and will lose their scopes/
+
             Virtjs.DebugUtil.preprocessFunction( this, 'load', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'setMaxSubIterations', this._options );
+            Virtjs.DebugUtil.preprocessFunction( this, '_setupEnvironment', this._options );
 
         },
 
-        setup : function ( ) {
+        load : function ( romBuffer, options ) {
 
-            // BIOS
-            this._bios = new Uint8Array( bios );
+            options = options || { };
 
-            // Cartridge (instanciated by .load)
-            this._cartridge = null;
+            this.environment = this._createEnvironment( romBuffer, options );
+            this.cartridge = this._createRomMBC( this.environment );
 
-            // Working RAM
-            this._wram = new Uint8Array( 8192 );
-
-            // Zero-page RAM
-            this._zram = new Uint8Array( 128 );
-
-            // CPU, GPU, MMU & IO Setup
-            this._cpu.setup( );
-            this._gpu.setup( );
-            this._mmu.setup( );
-            this._io.setup( );
-            this._timer.setup( );
-
-        },
-
-        load : function ( buffer ) {
-
-            this._mmu._inBios = true;
-
-            var data = new Uint8Array( buffer );
-            var mbcType = data[ 0x0147 ];
-            this._cartridge = new ( this._mbcTable[ mbcType ] )( data.buffer );
-
-            if ( typeof preprocess !== 'undefined' && preprocess.skipBios ) {
-
-                this._cpu._a[ 0 ] = 0x11; // 0x01 : DMG  |  0x11 : CGB  |  0xFF : MGB
-                this._cpu._f[ 0 ] = 0xb0;
-
-                this._cpu._b[ 0 ] = 0x00;
-                this._cpu._c[ 0 ] = 0x13;
-
-                this._cpu._d[ 0 ] = 0x00;
-                this._cpu._e[ 0 ] = 0xD8;
-
-                this._cpu._h[ 0 ] = 0x01;
-                this._cpu._l[ 0 ] = 0x4d;
-
-                this._cpu._pc[ 0 ] = 0x0100;
-                this._cpu._sp[ 0 ] = 0xfffe;
-
-                this._mmu._inBios = false;
-;
-            }
+            this.cpu.setup( );
+            this.gpu.setup( );
+            this.io.setup( );
+            this.mmu.setup( );
+            this.timer.setup( );
+            this.cartridge.setup( );
 
             if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'load' ) !== - 1 ) {
                 this.emit( 'load' );
@@ -106,54 +73,57 @@ define( [
 
             this._continue = true;
 
+            // If the user has specified a `maxSubIterations` option, we prevent the CPU from running more than this number in a single pass.
+            // In order to get an optimized execution path, this function will be preprocessed in order to remove unneeded branches.
+
             if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations !== 'undefined' ) {
 
                 for ( var t = 0; this._status === 'running' && this._continue && t < this._options.maxSubIterations; ++ t ) {
-                    this._cpu.step( );
+                    this.cpu.step( );
                 }
 
             } else {
 
                 while ( this._status === 'running' && this._continue ) {
-                    this._cpu.step( );
+                    this.cpu.step( );
                 }
 
             }
 
         },
 
-        disassemble : function ( ) {
+        disassembleAt : function ( address ) {
 
-            var instructions = [ ];
-
-            instructions.addressSize = 16;
-            instructions.opcodeSize = 8;
-
-            for ( var address = 0; address < this._rom.length; ) {
-
-                var opcode = this._rom[ address ];
-                var instruction = this._cpu._instructionMaps.unprefixed[ opcode ];
-
-                try {
-                    var infos = instruction ? instruction.xDefinition.debug.call( this._cpu, address + 1 ) : null;
-                } catch ( e ) {
-                    var infos = { size : 1, label : '<corrupted : ' + e.message + '>' };
-                }
-
-                var label = infos ? infos.label : '-';
-                var size  = infos ? infos.size : 1;
-
-                instructions.push( {
-                    address : address,
-                    opcode : opcode,
-                    label : label
-                } );
-
-                address += size;
-
+            try {
+                var opcode = this.mmu.readUint8( address );
+                var instruction = this.cpu._opcodeMaps.unprefixed[ opcode ];
+            } catch ( e ) {
+                var infos = { size : 1, label : '<corrupted : cannot fetch opcode>' };
             }
 
-            return instructions;
+            if ( ! infos ) try { // In some cases, an instruction may be corrupted
+                var infos = instruction ? instruction.xDefinition.debug.call( this._cpu, address + 1 ) : { size : 1, label : '<corrupted : null instruction>' };
+            } catch ( e ) { // Since we're debugging, we shouldn't fail
+                var infos = { size : 1, label : '<corrupted : ' + e.message + '>' };
+            }
+
+            infos.address = address;
+            infos.opcode = [ ];
+
+            for ( var offset = 0; offset < infos.size; ++ offset )
+                infos.opcode.push( this.byteAt( address + offset ) );
+
+            return infos;
+
+        },
+
+        byteAt : function ( address ) {
+
+            try {
+                return this.mmu.readUint8( address );
+            } catch ( e ) {
+                return NaN;
+            }
 
         },
 
@@ -163,6 +133,47 @@ define( [
                 throw new Error( 'Cannot change the max sub iteration number of this engine - please set maxSubIterations to non-nil at creation' );
 
             this._options.maxSubIterations = maxSubIterations;
+
+        },
+
+        _createRomMBC : function ( environment ) {
+
+            var mbcType = environment.rom[ 0x0147 ];
+            return new ( mbcTypes[ mbcType ] )( this );
+
+        },
+
+        _createEnvironment : function ( romBuffer, options) {
+
+            return ( options || { } ).environment || this._setupEnvironment( new Environment( romBuffer ) );
+
+        },
+
+        _setupEnvironment : function ( environment ) {
+
+            if ( typeof preprocess === 'undefined' || ! preprocess.skipBios )
+                return environment;
+
+            // A register -> 0x01 : DMG  |  0x11 : CGB  |  0xFF : MGB
+
+            environment.a[ 0 ] = 0x11;
+            environment.f[ 0 ] = 0xb0;
+
+            environment.b[ 0 ] = 0x00;
+            environment.c[ 0 ] = 0x13;
+
+            environment.d[ 0 ] = 0x00;
+            environment.e[ 0 ] = 0xD8;
+
+            environment.h[ 0 ] = 0x01;
+            environment.l[ 0 ] = 0x4d;
+
+            environment.pc[ 0 ] = 0x0100;
+            environment.sp[ 0 ] = 0xfffe;
+
+            environment.mmuBiosLocked = true;
+
+            return environment;
 
         }
 

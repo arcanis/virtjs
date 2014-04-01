@@ -12,6 +12,7 @@
 
             this._tickRequest = null;
             this._nextTicks = [ ];
+            this._nextTicksBackup = [ ];
 
             this._fpsMeter = options.fpsMeter || {
                 tickStart : function ( ) { },
@@ -51,10 +52,13 @@
             this._fpsMeter.tickStart( );
 
             var callbacks = this._nextTicks;
-            this._nextTicks = [ ];
+            this._nextTicks = this._nextTicksBackup;
+            this._nextTicksBackup = callbacks;
 
             for ( var t = 0, T = callbacks.length; t < T; ++ t )
                 callbacks[ t ]( );
+
+            callbacks.length = 0;
 
             this._fpsMeter.tick( );
 

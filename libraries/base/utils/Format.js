@@ -6,6 +6,9 @@ define( [
 
         decimal : function ( value, length ) {
 
+            if ( isNaN( value ) )
+                return 'NaN';
+
             var str = value.toString( 10 );
 
             if ( typeof length !== 'undefined' )
@@ -16,7 +19,18 @@ define( [
 
         },
 
+        relativeAddress : function ( sourceAddress, relativeAddress, sourceBits, relativeBits ) {
+
+            var sign = relativeAddress > 0 ? '+' : '-';
+
+            return this.address( sourceAddress, sourceBits ) + sign + this.address( Math.abs( relativeAddress ), relativeBits );
+
+        },
+
         address : function ( address, bits ) {
+
+            if ( isNaN( address ) )
+                return 'NaN';
 
             var str = address.toString( 16 ).toLowerCase( );
 
@@ -30,6 +44,9 @@ define( [
 
         hexadecimal : function ( value, bits ) {
 
+            if ( isNaN( value ) )
+                return 'NaN';
+
             var str = value.toString( 16 ).toLowerCase( );
 
             if ( typeof bits !== 'undefined' )
@@ -41,6 +58,9 @@ define( [
         },
 
         binary : function ( value, bits ) {
+
+            if ( isNaN( value ) )
+                return 'NaN';
 
             var str = value.toString( 2 );
 

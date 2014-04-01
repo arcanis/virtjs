@@ -1,0 +1,14 @@
+{# This test will change the call site. A debugger should detect it and adapt the view to fit the new instructions #}
+{# - First pass is LD B, 0x16  #}
+{# - Second pass is LD D, 0x06 #}
+
+DB $06
+
+dynamic_jump:
+DB $16,$06,$16,$06,$16,$06,$16,$06
+DB $16,$06,$16,$06,$16,$06,$16,$06
+DB $16,$06,$16,$06,$16,$06,$16,$06
+DB $16,$06,$16,$06,$16,$06,$16,$06
+
+DB $18,$04,$00
+jp dynamic_jump

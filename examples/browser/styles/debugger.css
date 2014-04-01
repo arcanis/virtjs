@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     height: 100%;
 }
@@ -6,11 +10,17 @@ body {
     display: flex;
 
     padding: 40px;
-
-    border-top: 10px solid transparent;
 }
 
 /* --- --- --- --- --- --- --- --- --- --- --- --- --- --- */
+
+.tracer {
+    transition: opacity .1s;
+}
+
+.tracer-disabled {
+    opacity: .4;
+}
 
 .tracer-breakpoint {
     text-align: center;
@@ -22,7 +32,7 @@ body {
     vertical-align: middle;
 }
 
-.tracer-address, .tracer-opcode, .tracer-label {
+.tracer-cell-address, .tracer-cell-opcode, .tracer-cell-label {
     font-family: monospace;
 }
 
@@ -70,13 +80,22 @@ body {
 }
 
 #display {
+    position: relative;
     flex: none;
+
+    overflow: none;
 
     margin-bottom: 20px;
 }
 
 #display canvas {
+    display: block;
+
     width: 100%;
+
+    border-bottom-left-radius: 0;
+
+    padding: 0;
 }
 
 #registers {
@@ -97,6 +116,7 @@ body {
 #tracer-interface {
     display: flex;
     flex-direction: column;
+    flex: 1;
 
     height: 100%;
 }
@@ -135,14 +155,22 @@ body {
 }
 
 #instructions {
-    padding-top: 30px;
+    flex: 1;
+
+    border: 1px solid #CECECE;
+    border-top: 0;
 }
 
+#instructions * {
+    box-sizing: content-box;
+}
+/*
 #instructions .table-fixed-inner {
     border-top: 1px solid #CCC;
 }
 
 #instructions table {
+    margin-bottom: 0;
     table-layout: fixed;
 }
 
@@ -157,9 +185,17 @@ body {
 }
 
 #instructions th > *, #instructions td {
-    padding: 5px;
-}
+    height: 30px;
+    line-height: 30px;
+    overflow: hidden;
 
+    padding-top: 0;
+    padding-bottom: 0;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+*/
 #control-watch .glyphicon-eye-open {
     display: none;
 }

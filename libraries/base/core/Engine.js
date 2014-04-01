@@ -1,3 +1,5 @@
+/*global preprocess, define*/
+
 define( [
 
     '../utils/Class',
@@ -9,7 +11,8 @@ define( [
 
         initialize : function ( ) {
 
-            // This line will setup the right branches when used by the build tool
+            // These functions will be reinstrumented /and will lose their scopes/
+
             DebugUtil.preprocessFunction( this, '_setStatus', this._options );
 
             this._setStatus( 'stopped' );
@@ -19,7 +22,8 @@ define( [
 
         start : function ( ) {
 
-            var autoResume = arguments[ this.load.length ];
+            var options = arguments[ this.load.length - 1 ] || { };
+            var autoResume = options.autoResume;
 
             if ( typeof autoResume === 'undefined' )
                 autoResume = true;
@@ -27,7 +31,6 @@ define( [
             if ( this._status !== 'stopped' )
                 return ;
 
-            this.setup( );
             this.load.apply( this, arguments );
 
             this._setStatus( 'paused' );

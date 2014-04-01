@@ -4,7 +4,7 @@ var Virtjs = require( 'virtjs' );
 
 module.exports = Virtjs.ClassUtil.extend( {
 
-    setSize : function ( ) {
+    setInputSize : function ( ) {
 
     },
 

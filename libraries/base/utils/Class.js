@@ -4,14 +4,13 @@ define( [
 
 ], function ( ObjectUtil ) {
 
-    var instance = 0;
+    var Class = function ( ) {
 
-    var Class = function ( dynamics, statics ) {
+        var instance = this;
 
-        this._instance = instance ++;
-        this._options = arguments[ this.initialize.length ] || { };
+        instance._options = arguments[ instance.initialize.length ] || { };
 
-        this.initialize.apply( this, arguments );
+        instance.initialize.apply( instance, arguments );
 
     };
 
@@ -21,11 +20,12 @@ define( [
             statics = dynamics, dynamics = mixins, mixins = [ ];
 
         var NewClass = function ( ) {
-            Class.apply( this, arguments ); };
+            return Class.apply( this, arguments ); };
 
         var Inheritor = function ( ) { };
         Inheritor.prototype = this.prototype;
         NewClass.prototype = new Inheritor( );
+        NewClass.prototype.constructor = NewClass;
 
         mixins.forEach( function ( mixin ) {
             ObjectUtil.extend( NewClass.prototype, mixin );

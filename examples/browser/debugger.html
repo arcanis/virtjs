@@ -7,12 +7,20 @@
         <title>Virt.js</title>
 
         <link rel="stylesheet" href="vendors/Bootstrap-3.1.0/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="http://mleibman.github.io/SlickGrid/css/smoothness/jquery-ui-1.8.16.custom.css" />
+        <link rel="stylesheet" href="vendors/SlickGrid-20140401/slick.grid.css" />
         <link rel="stylesheet" href="styles/debugger.css" />
 
+        <script src="vendors/FPSMeter-0.3.1.min.js"></script>
         <script src="vendors/JQuery-2.1.0.min.js"></script>
+        <script src="vendors/jquery/event.drag-20140401.js"></script>
 
         <script src="vendors/Escodegen-1.2.0.min.js"></script>
         <script src="vendors/Esprima-140212.js"></script>
+
+        <script src="vendors/SlickGrid-20140401/slick.core.js"></script>
+        <script src="vendors/SlickGrid-20140401/slick.grid.js"></script>
+        <script src="vendors/SlickGrid-20140401/slick.dataview.js"></script>
 
         <script src="querystring.js"></script>
 
@@ -101,46 +109,7 @@
                 </div>
             </div>
 
-            <div id="instructions" class="table-fixed">
-                <div class="table-fixed-inner">
-
-                    <table class="table table-bordered table-condensed">
-
-                        <colgroup>
-                            <col width="30" />
-                            <col width="200" />
-                            <col width="200" />
-                            <col width="*" />
-                        </colgroup>
-
-                        <thead class="fixed-header">
-                            <tr>
-
-                                <th><div>
-                                </div></th>
-
-                                <th><div>
-                                    Address
-                                </div></th>
-
-                                <th><div>
-                                    Opcode
-                                </div></th>
-
-                                <th><div>
-                                    Instruction
-                                </div></th>
-
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+            <div id="instructions" class="tracer">
             </div>
 
         </div>

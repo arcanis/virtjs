@@ -34,17 +34,16 @@ var engine = Virtjs.create( GB, {
 
 // Starts logging
 
-engine._cpu.on( 'instruction', function ( e ) {
+engine.cpu.on( 'instruction', function ( e ) {
     if ( e.opcode === 0x76 ) process.exit( );
     console.log( [ '[dbg]',
-        //Virtjs.FormatUtil.decimal( e.count, 10 ),
         Virtjs.FormatUtil.address( e.address, 16 ),
         Virtjs.FormatUtil.hexadecimal( e.opcode, 8 ),
-        'af:' + Virtjs.FormatUtil.hexadecimal( engine._cpu._af[ 0 ], 16 ),
-        'bc:' + Virtjs.FormatUtil.hexadecimal( engine._cpu._bc[ 0 ], 16 ),
-        'de:' + Virtjs.FormatUtil.hexadecimal( engine._cpu._de[ 0 ], 16 ),
-        'hl:' + Virtjs.FormatUtil.hexadecimal( engine._cpu._hl[ 0 ], 16 ),
-        'sp:' + Virtjs.FormatUtil.hexadecimal( engine._cpu._sp[ 0 ], 16 )
+        'af:' + Virtjs.FormatUtil.hexadecimal( engine.environment.af[ 0 ], 16 ),
+        'bc:' + Virtjs.FormatUtil.hexadecimal( engine.environment.bc[ 0 ], 16 ),
+        'de:' + Virtjs.FormatUtil.hexadecimal( engine.environment.de[ 0 ], 16 ),
+        'hl:' + Virtjs.FormatUtil.hexadecimal( engine.environment.hl[ 0 ], 16 ),
+        'sp:' + Virtjs.FormatUtil.hexadecimal( engine.environment.sp[ 0 ], 16 )
     ].join( ' ' ) );
 } );
 
