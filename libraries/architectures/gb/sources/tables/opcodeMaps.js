@@ -287,7 +287,7 @@ define( [
             'PUSH_rr:af',
             'OR_n',
             'RST_n:0x30',
-            'LDHL_rr:sp_sn',
+            'LDHL_rr:sp_n',
             'LD_rr:sp_rr:hl',
             'LD_r:a_nnm',
             'EI',

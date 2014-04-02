@@ -21,7 +21,7 @@ define( [
 
         relativeAddress : function ( sourceAddress, relativeAddress, sourceBits, relativeBits ) {
 
-            var sign = relativeAddress > 0 ? '+' : '-';
+            var sign = relativeAddress >= 0 ? '+' : '-';
 
             return this.address( sourceAddress, sourceBits ) + sign + this.address( Math.abs( relativeAddress ), relativeBits );
 

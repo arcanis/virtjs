@@ -2,6 +2,9 @@
 
 ( function ( ) {
 
+    var SlickBreakpointFormatter = function ( row, cell, value ) {
+        return value ? '✓' : ''; };
+
     Virtjs.debug.Tracer = Virtjs.ClassUtil.extend( {
 
         initialize : function ( engine, options ) {
@@ -35,17 +38,30 @@
                 }.bind( this ) ).join( ' ' );
             }.bind( this );
 
-            var columns = [ { name : 'Address',     field : 'address', cssClass : 'tracer-cell tracer-cell-address', minWidth : 120, maxWidth : 120, formatter : addressFormatter }
-                          , { name : 'Opcode',      field : 'opcode',  cssClass : 'tracer-cell tracer-cell-opcode',  minWidth : 200, maxWidth : 200, formatter : opcodeFormatter }
-                          , { name : 'Instruction', field : 'label',   cssClass : 'tracer-cell tracer-cell-label'    } ];
+            var columns = [ { name : 'Breakpoint',  field : 'breakpoint', cssClass : 'tracer-cell tracer-cell-breakpoint', minWidth : 100, maxWidth : 100, formatter : SlickBreakpointFormatter }
+                          , { name : 'Address',     field : 'address',    cssClass : 'tracer-cell tracer-cell-address',    minWidth : 120, maxWidth : 120, formatter : addressFormatter }
+                          , { name : 'Opcode',      field : 'opcode',     cssClass : 'tracer-cell tracer-cell-opcode',     minWidth : 200, maxWidth : 200, formatter : opcodeFormatter }
+                          , { name : 'Instruction', field : 'label',      cssClass : 'tracer-cell tracer-cell-label'       } ];
 
             this._grid = new Slick.Grid( this._options.container, this._instructions, columns, {
+                enableTextSelectionOnCells : true,
                 enableColumnReorder : false,
                 forceFitColumns : true
             } );
 
+            this._grid.onClick.subscribe( function ( e, args ) {
+                if ( args.cell !== 0 ) return ;
+                var instruction = this._grid.getDataItem( args.row );
+                this.toggleBreakpoint( instruction.address );
+            }.bind( this ) );
+
+            this._grid.onKeyDown.subscribe( function ( e, args ) {
+                if ( [ 13, 32 ].indexOf( e.keyCode ) === - 1 ) return ;
+                var instruction = this._grid.getDataItem( args.row );
+                this.toggleBreakpoint( instruction.address );
+            }.bind( this ) );
+
             this._engine.mmu.on( 'post-write', function ( e ) {
-                if ( ! this._domEnabled ) return ;
                 this._refreshFrom( this._findInstruction( e.address ) );
             }.bind( this ) );
 
@@ -76,6 +92,22 @@
             this._breakDelay = 2;
 
             this._engine.resume( );
+
+        },
+
+        toggleBreakpoint : function ( address ) {
+
+            var breakpointStatus = ! this._breakpoints[ address ];
+            this._breakpoints[ address ] = breakpointStatus;
+
+            var instruction = this._byAddress[ address ];
+
+            if ( ! instruction )
+                return ;
+
+            instruction.breakpoint = breakpointStatus;
+            this._updateAddress( address );
+            this._render( );
 
         },
 
@@ -132,8 +164,12 @@
 
             this._instructions.length = 0;
 
-            for ( var instruction, address = 0, memorySize = this._options.memorySize; address < memorySize; address += instruction.size )
-                this._instructions.push( instruction = this._byAddress[ address ] = this._engine.disassembleAt( address ) );
+            for ( var instruction, address = 0, memorySize = this._options.memorySize; address < memorySize; address += instruction.size ) {
+                var instruction = this._engine.disassembleAt( address );
+                instruction.breakpoint = this._breakpoints[ address ];
+                this._byAddress[ address ] = instruction;
+                this._instructions.push( instruction );
+            }
 
             this._invalidate( );
 
@@ -168,6 +204,9 @@
 
             } while ( address < this._options.memorySize && ! this._byAddress[ address ] );
 
+            if ( ! this._domEnabled )
+                return ;
+
             this._invalidateRows( [ first, index ] );
             this._updateRowCount( );
 
@@ -197,7 +236,7 @@
 
             for ( var offset = 0; offset < instruction.size; ++ offset ) {
 
-                var dummyInstruction = ( { address : address + offset, label : 'db', opcode : [ this._engine.byteAt( address + offset ) ], size : 1 } );
+                var dummyInstruction = ( { address : address + offset, label : 'db', opcode : [ this._engine.byteAt( address + offset ) ], size : 1, breakpoint : this._breakpoints[ address + offset ] } );
                 this._instructions.splice( index + offset, 0, this._byAddress[ address + offset ] = dummyInstruction );
 
             }
@@ -291,10 +330,11 @@
 
         _updateAddress : function ( address ) {
 
+            if ( ! this._domEnabled )
+                return ;
+
             var rowIndex = this._instructions.indexOf( this._byAddress[ address ] );
             this._invalidateRow( rowIndex );
-
-            return rowIndex;
 
         },
 

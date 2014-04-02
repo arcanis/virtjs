@@ -32,10 +32,10 @@ require( [
         // Instanciates a few input / output devices which will be used by the emulator
 
         var screen = new Virtjs.screen.WebGL( { className : 'screen' } );
-        screen.open( document.body );
+        document.body.appendChild( screen.canvas );
 
         var keyboard = new Virtjs.input.Keyboard( AZERTY );
-        keyboard.open( document.body );
+        keyboard.listen( document.body );
 
         var timer = new Virtjs.timer.RAFrame( );
 

@@ -292,7 +292,7 @@ define( [
                 command : function ADD_rr_sn( ) {
 
                     var rrBefore = parameters[ 0 ][ 0 ];
-                    parameters[ 0 ][ 0 ] += engine.mmu.readInt8( );
+                    parameters[ 0 ][ 0 ] += this.readInt8( );
                     var rrAfter = parameters[ 0 ][ 0 ];
 
                     engine.environment.cpuBCD = false;
@@ -300,10 +300,10 @@ define( [
                     engine.environment.cpuZero = false;
 
                     engine.environment.cpuHalf =
-                        ( rrBefore & 0x0FFF ) > ( rrAfter & 0x0FFF );
+                        ( rrBefore & 0x000F ) > ( rrAfter & 0x000F );
 
                     engine.environment.cpuCarry =
-                        ( rrBefore ) > ( rrAfter );
+                        ( rrBefore & 0x00FF ) > ( rrAfter & 0x00FF );
 
                     return 4;
 
@@ -1208,7 +1208,7 @@ define( [
                     return {
                         size : 2,
                         label : 'jr c ' + [
-                            Virtjs.FormatUtil.relativeAddress( address, engine.mmu.readInt8( address ), 16, 8 )
+                            Virtjs.FormatUtil.address( address + engine.mmu.readInt8( address ) + 1, 16 )
                         ].join( ', ' )
                     };
 
@@ -1237,7 +1237,7 @@ define( [
                     return {
                         size : 2,
                         label : 'jr nc ' + [
-                            Virtjs.FormatUtil.relativeAddress( address, engine.mmu.readInt8( address ), 16, 8 )
+                            Virtjs.FormatUtil.address( address + engine.mmu.readInt8( address ) + 1, 16 )
                         ].join( ', ' )
                     };
 
@@ -1266,7 +1266,7 @@ define( [
                     return {
                         size : 2,
                         label : 'jr nz ' + [
-                            Virtjs.FormatUtil.relativeAddress( address, engine.mmu.readInt8( address ), 16, 8 )
+                            Virtjs.FormatUtil.address( address + engine.mmu.readInt8( address ) + 1, 16 )
                         ].join( ', ' )
                     };
 
@@ -1295,7 +1295,7 @@ define( [
                     return {
                         size : 2,
                         label : 'jr z ' + [
-                            Virtjs.FormatUtil.relativeAddress( address, engine.mmu.readInt8( address ), 16, 8 )
+                            Virtjs.FormatUtil.address( address + engine.mmu.readInt8( address ) + 1, 16 )
                         ].join( ', ' )
                     };
 
@@ -1321,7 +1321,7 @@ define( [
                     return {
                         size : 2,
                         label : 'jr ' + [
-                            Virtjs.FormatUtil.relativeAddress( address, engine.mmu.readInt8( address ), 16, 8 )
+                            Virtjs.FormatUtil.address( address + engine.mmu.readInt8( address ) + 1, 16 )
                         ].join( ', ' )
                     };
 
@@ -1384,7 +1384,7 @@ define( [
             },
 
             // ex: LDHL de, +10
-            LDHL_rr_sn : {
+            LDHL_rr_n : {
 
                 command : function LDHL_rr_sn( ) {
 
@@ -1438,7 +1438,7 @@ define( [
                     return {
                         size : 2,
                         label : 'ldh ' + [
-                            '(' + Virtjs.FormatUtil.relativeAddress( 0xFF00, engine.mmu.readInt8( address ), 16, 8 ) + ')',
+                            '(' + Virtjs.FormatUtil.relativeAddress( 0xFF00, engine.mmu.readUint8( address ), 16, 8 ) + ')',
                             parameters[ 0 ].xRegister
                         ].join( ', ' )
                     };
@@ -1464,7 +1464,7 @@ define( [
                         size : 2,
                         label : 'ldh ' + [
                             parameters[ 0 ].xRegister,
-                            '(' + Virtjs.FormatUtil.relativeAddress( 0xFF00, engine.mmu.readInt8( address ), 16, 8 ) + ')'
+                            '(' + Virtjs.FormatUtil.relativeAddress( 0xFF00, engine.mmu.readUint8( address ), 16, 8 ) + ')'
                         ].join( ', ' )
                     };
 
@@ -2505,7 +2505,7 @@ define( [
 
                 command : function STOP_0( ) {
 
-                    engine.environment.cpuStop = true;
+                    // engine.environment.cpuStop = true;
 
                     engine.environment.pc[ 0 ] += 1;
 

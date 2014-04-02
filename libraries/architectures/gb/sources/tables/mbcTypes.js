@@ -9,7 +9,7 @@ define( [
 
         0 : NoMBC,
 
-        1 : NoMBC,
+        1 : MBC1,
         2 : MBC1,
         3 : MBC1
 

@@ -35,7 +35,10 @@ var engine = Virtjs.create( GB, {
 // Starts logging
 
 engine.cpu.on( 'instruction', function ( e ) {
-    if ( e.opcode === 0x76 ) process.exit( );
+
+    if ( [ 0x10, 0x76 ].indexOf( e.opcode ) !== - 1 )
+        process.exit( );
+
     console.log( [ '[dbg]',
         Virtjs.FormatUtil.address( e.address, 16 ),
         Virtjs.FormatUtil.hexadecimal( e.opcode, 8 ),
@@ -45,6 +48,7 @@ engine.cpu.on( 'instruction', function ( e ) {
         'hl:' + Virtjs.FormatUtil.hexadecimal( engine.environment.hl[ 0 ], 16 ),
         'sp:' + Virtjs.FormatUtil.hexadecimal( engine.environment.sp[ 0 ], 16 )
     ].join( ' ' ) );
+
 } );
 
 // Finally, we start the engine. Its clock will be managed by the `Timer` instance.

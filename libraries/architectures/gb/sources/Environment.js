@@ -16,8 +16,8 @@ define( [
 
             // Address registers
 
-            this.pc = new Uint16Array( 1 );
-            this.sp = new Uint16Array( 1 );
+            this.pc = new Uint16Array( [ 0x0000 ] );
+            this.sp = new Uint16Array( [ 0xfffe ] );
 
             // Standard CPU registers
 
@@ -54,12 +54,12 @@ define( [
             this.gpuClock             = 0;
             this.gpuLine              = 0;
 
-            this.cpuInterruptsFeature = true;
-            this.cpuZero              = false;
-            this.cpuHalf              = false;
-            this.cpuCarry             = false;
-            this.cpuBCD               = false;
-            this.cpuMode              = 0x02;
+            this.cpuInterruptFeature = true;
+            this.cpuZero             = false;
+            this.cpuHalf             = false;
+            this.cpuCarry            = false;
+            this.cpuBCD              = false;
+            this.cpuMode             = 0x02;
 
             this.ioKeyColumn = 0x00;
 
@@ -68,11 +68,11 @@ define( [
 
             // Memory
 
-            this.wram = new Uint8Array( 0xFE00 - 0xE000 );
-            this.hram = new Uint8Array( 0xFFFF - 0xFF80 );
+            this.wram = new Uint8Array( 8192 );
+            this.hram = new Uint8Array( 127 );
 
-            this.oam = new Uint8Array( 0xFEA0 - 0xFE00 );
-            this.vram = new Uint8Array( 0xA000 - 0x8000 );
+            this.oam = new Uint8Array( 175 );
+            this.vram = new Uint8Array( 8192 );
 
             this.nombcRomBank = null;
             this.nombcRamBank = null;

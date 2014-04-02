@@ -8,11 +8,17 @@ define( [
 
     return Virtjs.ClassUtil.extend( {
 
-        initialize : function ( rom ) {
+        initialize : function ( engine ) {
+
+            this._engine = engine;
+
+        },
+
+        setup : function ( ) {
 
             this._mode = 0x00;
 
-            this._rom = rom;
+            this._rom = this._engine.environment.rom.buffer;
             this._ram = new ArrayBuffer( 0x6000 );
 
             this._romBank = 0x01;

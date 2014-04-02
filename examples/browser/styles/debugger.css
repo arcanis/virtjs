@@ -22,14 +22,8 @@ body {
     opacity: .4;
 }
 
-.tracer-breakpoint {
+.tracer-cell-breakpoint {
     text-align: center;
-}
-
-.tracer-breakpoint input[type="checkbox"] {
-    margin: 0;
-
-    vertical-align: middle;
 }
 
 .tracer-cell-address, .tracer-cell-opcode, .tracer-cell-label {
@@ -37,14 +31,19 @@ body {
 }
 
 .tracer-row {
-    transition: background 1s;
 }
 
-.tracer-current {
+.tracer-row.active {
+    background: #E8F0F3;
+}
+
+.tracer-row.tracer-current {
     background: #5D81A5;
     color: #FFFFFF;
+}
 
-    transition: none;
+.tracer-row.tracer-current.active {
+    background: #577F8F;
 }
 
 .table-fixed {
