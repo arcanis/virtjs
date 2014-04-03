@@ -352,7 +352,7 @@ define( [
 
             // Fetch the offset of the first tile, which depends on a CPU flag
 
-            var tilesOffset = this._engine.environment.gpuTilesetBase ? 0 : 129;
+            var tilesOffset = this._engine.environment.gpuTilesetBase ? 0 : 256;
 
             // Compute the actual position of the pixel in the world (i.e. taking the scroll into count)
 
@@ -386,6 +386,12 @@ define( [
 
                 var mapOffset = mapBase + mapOffsetY + mapOffsetX;
                 var tileIndex = this._engine.environment.vram[ mapOffset ];
+
+                // When using the second tileset, the index is actually a signed number so that whatever the tileset, the same index greater than 0x7F (such as 0xFF) will always point toward the same tile
+
+                if ( ! this._engine.environment.gpuTilesetBase )
+                    if ( tileIndex > 0x7f )
+                        tileIndex -= 0x100;
 
                 // We just have to get the palette index color, then the color from the palette
 
