@@ -52,6 +52,13 @@ define( [
             this._engine.environment.gpuClock = 0;
             this._engine.environment.gpuLine += 1;
 
+            this._engine.environment.gpuCoincidence =
+                this._engine.environment.gpuLine === this._engine.environment.gpuLyCompare;
+
+            if ( this._engine.environment.gpuCoincidence )
+                if ( this._engine.environment.gpuInterrupts & ( 1 << 6 ) )
+                    this._engine.environment.pendingInterrupts |= 0x02;
+
             if ( this._engine.environment.gpuLine < 144 ) {
 
                 this._setMode( 0x02 );
@@ -74,10 +81,18 @@ define( [
             this._engine.environment.gpuClock = 0;
             this._engine.environment.gpuLine += 1;
 
-            if ( this._engine.environment.gpuLine < 154 )
-                return ;
+            if ( this._engine.environment.gpuLine === 154 )
+                this._engine.environment.gpuLine = 0;
 
-            this._engine.environment.gpuLine = 0;
+            this._engine.environment.gpuCoincidence =
+                this._engine.environment.gpuLine === this._engine.environment.gpuLyCompare;
+
+            if ( this._engine.environment.gpuCoincidence )
+                if ( this._engine.environment.gpuInterrupts & ( 1 << 6 ) )
+                    this._engine.environment.pendingInterrupts |= 0x02;
+
+            if ( this._engine.environment.gpuLine !== 0 )
+                return ;
 
             this._setMode( 0x02 );
 

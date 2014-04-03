@@ -163,6 +163,11 @@ define( [
                     this._engine.environment.pendingInterrupts &= 0x01 ^ 0xFF;
                     var time = this._instructionSets.unprefixed[ 'RST_n:0x40' ].command.call( this );
 
+                } else if ( firedInterrupts & 0x02 ) {
+
+                    this._engine.environment.pendingInterrupts &= 0x02 ^ 0xFF;
+                    var time = this._instructionSets.unprefixed[ 'RST_n:0x48' ].command.call( this );
+
                 } else if ( firedInterrupts & 0x04 ) {
 
                     this._engine.environment.pendingInterrupts &= 0x04 ^ 0xFF;

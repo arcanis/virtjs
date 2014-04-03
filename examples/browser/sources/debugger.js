@@ -1,4 +1,4 @@
-/*global Virtjs, Query, require, $*/
+/*global Virtjs, Query, require, $, loadRom*/
 
 require( [
 
@@ -61,11 +61,9 @@ require( [
 
     // ROM loader
 
-    var xhr = new XMLHttpRequest( );
-    xhr.open( 'GET', '../assets/gb/' + ( Query.rom || 'tetris.gb' ), true );
-    xhr.addEventListener( 'load', function ( ) { engine.start( xhr.response, { autoResume : Query.autostart || Query.break_at } ); } );
-    xhr.responseType = 'arraybuffer';
-    xhr.send( null );
+    loadRom( Query.rom || '2048-sanqui.gb', function ( response ) {
+        engine.start( response );
+    } );
 
     // We're in debugger.js, so let's create a debugger
 

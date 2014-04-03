@@ -8,9 +8,16 @@
         'varying vec2 vTextureCoordinates;',
         '',
         'uniform sampler2D uSampler;',
+        'uniform vec2 uResolution;',
         '',
         'void main( void ) {',
+        '    vec2 uv2 = vTextureCoordinates * 2.0 - 1.0;',
         '    gl_FragColor = texture2D( uSampler, vec2( vTextureCoordinates.s, 1.0 - vTextureCoordinates.t ) );',
+        '    gl_FragColor.rgb *= vec3( .4, .5, .4 );',
+        '    gl_FragColor.rgb *= 1. - pow( length( uv2 * uv2 * uv2 * uv2 * uv2 ), 3. );',
+        '    gl_FragColor.r *= ( ( .5 + abs( .5 - mod( uv2.y       , .021 ) / .021 ) * .5 ) * 3.5 );',
+        '    gl_FragColor.g *= ( ( .5 + abs( .5 - mod( uv2.y + .007, .021 ) / .021 ) * .5 ) * 3.5 );',
+        '    gl_FragColor.b *= ( ( .5 + abs( .5 - mod( uv2.y + .014, .021 ) / .021 ) * .5 ) * 3.5 );',
         '}'
     ].join( '\n' );
 
@@ -36,7 +43,9 @@
             this._context2D = this._canvas2D.getContext( '2d' );
 
             this._canvas = document.createElement( 'canvas' );
-            this._context = this._canvas.getContext( 'experimental-webgl' );
+            this._context = this._canvas.getContext( 'webgl', { antialias : true } ) || this._canvas.getContext( 'experimental-webgl' );
+
+            this._context.clearColor( 0.0, 0.0, 0.0, 1.0);
 
             this._textures = [ this._createTexture( ), this._createTexture( ) ];
 
@@ -67,10 +76,10 @@
 
         setOutputSize : function ( width, height ) {
 
-            this._context.viewport( 0, 0, width, height );
-
             this._canvas.width = width;
             this._canvas.height = height;
+
+            this._context.viewport( 0, 0, this._canvas.width, this._canvas.height );
 
             this._updateViewport( );
 
@@ -158,6 +167,8 @@
             this._samplerUniform = this._context.getUniformLocation( shaderProgram, 'uSample' );
             this._context.uniform1i( this._samplerUniform, 0 );
 
+            this._resolutionwebglLocation = this._context.getUniformLocation( shaderProgram, 'uResolution' );
+
             this._vertexPositionAttribute = this._context.getAttribLocation( shaderProgram, 'aVertexPosition' );
             this._context.enableVertexAttribArray( this._vertexPositionAttribute );
 
@@ -178,12 +189,12 @@
 
             var matrix = this._createOrthoMatrix( - viewportWidth, viewportWidth, - viewportHeight, viewportHeight, - 100, 100 );
             this._context.uniformMatrix4fv( this._matrixLocation, false, matrix );
+            this._context.uniform2f( this._resolutionLocation, viewportWidth, viewportHeight );
 
         },
 
         _draw : function ( ) {
 
-            this._context.clearColor( 0.0, 0.0, 0.0, 1.0 );
             this._context.clear( this._context.COLOR_BUFFER_BIT | this._context.DEPTH_BUFFER_BIT );
 
             this._context.bindBuffer( this._vertexPositionBuffer.bufferTarget, this._vertexPositionBuffer );

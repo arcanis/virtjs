@@ -299,6 +299,7 @@ define( [
             // INTERNAL USE EXCLUSIVES
 
             'RST_n:0x40',
+            'RST_n:0x48',
             'RST_n:0x50',
             'RST_n:0x60'
 

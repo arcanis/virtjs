@@ -1,4 +1,4 @@
-/*global Virtjs, Query, require*/
+/*global Virtjs, Query, require, loadRom*/
 
 require( [
 
@@ -53,14 +53,9 @@ require( [
 
         } );
 
-        var start = function ( ) {
-            engine.start( xhr.response ); };
-
-        var xhr = new XMLHttpRequest( );
-        xhr.open( 'GET', '../assets/gb/' + rom, true );
-        xhr.onload = start;
-        xhr.responseType = 'arraybuffer';
-        xhr.send( null );
+        loadRom( rom, function ( response ) {
+            engine.start( response );
+        } );
 
         return engine;
 

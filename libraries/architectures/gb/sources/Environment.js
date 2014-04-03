@@ -45,8 +45,10 @@ define( [
             this.gpuSpriteFeature     = false;
             this.gpuWindowFeature     = false;
             this.gpuLCDFeature        = false;
+            this.gpuCoincidence       = false;
             this.gpuMode              = 0x02;
             this.gpuInterrupts        = 0x00;
+            this.gpuLyCompare         = 0;
             this.gpuSpriteSize        = 0;
             this.gpuBackgroundBase    = 0;
             this.gpuTilesetBase       = 0;

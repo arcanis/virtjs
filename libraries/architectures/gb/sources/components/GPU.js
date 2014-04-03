@@ -31,6 +31,7 @@ define( [
             this._scrollXMapper        = [ this._scrollAccess.bind( this, 0 ),  null ];
             this._scrollYMapper        = [ this._scrollAccess.bind( this, 1 ),  null ];
             this._lineMapper           = [ this._lineAccess.bind( this ),       null ];
+            this._lycMapper            = [ this._lycAccess.bind( this ),        null ];
             this._oamDmaMapper         = [ this._oamDmaAccess.bind( this ),     null ];
             this._bgPaletteMapper      = [ this._paletteAccess.bind( this, 0 ), null ];
             this._sprite1PaletteMapper = [ this._paletteAccess.bind( this, 1 ), null ];
@@ -81,6 +82,9 @@ define( [
 
             if ( address === 0x04 )
                 return this._lineMapper;
+
+            if ( address === 0x05 )
+                return this._lycMapper;
 
             if ( address === 0x06 )
                 return this._oamDmaMapper;
@@ -149,6 +153,15 @@ define( [
                 return this._engine.environment.gpuLine;
 
             throw new Error( 'Invalid write at ' + Virtjs.FormatUtil.address( user, 16 ) );
+
+        },
+
+        _lycAccess : function ( address, value ) {
+
+            if ( typeof value === 'undefined' )
+                return this._engine.environment.gpuLyCompare;
+
+            this._engine.environment.gpuLyCompare = value;
 
         },
 
@@ -232,8 +245,9 @@ define( [
         _packLcdStatus : function ( ) {
 
             return (
-                ( this._engine.environment.gpuMode       << 0 ) |
-                ( this._engine.environment.gpuInterrupts << 3 )
+                ( this._engine.environment.gpuMode        << 0 ) |
+                ( this._engine.environment.gpuCoincidence << 2 ) |
+                ( this._engine.environment.gpuInterrupts  << 3 )
             );
 
         },

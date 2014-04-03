@@ -54,8 +54,8 @@ define( [
 
         ramMapping : function ( address ) {
 
-            this._ramBankMapNN[ 1 ] = address;
-            return this._ramBankMapNN;
+            this._ramBankNNMap[ 1 ] = address;
+            return this._ramBankNNMap;
 
         },
 
