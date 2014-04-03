@@ -450,7 +450,7 @@ define( [
                     if ( tileRow[ actualTileX ] === 0 )
                         continue ;
 
-                    if ( scanline[ x ] & 0xFF00 && ! sprite.priority )
+                    if ( scanline[ x ] & 0xFF00 && sprite.priority )
                         continue ;
 
                     scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
