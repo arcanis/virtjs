@@ -56,7 +56,7 @@ define( [
             var mapping = this.mapAddress( address );
 
             if ( typeof mapping[ 0 ] === 'function' ) {
-                value = mapping[ 0 ].call( null, mapping[ 1 ], undefined, address );
+                value = mapping[ 0 ]( mapping[ 1 ], undefined, address );
             } else {
                 value = mapping[ 0 ][ mapping[ 1 ] ];
             }
@@ -96,7 +96,7 @@ define( [
             var mapping = this.mapAddress( address );
 
             if ( typeof mapping[ 0 ] === 'function' ) {
-                 mapping[ 0 ].call( null, mapping[ 1 ], value, address );
+                 mapping[ 0 ]( mapping[ 1 ], value, address );
             } else {
                 mapping[ 0 ][ mapping[ 1 ] ] = value;
             }

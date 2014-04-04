@@ -39,9 +39,6 @@
 
         initialize : function ( ) {
 
-            this._canvas2D = this._options.element || document.createElement( 'canvas' );
-            this._context2D = this._canvas2D.getContext( '2d' );
-
             this._canvas = document.createElement( 'canvas' );
             this._context = this._canvas.getContext( 'webgl', { antialias : true } ) || this._canvas.getContext( 'experimental-webgl' );
 
@@ -65,10 +62,10 @@
 
         setInputSize : function ( width, height ) {
 
-            this._canvas2D.width = this._canvas2D.width = width;
-            this._canvas2D.height = this._canvas2D.height = height;
+            this._width = width;
+            this._height = height;
 
-            this._data = this._context2D.getImageData( 0, 0, width, height );
+            this._data = new Uint8Array( this._width * this._height * 3 );
 
             this._updateViewport( );
 
@@ -87,19 +84,16 @@
 
         setPixel : function ( x, y, r, g, b ) {
 
-            var target = this._data.data;
-            var index = ( y * this._canvas2D.width + x ) * 4;
+            var target = this._data;
+            var index = ( y * this._width + x ) * 3;
 
             target[ index + 0 ] = r;
             target[ index + 1 ] = g;
             target[ index + 2 ] = b;
-            target[ index + 3 ] = 255;
 
         },
 
         flushScreen : function ( ) {
-
-            this._context2D.putImageData( this._data, 0, 0 );
 
             this._draw( );
 
@@ -179,8 +173,8 @@
 
         _updateViewport : function ( ) {
 
-            var widthRatio = this._canvas.width / this._canvas2D.width;
-            var heightRatio = this._canvas.height / this._canvas2D.height;
+            var widthRatio = this._canvas.width / this._width;
+            var heightRatio = this._canvas.height / this._height;
 
             var ratio = Math.min( widthRatio, heightRatio );
 
@@ -205,7 +199,7 @@
 
             this._context.activeTexture( this._context.TEXTURE0 );
             this._context.bindTexture( this._context.TEXTURE_2D, this._textures[ 0 ] );
-            this._context.texImage2D( this._context.TEXTURE_2D, 0, this._context.RGBA, this._context.RGBA, this._context.UNSIGNED_BYTE, this._canvas2D );
+            this._context.texImage2D( this._context.TEXTURE_2D, 0, this._context.RGB, this._width, this._height, 0, this._context.RGB, this._context.UNSIGNED_BYTE, this._data );
             this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_MAG_FILTER, this._context.NEAREST );
             this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_MIN_FILTER, this._context.LINEAR );
             this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_WRAP_S, this._context.CLAMP_TO_EDGE );
