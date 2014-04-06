@@ -75,6 +75,8 @@ body {
 
 .run-rom .screen .viewport emulator {
     flex: auto;
+
+    background: #000;
 }
 
 .run-rom .controls {
