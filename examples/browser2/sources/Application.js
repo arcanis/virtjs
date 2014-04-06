@@ -4,6 +4,12 @@ angular.module( 'application', [ 'ngRoute', 'reverse', 'emulator', 'sizeMonitori
 
     .config( [ '$routeProvider', function ( $routeProvider ) {
 
+        $routeProvider.when( '/', {
+            name : 'root',
+            template : '',
+            controller : 'root'
+        } );
+
         $routeProvider.when( '/:server', {
             name : 'file-list',
             templateUrl : 'templates/file-list.html',
@@ -18,6 +24,12 @@ angular.module( 'application', [ 'ngRoute', 'reverse', 'emulator', 'sizeMonitori
 
     } ] )
 
+    .controller( 'root', [ '$location', 'reverse', function ( $location, reverse ) {
+
+        $location.path( reverse( 'file-list', { server : window.btoa( '../assets/gb' ) } ) );
+
+    } ] )
+
     .controller( 'fileList', [ '$scope', '$routeParams', '$http', 'reverse', 'basicAuth', function ( $scope, $routeParams, $http, reverse, basicAuth ) {
 
         var server = window.atob( $routeParams.server );
@@ -29,15 +41,20 @@ angular.module( 'application', [ 'ngRoute', 'reverse', 'emulator', 'sizeMonitori
 
         $scope.name = parser.host;
 
+        $scope.year = new Date( ).getFullYear( );
+
         $http.get( server + '/filelist.json', {
 
             headers : { authorization : authorization }
 
         } ).success( function ( data ) {
 
-            $scope.roms = data.map( function ( src ) {
+            $scope.roms = data.sort( ).map( function ( src ) {
 
-                var name = src.replace( /^.*\//, '' );
+                var name = src
+                    .replace( /^.*\//, '' )
+                    .replace( /\.[^.]*$/, '' )
+                ;
 
                 return { name : name, href : '#' + reverse( 'run-rom', {
                     server : window.btoa( server ),

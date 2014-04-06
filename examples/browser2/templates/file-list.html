@@ -1,9 +1,18 @@
 <div class="file-list">
 
-    <nav class="navbar navbar-inverse" role="navigation">
+    <div class="well about">
+        <p>I hope you enjoy Virt.js !</p>
+        <p>Simply remember that this is a very early demo, and that bugs are expected. Please feel free to <a href="https://github.com/arcanis/virt.js/issues">open an issue</a> if you notice something wrong.</p>
+        <p>URLs can be freely shared, your buddies will find the same content than you.</p>
+        <p class="sign">&#151; Arcanis</p>
+    </div>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">File Listing on <span class="name">{{ name }}</span></a>
+                <div class="navbar-brand">
+                    File Listing on <span class="name">{{ name }}</span>
+                </div>
             </div>
         </div>
     </nav>
@@ -12,6 +21,10 @@
         <a class="list-group-item" ng-repeat="rom in roms" href="{{ rom.href }}">
             {{ rom.name }}
         </a>
+    </div>
+
+    <div class="well">
+        <a href="https://arcanis.github.io/virt.js/">&copy; {{ year }} &#151; Virt.js</a>
     </div>
 
 </div>

@@ -6,15 +6,36 @@ html, body, .main {
 }
 
 html {
-    background: #DDD;
+    background: #FFF3EC;
 }
 
 emulator, canvas {
     display: block;
 }
 
+body {
+    background: initial;
+}
+
 .file-list {
     padding: 10px;
+    padding-top: 60px;
+}
+
+.file-list .about {
+    text-align: justify;
+}
+
+.file-list .about .sign {
+    margin-top: 20px;
+
+    text-align: right;
+
+    font-weight: bold;
+}
+
+.file-list > :last-child {
+    margin-bottom: 0;
 }
 
 .file-list .navbar .name {
@@ -28,20 +49,31 @@ emulator, canvas {
 
     width: 100%;
     height: 100%;
-
-    background: #000;
 }
 
-.run-rom .viewport {
+.run-rom .screen {
     display: flex;
     flex: auto;
 
     margin-bottom: 290px;
 
     padding: 10px;
+
+    background: #AC92EC;
 }
 
-.run-rom .viewport emulator {
+.run-rom .screen .viewport {
+    display: flex;
+    flex: auto;
+
+    border-radius: 3px;
+
+    padding: 10px;
+
+    background: #fff;
+}
+
+.run-rom .screen .viewport emulator {
     flex: auto;
 }
 
@@ -51,6 +83,8 @@ emulator, canvas {
 
     width: 100%;
     height: 290px;
+
+    background: radial-gradient(ellipse 200px 187px at center top, #AC92EC 99%, #967ADC);
 }
 
 .run-rom .controls .pad {
