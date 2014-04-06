@@ -420,20 +420,29 @@ define( [
 
         _spritesScanline: function ( scanline, line ) {
 
+            var size = this._engine.environment.gpuSpriteSize ? 16 : 8;
+
             // Iterates on each sprite (40 of them)
 
             for ( var t = 0; t < 40; ++ t ) {
 
                 var sprite = this._sprites[ t ];
 
-                if ( sprite.y + 8 <= line || sprite.y > line )
+                if ( sprite.y + size <= line || sprite.y > line )
                     continue ;
 
                 var palette = this._engine.environment.palettes[ 1 + sprite.palette ];
 
+                var tileIndex = sprite.tile;
+
+                if ( this._engine.environment.gpuSpriteSize )
+                    tileIndex = line - sprite.y >= 8 ? tileIndex | 0x01 : tileIndex & 0xFE;
+
+                var tileY = ( line - sprite.y ) & 0xFF;
+
                 var tileRow = sprite.yflip ?
-                    this._engine.environment.tilesets[ sprite.tile ][ 7 - ( line - sprite.y ) ] :
-                    this._engine.environment.tilesets[ sprite.tile ][ 0 + ( line - sprite.y ) ]
+                    this._engine.environment.tilesets[ tileIndex ][ 7 - tileY ] :
+                    this._engine.environment.tilesets[ tileIndex ][ 0 + tileY ]
                 ;
 
                 for ( var tileX = 0; tileX < 8; ++ tileX ) {
