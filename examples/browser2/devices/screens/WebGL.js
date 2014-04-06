@@ -14,7 +14,7 @@
         '    vec2 uv2 = vTextureCoordinates * 2.0 - 1.0;',
         '    gl_FragColor = texture2D( uSampler, vec2( vTextureCoordinates.s, 1.0 - vTextureCoordinates.t ) );',
         '    gl_FragColor.rgb *= vec3( .4, .5, .4 );',
-        '    gl_FragColor.rgb *= 1. - pow( length( uv2 * uv2 * uv2 * uv2 * uv2 ), 3. );',
+        '    gl_FragColor.a *= 1. - pow( length( uv2 * uv2 * uv2 * uv2 * uv2 ), 5. );',
         '    gl_FragColor.r *= ( ( .5 + abs( .5 - mod( uv2.y       , .021 ) / .021 ) * .5 ) * 3.5 );',
         '    gl_FragColor.g *= ( ( .5 + abs( .5 - mod( uv2.y + .007, .021 ) / .021 ) * .5 ) * 3.5 );',
         '    gl_FragColor.b *= ( ( .5 + abs( .5 - mod( uv2.y + .014, .021 ) / .021 ) * .5 ) * 3.5 );',
@@ -37,12 +37,16 @@
 
     Virtjs.screen.WebGL = Virtjs.ClassUtil.extend( {
 
-        initialize : function ( ) {
+        initialize : function ( options ) {
 
-            this._canvas = document.createElement( 'canvas' );
+            this._options = options || { };
+
+            this._canvas = this._options.element || document.createElement( 'canvas' );
             this._context = this._canvas.getContext( 'webgl', { antialias : true } ) || this._canvas.getContext( 'experimental-webgl' );
 
-            this._context.clearColor( 0.0, 0.0, 0.0, 1.0);
+            this._context.clearColor( 0.0, 0.0, 0.0, 0.0);
+            this._context.blendFunc( this._context.SRC_ALPHA, this._context.ONE_MINUS_SRC_ALPHA );
+            this._context.enable( this._context.BLEND );
 
             this._textures = [ this._createTexture( ), this._createTexture( ) ];
 

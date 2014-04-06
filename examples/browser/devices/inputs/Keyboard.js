@@ -1,6 +1,6 @@
-/*global Virtjs*/
+/*global Virtjs, require*/
 
-( function ( ) {
+( function ( Virtjs ) {
 
     Virtjs.input.Keyboard = Virtjs.ClassUtil.extend( [
 
@@ -40,4 +40,4 @@
 
     } );
 
-} )( );
+} )( window.Virtjs || require( 'virtjs' ) );

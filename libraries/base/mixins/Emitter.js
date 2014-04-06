@@ -38,6 +38,13 @@ define( [
                 callback( data );
             } );
 
+            if ( typeof this._listeners[ '*' ] === 'undefined' )
+                return ;
+
+            this._listeners[ '*' ].forEach( function ( callback ) {
+                callback( event, data );
+            } );
+
         }
 
     };

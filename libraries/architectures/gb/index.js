@@ -14,7 +14,7 @@ define( [
 
 ], function ( Virtjs, CPU, GPU, IO, MMU, Timer, mbcTypes, Environment ) {
 
-    return Virtjs.Engine.extend( [
+    return Virtjs.engine.GameBoy = Virtjs.Engine.extend( [
 
         Virtjs.EmitterMixin
 
@@ -49,7 +49,7 @@ define( [
 
         },
 
-        load : function ( romBuffer, options ) {
+        _load : function ( romBuffer, options ) {
 
             options = options || { };
 

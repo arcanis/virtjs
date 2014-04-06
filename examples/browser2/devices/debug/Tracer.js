@@ -10,7 +10,7 @@
         initialize : function ( engine, options ) {
 
             this._engine = engine;
-            this._options = options;
+            this._options = options || { };
 
             this._instructions = [ ];
             this._byAddress = { };

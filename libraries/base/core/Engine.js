@@ -20,7 +20,7 @@ define( [
 
         },
 
-        start : function ( ) {
+        load : function ( ) {
 
             var options = arguments[ this.load.length - 1 ] || { };
             var autoResume = options.autoResume;
@@ -29,11 +29,12 @@ define( [
                 autoResume = true;
 
             if ( this._status !== 'stopped' )
-                return ;
+                this._setStatus( 'paused' );
 
-            this.load.apply( this, arguments );
+            this._load.apply( this, arguments );
 
-            this._setStatus( 'paused' );
+            if ( this._status !== 'paused' )
+                this._setStatus( 'paused' );
 
             if ( autoResume ) {
                 this.resume( );
