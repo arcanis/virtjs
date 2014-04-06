@@ -438,7 +438,7 @@ define( [
                 if ( this._engine.environment.gpuSpriteSize )
                     tileIndex = line - sprite.y >= 8 ? tileIndex | 0x01 : tileIndex & 0xFE;
 
-                var tileY = ( line - sprite.y ) & 0xFF;
+                var tileY = ( line - sprite.y ) & 0x07;
 
                 var tileRow = sprite.yflip ?
                     this._engine.environment.tilesets[ tileIndex ][ 7 - tileY ] :
