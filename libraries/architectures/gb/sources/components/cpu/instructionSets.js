@@ -946,7 +946,7 @@ define( [
                     engine.environment.cpuHalf =
                         ( rAfter & 0x0F ) === 0x00;
 
-                    return 2;
+                    return 1;
 
                 },
 
@@ -1733,7 +1733,7 @@ define( [
 
                     parameters[ 0 ][ 0 ] = this.readUint16( );
 
-                    return 2;
+                    return 3;
 
                 },
 
@@ -1862,7 +1862,7 @@ define( [
 
                     engine.environment.cpuCarry = false;
 
-                    return 1;
+                    return 2;
 
                 },
 
@@ -2046,7 +2046,7 @@ define( [
 
                     engine.environment.pc[ 0 ] = this.pop( );
 
-                    return 3;
+                    return 4;
 
                 },
 
@@ -2777,7 +2777,7 @@ define( [
 
                     engine.environment.cpuHalf = true;
 
-                    return 4;
+                    return 3;
 
                 },
 
@@ -2863,7 +2863,7 @@ define( [
 
                     engine.environment.cpuCarry = leftMostBit === 1;
 
-                    return 1;
+                    return 2;
 
                 },
 
@@ -2897,7 +2897,7 @@ define( [
 
                     engine.environment.cpuCarry = leftMostBit === 1;
 
-                    return 1;
+                    return 4;
 
                 },
 
@@ -2934,7 +2934,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rBefore & 0x80 ) === 0x80;
 
-                    return 1;
+                    return 2;
 
                 },
 
@@ -2971,7 +2971,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rrmBefore & 0x80 ) === 0x80;
 
-                    return 1;
+                    return 4;
 
                 },
 
@@ -3005,7 +3005,7 @@ define( [
 
                     engine.environment.cpuCarry = rightMostBit === 1;
 
-                    return 1;
+                    return 2;
 
                 },
 
@@ -3039,7 +3039,7 @@ define( [
 
                     engine.environment.cpuCarry = rightMostBit === 1;
 
-                    return 1;
+                    return 4;
 
                 },
 
@@ -3076,7 +3076,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rBefore & 0x01 ) === 0x01;
 
-                    return 1;
+                    return 2;
 
                 },
 
@@ -3113,7 +3113,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rrmBefore & 0x01 ) === 0x01;
 
-                    return 1;
+                    return 4;
 
                 },
 
@@ -3234,7 +3234,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rrmBefore & 0x80 ) === 0x80;
 
-                    return 1;
+                    return 4;
 
                 },
 
@@ -3269,7 +3269,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rBefore & 0x01 ) === 0x01;
 
-                    return 1;
+                    return 2;
 
                 },
 
@@ -3304,7 +3304,7 @@ define( [
                     engine.environment.cpuCarry =
                         ( rrmBefore & 0x01 ) === 0x01;
 
-                    return 1;
+                    return 4;
 
                 },
 
@@ -3442,7 +3442,7 @@ define( [
 
                     engine.environment.cpuCarry = false;
 
-                    return 2;
+                    return 4;
 
                 },
 

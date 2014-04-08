@@ -43,31 +43,25 @@ define( [
 
         step : function ( time ) {
 
-            this._buffers[ 0 ] += time;
+            this._buffers[ 0 ] += time * 4 * 4;
 
-            if ( this._buffers[ 0 ] >= 4 ) {
-
+            while ( this._buffers[ 0 ] >= 4 ) {
                 this._buffers[ 0 ] -= 4;
+                this._clocks[ 0 ] += 1;
+            }
 
-                this._buffers[ 1 ] += 1;
+            if ( ! this._enableTimer )
+                return ;
 
-                if ( this._buffers[ 1 ] === 16 ) {
-                    this._clocks[ 0 ] += 1;
-                    this._buffers[ 1 ] = 0;
+            this._buffers[ 1 ] += time * 4 * 4;
+
+            while ( this._buffers[ 1 ] >= this._counterLimits[ 1 ] ) {
+                this._buffers[ 1 ] -= this._counterLimits[ 1 ];
+                this._clocks[ 1 ] += 1;
+                if ( this._clocks[ 1 ] === 0 ) {
+                    this._clocks[ 1 ] = this._counterLimits[ 0 ];
+                    this._engine.environment.pendingInterrupts |= 0x04;
                 }
-
-                if ( this._enableTimer )
-                    this._buffers[ 2 ] += 1;
-
-                if ( this._buffers[ 2 ] === this._counterLimits[ 1 ] ) {
-                    this._clocks[ 1 ] += 1;
-                    this._buffers[ 2 ] = 0;
-                    if ( this._clocks[ 1 ] === 0 ) {
-                        this._clocks[ 1 ] = this._counterLimits[ 0 ];
-                        this._engine.environment.pendingInterrupts |= 0x04;
-                    }
-                }
-
             }
 
         },
@@ -116,7 +110,7 @@ define( [
         _unpackFlags : function ( value ) {
 
             this._enableTimer = !! ( value & 4 );
-            this._counterLimits[ 1 ] = ( { 0 : 64, 1 : 1, 2 : 4, 3 : 16 } )[ value & 3 ];
+            this._counterLimits[ 1 ] = ( { 0 : 1, 1 : 64, 2 : 16, 3 : 4 } )[ value & 3 ];
 
         }
 
