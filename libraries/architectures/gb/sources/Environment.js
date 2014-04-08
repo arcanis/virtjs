@@ -56,7 +56,7 @@ define( [
             this.gpuClock             = 0;
             this.gpuLine              = 0;
 
-            this.cpuInterruptFeature = true;
+            this.cpuInterruptFeature = false;
             this.cpuZero             = false;
             this.cpuHalf             = false;
             this.cpuCarry            = false;
