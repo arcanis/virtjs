@@ -34,7 +34,7 @@ var engine = Virtjs.create( GB, {
 var buffer = Fs.readFileSync( process.argv[ 2 ] );
 var arrayBuffer = new Uint8Array( buffer ).buffer;
 
-engine.start( arrayBuffer, { autoResume : false } );
+engine.load( arrayBuffer, { autoResume : false } );
 
 // Print the disassembled instruction
 
@@ -52,7 +52,7 @@ for ( var t = 0; t < count; ++ t ) {
 
     console.log( [
         Virtjs.FormatUtil.address( address, 16 ),
-        engine.disassemble( address ).label
+        engine.disassembleAt( address ).label
     ].join( ' ' ) );
 
 }

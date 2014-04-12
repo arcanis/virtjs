@@ -49,7 +49,7 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
 
                     } );
 
-                    engine = Virtjs.create( emulatorTypes[ type ].engine, {
+                    engine = window.engine = Virtjs.create( emulatorTypes[ type ].engine, {
 
                         screen : screen,
                         keyboard : input,

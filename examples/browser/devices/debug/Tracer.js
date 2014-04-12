@@ -216,11 +216,13 @@
 
         _findInstruction : function ( address ) {
 
+            var start = address;
+
             while ( address > 0 && ! this._byAddress[ address ] )
                 address -= 1;
 
             if ( ! this._byAddress[ address ] )
-                throw new Error( 'Instruction not found' );
+                throw new Error( 'Instruction not found at ' + start );
 
             return this._byAddress[ address ];
 

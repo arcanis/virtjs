@@ -37,9 +37,11 @@
 
     Virtjs.screen.WebGL = Virtjs.ClassUtil.extend( {
 
-        initialize : function ( ) {
+        initialize : function ( options ) {
 
-            this._canvas = document.createElement( 'canvas' );
+            this._options = options || {};
+
+            this._canvas = this._options.element || document.createElement( 'canvas' );
             this._context = this._canvas.getContext( 'webgl', { antialias : true } ) || this._canvas.getContext( 'experimental-webgl' );
 
             this._context.clearColor( 0.0, 0.0, 0.0, 1.0);

@@ -62,7 +62,7 @@ require( [
     // ROM loader
 
     loadRom( Query.rom || '2048-sanqui.gb', function ( response ) {
-        engine.start( response );
+        engine.load( response );
     } );
 
     // We're in debugger.js, so let's create a debugger

@@ -79,6 +79,24 @@ define( [
             this.nombcRomBank = null;
             this.nombcRamBank = null;
 
+            this.mbc1Mode = null;
+            this.mbc1RamFeature = false;
+
+            this.mbc1Ram = null;
+
+            this.mbc1RomBank = 0x01;
+            this.mbc1RamBank = 0x00;
+
+            this.mbc3Mode = null;
+            this.mbc3RamFeature = false;
+
+            this.mbc3Ram = null;
+            this.mbc3Rtc = null;
+            this.mbc3Latch = null;
+
+            this.mbc3RomBank = 0x01;
+            this.mbc3RamBank = 0x00;
+
             // GPU background palettes (4 of them, each being 4 bytes)
 
             this.palettes = [ ];

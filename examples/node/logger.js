@@ -56,4 +56,4 @@ engine.cpu.on( 'instruction', function ( e ) {
 var buffer = Fs.readFileSync( process.argv[ 2 ] );
 var arrayBuffer = new Uint8Array( buffer ).buffer;
 
-engine.start( arrayBuffer );
+engine.load( arrayBuffer );

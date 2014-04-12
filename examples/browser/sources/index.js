@@ -42,14 +42,25 @@ require( [
         timer    : timer,
         keyboard : keyboard,
 
-        skipBios : true
+        skipBios : true,
 
+        events : [ 'instruction' ]
+
+    } );
+
+    engine.cpu.on( 'instruction', function (e) {
+        if (e.address === 0xc2cc) console.log( 'step 1 ok' );
+        if (e.address === 0xc2bf) console.log( engine.timer._clocks[1], engine.timer._counterLimits[1] );
+        if (e.address === 0xc2c5) console.log( engine.timer._clocks[1], engine.timer._counterLimits[1] );
+        if (e.address === 0xc2d3) console.log( 'step 2 ok' );
+        if (!window.x) return ;
+        window.x.push( '' );
     } );
 
     // ROM loader
 
     loadRom( Query.rom || '2048-sanqui.gb', function ( response ) {
-        engine.start( response );
+        engine.load( response );
     } );
 
 } );

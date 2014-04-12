@@ -16,23 +16,23 @@ define( [
 
         setup : function ( ) {
 
-            this._mode = 0x00;
+            this._engine.environment.mbc1Mode = 0x00;
+            this._engine.environment.mbc1RamFeature = false;
 
-            this._rom = this._engine.environment.rom.buffer;
-            this._ram = new ArrayBuffer( 0x6000 );
+            this._engine.environment.mbc1Ram = new Uint8Array( 0x6000 );
 
-            this._romBank = 0x01;
-            this._ramBank = 0x00;
+            this._engine.environment.mbc1RomBank = 0x01;
+            this._engine.environment.mbc1RamBank = 0x00;
 
-            this._romBank00 = new Uint8Array( this._rom, 0x0000, 0x4000 );
+            this._romBank00 = new Uint8Array( this._engine.environment.rom.buffer, 0x0000, 0x4000 );
             this._romBankNN = null;
             this._ramBankNN = null;
-
-            this._rebank( );
 
             this._romBank00Map = [ this._romBank00Access.bind( this ), null ];
             this._romBankNNMap = [ this._romBankNNAccess.bind( this ), null ];
             this._ramBankNNMap = [ this._ramBankNNAccess.bind( this ), null ];
+
+            this._rebank( );
 
         },
 
@@ -61,17 +61,19 @@ define( [
 
         _rebank : function ( ) {
 
-            var romBank = this._romBank;
-            var ramBank = this._ramBank;
+            var romBank = this._engine.environment.mbc1RomBank;
+            var ramBank = this._engine.environment.mbc1RamBank;
 
-            if ( this._mode === 0 ) {
+            if ( this._engine.environment.mbc1Mode === 0 ) {
+                // "the only limitiation is that only RAM Bank 00h can be used during Mode 0 ..."
                 ramBank = 0x00;
             } else {
+                // "and only ROM Banks 00-1Fh can be used during Mode 1"
                 romBank &= 0x1F;
             }
 
-            this._romBankNN = new Uint8Array( this._rom, romBank * 0x4000, 0x4000 );
-            this._ramBankNN = new Uint8Array( this._ram, ramBank * 0x2000, 0x2000 );
+            this._romBankNN = new Uint8Array( this._engine.environment.rom.buffer, romBank * 0x4000, 0x4000 );
+            this._ramBankNN = new Uint8Array( this._engine.environment.mbc1Ram.buffer, ramBank * 0x2000, 0x2000 );
 
         },
 
@@ -82,13 +84,15 @@ define( [
 
             if ( address < 0x2000 ) {
 
+                this._engine.environment.mbc1RamFeature = ( value & 0x0A ) === 0x0A;
+
             } else {
 
-                this._romBank &= 0x60;
-                this._romBank |= ( value & 0x1F ) << 0;
+                this._engine.environment.mbc1RomBank &= 0x60;
+                this._engine.environment.mbc1RomBank |= ( value & 0x1F ) << 0;
 
-                if ( ( this._romBank & 0x1F ) === 0 )
-                    this._romBank += 1;
+                if ( ( this._engine.environment.mbc1RomBank & 0x1F ) === 0 )
+                    this._engine.environment.mbc1RomBank += 1;
 
                 this._rebank( );
 
@@ -105,14 +109,16 @@ define( [
 
             if ( address < 0x2000 ) {
 
-                this._romBank &= 0x1F;
-                this._romBank |= ( value & 0x03 ) << 5;
+                this._engine.environment.mbc1RomBank &= 0x1F;
+                this._engine.environment.mbc1RomBank |= ( value & 0x03 ) << 5;
+
+                this._engine.environment.mbc1RamBank = value & 0x03;
 
                 this._rebank( );
 
             } else {
 
-                this._mode = value & 0x01;
+                this._engine.environment.mbc1Mode = value & 0x01;
 
                 this._rebank( );
 
@@ -125,9 +131,9 @@ define( [
         _ramBankNNAccess : function ( address, value ) {
 
             if ( typeof value === 'undefined' )
-                return this._ramEnabled ? this._ramBankNN[ address ] : 0;
+                return this._engine.environment.mbc1RamFeature ? this._ramBankNN[ address ] : 0;
 
-            if ( this._ramEnabled )
+            if ( this._engine.environment.mbc1RamFeature )
                 this._ramBankNN[ address ] = value;
 
             return undefined;

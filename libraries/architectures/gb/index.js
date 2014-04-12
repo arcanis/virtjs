@@ -42,7 +42,7 @@ define( [
 
             // These functions will be reinstrumented /and will lose their scopes/
 
-            Virtjs.DebugUtil.preprocessFunction( this, 'load', this._options );
+            Virtjs.DebugUtil.preprocessFunction( this, '_load', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'setMaxSubIterations', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, '_setupEnvironment', this._options );
@@ -156,7 +156,7 @@ define( [
 
             // A register -> 0x01 : DMG  |  0x11 : CGB  |  0xFF : MGB
 
-            environment.a[ 0 ] = 0x01;
+            environment.a[ 0 ] = 0x11;
             environment.f[ 0 ] = 0xb0;
 
             environment.b[ 0 ] = 0x00;
