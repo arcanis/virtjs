@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Generated Sun Apr  6 20:05:29 CEST 2014
+# Generated Sun Apr 27 00:58:55 CEST 2014
 
 CACHE:
 ../../libraries/architectures/gb/sources/bios.js
@@ -12,6 +12,7 @@ CACHE:
 ../../libraries/architectures/gb/sources/components/mbc/MBC1.js
 ../../libraries/architectures/gb/sources/components/mbc/Table.js
 ../../libraries/architectures/gb/sources/components/mbc/NoMBC.js
+../../libraries/architectures/gb/sources/components/mbc/MBC3.js
 ../../libraries/architectures/gb/sources/components/CPU.js
 ../../libraries/architectures/gb/sources/tables/opcodeMaps.js
 ../../libraries/architectures/gb/sources/tables/mbcTypes.js
@@ -59,6 +60,7 @@ CACHE:
 ./devices/inputs/Keyboard.js
 ./devices/inputs/Button.js
 ./devices/timers/RAFrame.js
+./devices/data/LocalStorage.js
 ./devices/screens/WebGL.js
 ./config.js
 

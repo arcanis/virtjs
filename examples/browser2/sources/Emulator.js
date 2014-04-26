@@ -23,6 +23,7 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
 
                 var screen = new Virtjs.screen.WebGL( { element : canvas } );
                 var timer = new Virtjs.timer.RAFrame( );
+                var data = new Virtjs.data.LocalStorage( );
 
                 // Those two components depends on the Virtjs engine type
                 var input, engine;
@@ -54,6 +55,7 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
                         screen : screen,
                         keyboard : input,
                         timer : timer,
+                        data : data,
 
                         skipBios : true
 

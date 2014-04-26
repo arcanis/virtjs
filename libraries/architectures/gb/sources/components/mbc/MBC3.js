@@ -12,14 +12,24 @@ define( [
 
             this._engine = engine;
 
+            this._engine._options.data.on( 'requestSave', function ( ) {
+
+                this._engine.save( 'cartridge', {
+                    ram : this._engine.environment.mbc3Ram.buffer
+                } );
+
+            }.bind( this ) );
+
         },
 
         setup : function ( ) {
 
+            var saved = this._engine._options.data.restore( 'cartridge' ) || { };
+
             this._engine.environment.mbc3Mode = 0x00;
             this._engine.environment.mbc3RamFeature = false;
 
-            this._engine.environment.mbc3Ram = new Uint8Array( 0x6000 );
+            this._engine.environment.mbc3Ram = new Uint8Array( saved.ram || new ArrayBuffer( 0x6000 ) );
             this._engine.environment.mbc3Rtc = new Uint8Array( 5 );
             this._engine.environment.mbc3Latch = new Uint8Array( 1 );
 

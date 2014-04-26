@@ -17,6 +17,9 @@ require.config( {
         'sources/debugger' : {
             deps : [ 'virtjs' ] },
 
+        'devices/data/LocalStorage' : {
+            deps : [ 'virtjs' ] },
+
         'devices/inputs/Button' : {
             deps : [ 'virtjs' ] },
 

@@ -32,6 +32,10 @@ define( [
             return new Engine( options );
         },
 
+        data : {
+            // Plugins register here
+        },
+
         engine : {
             // Plugins register here
         },
