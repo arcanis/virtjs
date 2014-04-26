@@ -435,8 +435,16 @@ define( [
 
                 var tileIndex = sprite.tile;
 
-                if ( this._engine.environment.gpuSpriteSize )
-                    tileIndex = line - sprite.y >= 8 ? tileIndex | 0x01 : tileIndex & 0xFE;
+                if ( this._engine.environment.gpuSpriteSize ) {
+
+                    var isBottomTile = line - sprite.y >= 8;
+
+                    if ( sprite.yflip )
+                        isBottomTile = ! isBottomTile;
+
+                    tileIndex = isBottomTile ? tileIndex | 0x01 : tileIndex & 0xFE;
+
+                }
 
                 var tileY = ( line - sprite.y ) & 0x07;
 
