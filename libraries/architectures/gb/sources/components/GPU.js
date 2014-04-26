@@ -26,16 +26,18 @@ define( [
 
             // Creates all the mappers now, avoiding garbage collection
 
-            this._settingsMapper       = [ this._settingsAccess.bind( this ),   null ];
-            this._lcdStatusMapper      = [ this._lcdStatusAccess.bind( this ),  null ];
-            this._scrollXMapper        = [ this._scrollAccess.bind( this, 0 ),  null ];
-            this._scrollYMapper        = [ this._scrollAccess.bind( this, 1 ),  null ];
-            this._lineMapper           = [ this._lineAccess.bind( this ),       null ];
-            this._lycMapper            = [ this._lycAccess.bind( this ),        null ];
-            this._oamDmaMapper         = [ this._oamDmaAccess.bind( this ),     null ];
-            this._bgPaletteMapper      = [ this._paletteAccess.bind( this, 0 ), null ];
-            this._sprite1PaletteMapper = [ this._paletteAccess.bind( this, 1 ), null ];
-            this._sprite2PaletteMapper = [ this._paletteAccess.bind( this, 2 ), null ];
+            this._settingsMapper       = [ this._settingsAccess.bind( this ),          null ];
+            this._lcdStatusMapper      = [ this._lcdStatusAccess.bind( this ),         null ];
+            this._scrollXMapper        = [ this._scrollAccess.bind( this, 0 ),         null ];
+            this._scrollYMapper        = [ this._scrollAccess.bind( this, 1 ),         null ];
+            this._lineMapper           = [ this._lineAccess.bind( this ),              null ];
+            this._lycMapper            = [ this._lycAccess.bind( this ),               null ];
+            this._oamDmaMapper         = [ this._oamDmaAccess.bind( this ),            null ];
+            this._bgPaletteMapper      = [ this._paletteAccess.bind( this, 0 ),        null ];
+            this._sprite1PaletteMapper = [ this._paletteAccess.bind( this, 1 ),        null ];
+            this._sprite2PaletteMapper = [ this._paletteAccess.bind( this, 2 ),        null ];
+            this._windowXMapper        = [ this._windowPositionAccess.bind( this, 0 ), null ];
+            this._windowYMapper        = [ this._windowPositionAccess.bind( this, 1 ), null ];
 
             this._oamMapper  = [ this._oamAccess.bind( this ),  null ];
             this._vramMapper = [ this._vramAccess.bind( this ), null ];
@@ -98,7 +100,11 @@ define( [
             if ( address === 0x09 )
                 return this._sprite2PaletteMapper;
 
-            return [ [ 0 ], 0 ];
+            if ( address === 0x0A )
+                return this._windowYMapper;
+
+            if ( address === 0x0B )
+                return this._windowXMapper;
 
             return [ Virtjs.MemoryUtil.unaddressable( 16 ), address ];
 
@@ -135,6 +141,15 @@ define( [
                 return this._engine.environment.gpuScrolls[ index ];
 
             this._engine.environment.gpuScrolls[ index ] = value;
+
+        },
+
+        _windowPositionAccess : function ( index, address, value ) {
+
+            if ( typeof value === 'undefined' )
+                return this._engine.environment.gpuWindowPosition[ index ];
+
+            this._engine.environment.gpuWindowPosition[ index ] = value;
 
         },
 
@@ -222,7 +237,7 @@ define( [
                 ( this._engine.environment.gpuBackgroundBase    ? 1 << 3 : 0 ) |
                 ( this._engine.environment.gpuTilesetBase       ? 1 << 4 : 0 ) |
                 ( this._engine.environment.gpuWindowFeature     ? 1 << 5 : 0 ) |
-                ( this._engine.environment.gpuWindowTileMap     ? 1 << 6 : 0 ) |
+                ( this._engine.environment.gpuWindowBase        ? 1 << 6 : 0 ) |
                 ( this._engine.environment.gpuLCDFeature        ? 1 << 7 : 0 )
 
             );
@@ -237,7 +252,7 @@ define( [
             this._engine.environment.gpuBackgroundBase    = ( value & ( 1 << 3 ) ) !== 0;
             this._engine.environment.gpuTilesetBase       = ( value & ( 1 << 4 ) ) !== 0;
             this._engine.environment.gpuWindowFeature     = ( value & ( 1 << 5 ) ) !== 0;
-            this._engine.environment.gpuWindowTileMap     = ( value & ( 1 << 6 ) ) !== 0;
+            this._engine.environment.gpuWindowBase        = ( value & ( 1 << 6 ) ) !== 0;
             this._engine.environment.gpuLCDFeature        = ( value & ( 1 << 7 ) ) !== 0;
 
         },
@@ -328,15 +343,17 @@ define( [
 
         _hblank : function ( line ) {
 
-            if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuBackgroundFeature ) {
-                this._backgroundScanline( this._scanline, line );
-            } else for ( var x = 0, X = this._scanline.length; x < X; ++ x ) {
+            for ( var x = 0, X = this._scanline.length; x < X; ++ x )
                 this._scanline[ x ] = 0x00FF;
-            }
 
-            if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuSpriteFeature ) {
+            if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuBackgroundFeature )
+                this._backgroundScanline( this._scanline, line );
+
+            if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuWindowFeature )
+                this._windowScanline( this._scanline, line );
+
+            if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuSpriteFeature )
                 this._spritesScanline( this._scanline, line );
-            }
 
             for ( var x = 0, y = line, X = this._scanline.length; x < X; ++ x ) {
 
@@ -360,65 +377,16 @@ define( [
 
         _backgroundScanline : function ( scanline, line ) {
 
-            // Fetch the background map base, which depends on a CPU flag
-
             var mapBase = this._engine.environment.gpuBackgroundBase ? 0x1C00 : 0x1800;
 
-            // Fetch the offset of the first tile, which depends on a CPU flag
+            var scrollX = this._engine.environment.gpuScrolls[ 0 ];
+            var scrollY = this._engine.environment.gpuScrolls[ 1 ];
 
-            var tilesOffset = this._engine.environment.gpuTilesetBase ? 0 : 256;
-
-            // Compute the actual position of the pixel in the world (i.e. taking the scroll into count)
-
-            var actualY = ( this._engine.environment.gpuScrolls[ 1 ] + line ) & 0xFF;
-
-            // Fetch the top-left mapping coordinates
-            // Note that these coordinates will be <= than the pixel
-            //  - actualY >> 3 : "divide by 8 then floor", since there is 8 lines/columns per tile
-            //  - PREVIOUS << 5 : "multiply per 32", since there is 32 mappings per line, and that a mapping is a single byte
-
-            var mapOffsetY = ( actualY >> 3 ) << 5;
-
-            // Fetch the pixel coordinates relative to the top-left tile
-            //  - VALUE & 0b111 (0x7) : "modulo 8", since there is 8 lines/columns per tile
-
-            var tileY = actualY & 0x7;
-
-            // The first palette is the background palette
-
-            var palette = this._engine.environment.palettes[ 0 ];
-
-            for ( var x = 0; x < 160; ++ x ) {
-
-                // Same computations than before, but for X coordinates
-
-                var actualX = ( this._engine.environment.gpuScrolls[ 0 ] + x ) & 0xFF;
-                var mapOffsetX = ( actualX >> 3 ) & 31;
-                var tileX = actualX & 0x7;
-
-                // Knowing the map offset, we can fetch the tile index
-
-                var mapOffset = mapBase + mapOffsetY + mapOffsetX;
-                var tileIndex = this._engine.environment.vram[ mapOffset ];
-
-                // When using the second tileset, the index is actually a signed number so that whatever the tileset, the same index greater than 0x7F (such as 0xFF) will always point toward the same tile
-
-                if ( ! this._engine.environment.gpuTilesetBase )
-                    if ( tileIndex > 0x7f )
-                        tileIndex -= 0x100;
-
-                // We just have to get the palette index color, then the color from the palette
-
-                var paletteIndex = this._engine.environment.tilesets[ tilesOffset + tileIndex ][ tileY ][ tileX ];
-                var trueColor = colors[ palette[ paletteIndex ] ];
-
-                scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
-
-            }
+            this._backgroundScanliner( scanline, mapBase, 0, line, scrollX, scrollY );
 
         },
 
-        _spritesScanline: function ( scanline, line ) {
+        _spritesScanline : function ( scanline, line ) {
 
             var size = this._engine.environment.gpuSpriteSize ? 16 : 8;
 
@@ -473,6 +441,76 @@ define( [
                     scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
 
                 }
+
+            }
+
+        },
+
+        _windowScanline : function ( scanline, line ) {
+
+            var mapBase = this._engine.environment.gpuWindowBase ? 0x1C00 : 0x1800;
+
+            var positionX = this._engine.environment.gpuWindowPosition[ 0 ] - 7;
+            var positionY = this._engine.environment.gpuWindowPosition[ 1 ];
+
+            if ( positionY > line || positionY + 144 <= line )
+                return ;
+
+            this._backgroundScanliner( scanline, mapBase, positionX, line - positionY, 0, 0 );
+
+        },
+
+        _backgroundScanliner : function ( scanline, base, offsetX, line, scrollX, scrollY ) {
+
+            // Fetch the offset of the first tile, which depends on a CPU flag
+
+            var tilesOffset = this._engine.environment.gpuTilesetBase ? 0 : 256;
+
+            // Compute the actual position of the pixel in the world (i.e. taking the scroll into count)
+
+            var actualY = ( scrollY + line ) & 0xFF;
+
+            // Fetch the top-left mapping coordinates
+            // Note that these coordinates will be <= than the pixel
+            //  - actualY >> 3 : "divide by 8 then floor", since there is 8 lines/columns per tile
+            //  - PREVIOUS << 5 : "multiply per 32", since there is 32 mappings per line, and that a mapping is a single byte
+
+            var mapOffsetY = ( actualY >> 3 ) << 5;
+
+            // Fetch the pixel coordinates relative to the top-left tile
+            //  - VALUE & 0b111 (0x7) : "modulo 8", since there is 8 lines/columns per tile
+
+            var tileY = actualY & 0x7;
+
+            // The first palette is the background palette
+
+            var palette = this._engine.environment.palettes[ 0 ];
+
+            for ( var x = 0; x < 160; ++ x ) {
+
+                // Same computations than before, but for X coordinates
+
+                var actualX = ( scrollX + offsetX + x ) & 0xFF;
+                var mapOffsetX = ( actualX >> 3 ) & 31;
+                var tileX = actualX & 0x7;
+
+                // Knowing the map offset, we can fetch the tile index
+
+                var mapOffset = base + mapOffsetY + mapOffsetX;
+                var tileIndex = this._engine.environment.vram[ mapOffset ];
+
+                // When using the second tileset, the index is actually a signed number so that whatever the tileset, the same index greater than 0x7F (such as 0xFF) will always point toward the same tile
+
+                if ( ! this._engine.environment.gpuTilesetBase )
+                    if ( tileIndex > 0x7f )
+                        tileIndex -= 0x100;
+
+                // We just have to get the palette index color, then the color from the palette
+
+                var paletteIndex = this._engine.environment.tilesets[ tilesOffset + tileIndex ][ tileY ][ tileX ];
+                var trueColor = colors[ palette[ paletteIndex ] ];
+
+                scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
 
             }
 

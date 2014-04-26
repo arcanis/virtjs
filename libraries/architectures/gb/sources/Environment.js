@@ -43,16 +43,20 @@ define( [
 
             this.gpuBackgroundFeature = false;
             this.gpuSpriteFeature     = false;
-            this.gpuWindowFeature     = false;
             this.gpuLCDFeature        = false;
             this.gpuCoincidence       = false;
             this.gpuMode              = 0x02;
             this.gpuInterrupts        = 0x00;
             this.gpuLyCompare         = 0;
             this.gpuSpriteSize        = 0;
-            this.gpuBackgroundBase    = 0;
             this.gpuTilesetBase       = 0;
+            this.gpuBackgroundBase    = 0;
             this.gpuScrolls           = new Uint8Array( 2 );
+
+            this.gpuWindowFeature     = false;
+            this.gpuWindowBase        = 0;
+            this.gpuWindowPosition    = new Uint8Array( 2 );
+
             this.gpuClock             = 0;
             this.gpuLine              = 0;
 
