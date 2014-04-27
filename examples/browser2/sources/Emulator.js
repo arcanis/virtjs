@@ -1,8 +1,16 @@
-/*global angular, Virtjs*/
+/*global angular, Virtjs, SparkMD5*/
 
 angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
 
     .directive( 'emulator', [ '$http', 'basicAuth', 'emulatorTypes', function ( $http, basicAuth, emulatorTypes ) {
+
+        var engines = [ ];
+
+        window.addEventListener( 'unload', function ( ) {
+            engines.forEach( function ( engine ) {
+                engine._options.data.requestSave( );
+            } );
+        } );
 
         return {
 
@@ -61,6 +69,8 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
 
                     } );
 
+                    engines.push( engine );
+
                     loadRom( $scope.rom );
                     resizeOutput( $scope.width, $scope.height );
 
@@ -83,7 +93,9 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
                         if ( rom !== $scope.rom )
                             return ;
 
-                        engine.load( data );
+                        var ident = SparkMD5.ArrayBuffer.hash( data );
+
+                        engine.load( data, { ident : ident } );
 
                     } );
 
@@ -120,6 +132,9 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
 
                     if ( ! engine )
                         return ;
+
+                    engine._options.data.requestSave( );
+                    engines.splice( engines.indexOf( engine ), 1 );
 
                     engine.pause( );
 

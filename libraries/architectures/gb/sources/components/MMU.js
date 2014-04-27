@@ -25,8 +25,12 @@ define( [
 
             // Creates all the mappers now, avoiding garbage collection
 
-            this._biosLockMapper               = [ this._biosLockAccess, null ];
-            this._biosMapper                   = [ this._biosAccess,     null ];
+            this._biosLockMapper = [ this._biosLockAccess, null ];
+            this._biosMapper     = [ this._biosAccess,     null ];
+
+            // Memory mapping cache
+
+            this._memoryMapCache = new Array( 0x10000 );
 
         },
 
@@ -36,6 +40,12 @@ define( [
 
             this._hramMapper = [ this._engine.environment.hram, null ];
             this._wramMapper = [ this._engine.environment.wram, null ];
+
+            // Cache all of the mappers
+
+            for ( var t = 0; t <= 0xFFFF; ++ t ) {
+                this._memoryMapCache[ t ] = this.mapAddress( t );
+            }
 
         },
 
@@ -124,6 +134,9 @@ define( [
         },
 
         mapAddress : function ( current ) {
+
+            if ( false && this._memoryMapCache[ current ] )
+                return this._memoryMapCache[ current ];
 
             // [CPU] Enabled interrupts [0xFFFF;0xFFFF]
 

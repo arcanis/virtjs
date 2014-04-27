@@ -14,7 +14,10 @@ define( [
 
             this._engine._options.data.on( 'requestSave', function ( ) {
 
-                this._engine.save( 'cartridge', {
+                if ( ! this._storageName )
+                    return ;
+
+                this._engine._options.data.save( this._storageName, {
                     ram : this._engine.environment.mbc3Ram.buffer
                 } );
 
@@ -24,7 +27,10 @@ define( [
 
         setup : function ( ) {
 
-            var saved = this._engine._options.data.restore( 'cartridge' ) || { };
+            this._storageName = this._engine.environment.ident ? this._engine.environment.ident + '.' : '';
+            this._storageName += 'cartridge';
+
+            var saved = this._engine._options.data.restore( this._storageName ) || { };
 
             this._engine.environment.mbc3Mode = 0x00;
             this._engine.environment.mbc3RamFeature = false;

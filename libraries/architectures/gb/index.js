@@ -59,9 +59,9 @@ define( [
             this.cpu.setup( );
             this.gpu.setup( );
             this.io.setup( );
-            this.mmu.setup( );
             this.timer.setup( );
             this.cartridge.setup( );
+            this.mmu.setup( );
 
             if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'load' ) !== - 1 ) {
                 this.emit( 'load' );
@@ -143,9 +143,12 @@ define( [
 
         },
 
-        _createEnvironment : function ( romBuffer, options) {
+        _createEnvironment : function ( romBuffer, options ) {
 
-            return ( options || { } ).environment || this._setupEnvironment( new Environment( romBuffer ) );
+            if ( options && options.environment )
+                return options.environment;
+
+            return this._setupEnvironment( new Environment( romBuffer, options || { } ) );
 
         },
 

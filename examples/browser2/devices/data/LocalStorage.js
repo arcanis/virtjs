@@ -16,7 +16,7 @@
 
         requestSave : function ( ) {
 
-            this.emit( 'requestSave' );
+            this.emit( 'requestSave', null );
 
         },
 

@@ -8,11 +8,12 @@ define( [
 
     return Virtjs.ClassUtil.extend( {
 
-        initialize : function ( buffer ) {
+        initialize : function ( buffer, options ) {
 
             // ROM
 
             this.rom = new Uint8Array( buffer );
+            this.ident = options.ident;
 
             // Address registers
 

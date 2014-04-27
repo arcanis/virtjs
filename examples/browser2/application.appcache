@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Generated Sun Apr 27 00:58:55 CEST 2014
+# Generated Sun Apr 27 02:04:17 CEST 2014
 
 CACHE:
 ../../libraries/architectures/gb/sources/bios.js
@@ -39,6 +39,7 @@ CACHE:
 ./vendors/angular/Route-1.3.0b.min.js
 ./vendors/AddResizeListener.js
 ./vendors/Bootstrap-3.1.1.min.css
+./vendors/SparkMD5-20140427.min.js
 ./vendors/Escodegen-1.2.0.min.js
 ./vendors/Hammer-1.0.10.min.js
 ./vendors/Require-2.1.10.min.js
