@@ -32,7 +32,6 @@ void DiffBlock::print( Line const & line )
     this->printDiff( emptyPrefix, control, data, GREEN );
 
     m_Mode = BUFFER;
-
 }
 
 void DiffBlock::printDiff( String const & prefix, PartSet const & data, PartSet const & control, String const & color ) const

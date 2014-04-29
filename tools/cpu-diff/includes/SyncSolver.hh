@@ -21,6 +21,9 @@ public:
 
 protected:
 
+                   // Called whenever the streams are desynced
+                   virtual void desynced          ( int index, PartSet const & data, PartSet const & control, bool resynced ) { }
+
                    // Called whenever two a line can be compared
                    virtual void compare           ( int index, PartSet const & data, PartSet const & control ) { }
 

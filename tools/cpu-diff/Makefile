@@ -4,7 +4,7 @@ SOURCES		= $(shell find sources -name '*.cc')
 OBJECTS		= $(SOURCES:.cc=.o)
 
 CXX		= clang++
-CXXFLAGS	= -std=c++11 -Iincludes -O3
+CXXFLAGS	= -std=c++11 -Iincludes -O3 -g
 LDFLAGS		= -lboost_program_options
 
 all:	$(BIN)

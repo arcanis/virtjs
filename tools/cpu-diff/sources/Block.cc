@@ -1,4 +1,6 @@
 #include "Block.hh"
+#include "Line.hh"
+#include <iostream>
 
 Block::Block( void )
 {

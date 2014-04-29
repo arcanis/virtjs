@@ -73,10 +73,27 @@ bool SyncSolver::next( void )
     }
 
     m_LineIndex += 1;
-    this->compare( m_LineIndex, data, control );
 
-    if ( data[ 1 ] != control[ 1 ] )
-        return this->resync( );
+    if ( data[ 1 ] != control[ 1 ] ) {
+
+        if ( ! this->resync( ) ) {
+
+            this->desynced( m_LineIndex, data, control, false );
+            this->close( );
+
+            return false;
+
+        } else {
+
+            this->desynced( m_LineIndex, data, control, true );
+
+        }
+
+    } else {
+
+        this->compare( m_LineIndex, data, control );
+
+    }
 
     return true;
 }

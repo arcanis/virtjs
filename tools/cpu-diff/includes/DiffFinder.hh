@@ -15,13 +15,14 @@ public:
 
 protected:
 
+                virtual void desynced    ( int index, PartSet const & data, PartSet const & control, bool resynced );
                 virtual void compare     ( int index, PartSet const & data, PartSet const & control );
                 virtual void close       ( void );
 
 private:
 
                         template < typename T >
-                        void ensureBlock ( void );
+                        void ensureBlock ( bool forceNew = false );
 
 private:
 
@@ -30,9 +31,9 @@ private:
 };
 
 template < typename T >
-void DiffFinder::ensureBlock( void )
+void DiffFinder::ensureBlock( bool forceNew )
 {
-    if ( dynamic_cast< T * >( m_Block.get( ) ) )
+    if ( dynamic_cast< T * >( m_Block.get( ) ) && ! forceNew )
         return ;
 
     std::unique_ptr< Block > newBlock( new T( m_Block.get( ) ) );
