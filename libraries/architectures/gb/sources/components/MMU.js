@@ -23,28 +23,27 @@ define( [
             Virtjs.DebugUtil.preprocessFunction( this, 'readUint8', this._engine._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'writeUint8', this._engine._options );
 
-            // Creates all the mappers now, avoiding garbage collection
-
-            this._biosLockMapper = [ this._biosLockAccess, null ];
-            this._biosMapper     = [ this._biosAccess,     null ];
-
             // Memory mapping cache
 
-            this._memoryMapCache = new Array( 0x10000 );
+            this._memoryDescriptors = new Array( 0x10000 );
+            this._memoryAccessors = new Array( 0x10000 );
 
         },
 
         setup : function ( ) {
 
-            // Creates all the mappers now, avoiding garbage collection
-
-            this._hramMapper = [ this._engine.environment.hram, null ];
-            this._wramMapper = [ this._engine.environment.wram, null ];
-
             // Cache all of the mappers
 
             for ( var t = 0; t <= 0xFFFF; ++ t ) {
-                this._memoryMapCache[ t ] = this.mapAddress( t );
+
+                var mapping = this.mapAddress( t );
+
+                if ( Array.isArray( mapping ) ) {
+                    this._memoryDescriptors[ t ] = mapping;
+                } else {
+                    this._memoryAccessors[ t ] = mapping;
+                }
+
             }
 
         },
@@ -63,12 +62,13 @@ define( [
         readUint8 : function ( address ) {
 
             var value;
-            var mapping = this.mapAddress( address );
 
-            if ( typeof mapping[ 0 ] === 'function' ) {
-                value = mapping[ 0 ]( mapping[ 1 ], undefined, address );
+            var descriptor = this._memoryDescriptors[ address ];
+
+            if ( descriptor ) {
+                value = descriptor[ 0 ][ descriptor[ 1 ] ];
             } else {
-                value = mapping[ 0 ][ mapping[ 1 ] ];
+                value = this._memoryAccessors[ address ]( void 0, address );
             }
 
             if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'read' ) !== - 1 ) {
@@ -103,12 +103,12 @@ define( [
 
             }
 
-            var mapping = this.mapAddress( address );
+            var descriptor = this._memoryDescriptors[ address ];
 
-            if ( typeof mapping[ 0 ] === 'function' ) {
-                 mapping[ 0 ]( mapping[ 1 ], value, address );
+            if ( descriptor ) {
+                descriptor[ 0 ][ descriptor[ 1 ] ] = value;
             } else {
-                mapping[ 0 ][ mapping[ 1 ] ] = value;
+                this._memoryAccessors[ address ]( value, address );
             }
 
             if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'post-write' ) !== - 1 ) {
@@ -133,123 +133,114 @@ define( [
 
         },
 
-        mapAddress : function ( current ) {
-
-            if ( false && this._memoryMapCache[ current ] )
-                return this._memoryMapCache[ current ];
+        mapAddress : function ( address ) {
 
             // [CPU] Enabled interrupts [0xFFFF;0xFFFF]
 
-            if ( current === 0xFFFF )
-                return this._engine.cpu._enabledInterruptsMapper;
+            if ( address === 0xFFFF )
+                return Virtjs.MemoryUtil.plainOldData( this._engine.environment, 'enabledInterrupts' );
 
             //       High RAM [0xFF80;0xFFFF[
 
-            if ( current >= 0xFF80 && current < 0xFFFF ) {
-                this._hramMapper[ 1 ] = current - 0xFF80;
-                return this._hramMapper;
-            }
+            if ( address >= 0xFF80 && address < 0xFFFF )
+                return Virtjs.MemoryUtil.plainOldData( this._engine.environment.hram, address - 0xFF80 );
 
             // [MMU] BIOS flag [0xFF50]
 
-            if ( ! this._engine.environment.mmuBiosLocked && current === 0xFF50 )
-                return this._biosLockMapper;
+            if ( ! this._engine.environment.mmuBiosLocked && address === 0xFF50 )
+                return Virtjs.MemoryUtil.accessor( this._biosLockAccess, this );
 
             // [GPU] GPU binding [0xFF40;0xFF80[
 
-            if ( current >= 0xFF40 && current < 0xFF80 )
-                return this._engine.gpu.settingsMapping( current - 0xFF40 );
+            if ( address >= 0xFF40 && address < 0xFF80 )
+                return this._engine.gpu.settingsMapping( address - 0xFF40 );
 
             // [SND] Sound binding [0xFF10;0xFF30[
 
-            if ( current >= 0xFF10 && current < 0xFF40 )
-                return [ [ 0 ], 0 ];
+            if ( address >= 0xFF10 && address < 0xFF40 )
+                return Virtjs.MemoryUtil.immutable( 0x00 );
 
             // [CPU] Requested interruptions [0xFF0F]
 
-            if ( current === 0xFF0F )
-                return this._engine.cpu._pendingInterruptsMapper;
+            if ( address === 0xFF0F )
+                return Virtjs.MemoryUtil.plainOldData( this._engine.environment, 'pendingInterrupts' );
 
             // [TIM] Timer binding [0xFF04;0xFF08[
 
-            if ( current >= 0xFF04 && current < 0xFF08 )
-                return this._engine.timer.timerMapping( current - 0xFF04 );
+            if ( address >= 0xFF04 && address < 0xFF08 )
+                return this._engine.timer.timerMapping( address - 0xFF04 );
 
             // [IO]  Serial transfer [0xFF01;0xFF02]
 
-            if ( current >= 0xFF01 && current <= 0xFF02 )
-                return [ [ 0 ], 0 ];
+            if ( address >= 0xFF01 && address <= 0xFF02 )
+                return Virtjs.MemoryUtil.immutable( 0x00 );
 
             // [IO]  Input binding [0xFF00]
 
-            if ( current === 0xFF00 )
-                return this._engine.io.keyMapping( current - 0xFF00 );
+            if ( address === 0xFF00 )
+                return this._engine.io.keyMapping( address - 0xFF00 );
 
             //       Empty area
 
-            if ( current >= 0xFEA0 && current < 0xFF00 )
-                return [ [ 0 ], 0 ];
+            if ( address >= 0xFEA0 && address < 0xFF00 )
+                return Virtjs.MemoryUtil.immutable( 0x00 );
 
             // [GPU] Object attributes memory [0xFE00;0xFF00[
 
-            if ( current >= 0xFE00 && current < 0xFEA0 )
-                return this._engine.gpu.oamMapping( current - 0xFE00 );
+            if ( address >= 0xFE00 && address < 0xFEA0 )
+                return this._engine.gpu.oamMapping( address - 0xFE00 );
 
             //       Working RAM shadow [0xE000;0xFE00[
 
-            if ( current >= 0xE000 && current < 0xFE00 ) {
-                this._wramMapper[ 1 ] = current & 0x1FFF;
-                return this._wramMapper;
-            }
+            if ( address >= 0xE000 && address < 0xFE00 )
+                return Virtjs.MemoryUtil.plainOldData( this._engine.environment.wram, address & 0x1FFF );
 
             //       Working RAM [0xC000;0xE000[
 
-            if ( current >= 0xC000 && current < 0xE000 ) {
-                this._wramMapper[ 1 ] = current & 0x1FFF;
-                return this._wramMapper;
-            }
+            if ( address >= 0xC000 && address < 0xE000 )
+                return Virtjs.MemoryUtil.plainOldData( this._engine.environment.wram, address & 0x1FFF );
 
             //       External RAM [0xA000;0xC000[
 
-            if ( current >= 0xA000 && current < 0xC000 )
-                return this._engine.cartridge.ramMapping( current - 0xA000 );
+            if ( address >= 0xA000 && address < 0xC000 )
+                return this._engine.cartridge.ramMapping( address - 0xA000 );
 
             // [GPU] Graphics VRAM [0x8000;0xA000[
 
-            if ( current >= 0x8000 && current < 0xA000 )
-                return this._engine.gpu.vramMapping( current & 0x1FFF );
+            if ( address >= 0x8000 && address < 0xA000 )
+                return this._engine.gpu.vramMapping( address & 0x1FFF );
 
             //       BIOS [0x0000;0x0100[
 
-            if ( ! this._engine.environment.mmuBiosLocked && current < 0x0100 ) {
-                this._biosMapper[ 1 ] = current;
-                return this._biosMapper;
-            }
+            if ( ! this._engine.environment.mmuBiosLocked && address < 0x0100 )
+                return Virtjs.MemoryUtil.accessor( this._biosAccess, this, address );
 
             //       ROM [0x0000;0x8000[
 
-            if ( current < 0x8000 )
-                return this._engine.cartridge.romMapping( current );
+            if ( address < 0x8000 )
+                return this._engine.cartridge.romMapping( address );
 
-            return [ Virtjs.MemoryUtil.unaddressable( 16 ), current ];
+            return Virtjs.MemoryUtil.unaddressable( address, 16 );
 
         },
 
-        _biosLockAccess : function ( address, value ) {
+        _biosLockAccess : function ( value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return 0;
-
-            this._engine.environment.mmuBiosLocked = value !== 0;
+            } else {
+                this._engine.environment.mmuBiosLocked = value !== 0;
+            }
 
         },
 
         _biosAccess : function ( address, value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return bios[ address ];
-
-            return ;
+            } else {
+                return void 0;
+            }
 
         }
 

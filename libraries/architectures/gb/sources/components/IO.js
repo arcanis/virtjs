@@ -39,10 +39,6 @@ define( [
 
             }.bind( this ) );
 
-            // Creates all the mappers now, avoiding garbage collection
-
-            this._keyMapper = [ this._keyAccess.bind( this ), null ];
-
         },
 
         setup : function ( ) {
@@ -56,16 +52,14 @@ define( [
 
         keyMapping : function ( address ) {
 
-            if ( address === 0x00 ) {
-                this._keyMapper[ 1 ] = address;
-                return this._keyMapper;
-            }
+            if ( address === 0x00 )
+                return Virtjs.MemoryUtil.accessor( this._keyAccess, this );
 
-            return [ Virtjs.MemoryUtil.unadressable( 16 ), address ];
+            return Virtjs.MemoryUtil.unadressable( 16 );
 
         },
 
-        _keyAccess : function ( address, value ) {
+        _keyAccess : function ( value ) {
 
             if ( typeof value === 'undefined' ) {
 
@@ -79,9 +73,11 @@ define( [
 
                 return keyline;
 
-            }
+            } else {
 
-            this._engine.environment.ioKeyColumn = value & 0x30;
+                this._engine.environment.ioKeyColumn = value & 0x30;
+
+            }
 
         }
 

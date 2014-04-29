@@ -7,18 +7,20 @@ define( [
     './utils/Class',
     './utils/Debug',
     './utils/Format',
+    './utils/Function',
     './utils/Log',
     './utils/Memory',
     './utils/Object',
     './utils/Reflection'
 
-], function ( Engine, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
+], function ( Engine, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, FunctionUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
 
     return {
 
         ClassUtil      : ClassUtil,
         DebugUtil      : DebugUtil,
         FormatUtil     : FormatUtil,
+        FunctionUtil   : FunctionUtil,
         LogUtil        : LogUtil,
         MemoryUtil     : MemoryUtil,
         ObjectUtil     : ObjectUtil,

@@ -5,13 +5,29 @@ define( [
     var Esprima   = typeof window !== 'undefined' ? window.esprima : require( 'esprima' );
     var Escodegen = typeof window !== 'undefined' ? window.escodegen : require( 'escodegen' );
 
+    var executePreprocessing = function ( preprocess, root ) {
+
+        return findBranches( root, function ( node ) {
+
+            if ( ! usesPreprocessVariable( node.test ) )
+                return node;
+
+            if ( usesUndeclaredVariables( node.test, [ 'this', 'arguments', 'preprocess' ] ) )
+                throw new Error( 'Preprocessed branches cannot access other variables than `preprocess`' );
+
+            var test = Escodegen.generate( node.test );
+            var branch = eval( test ) ? node.consequent : node.alternate;
+
+            return executePreprocessing( preprocess, branch || { type : 'EmptyStatement' } );
+
+        } );
+
+    };
+
     var findBranches = function ( node, callback ) {
 
-        if ( node.type === 'IfStatement' ) {
-            node = callback( node ) || {
-                type : 'EmptyStatement'
-            };
-        }
+        if ( node.type === 'IfStatement' )
+            node = callback( node );
 
         Object.keys( node ).forEach( function ( key ) {
 
@@ -79,6 +95,59 @@ define( [
 
     return {
 
+        monitorFunction : function ( /* ( instance, member | function ), callback */ ) {
+
+            if ( typeof arguments[ 1 ] === 'function' ) {
+
+                var fn = arguments[ 0 ];
+                var callback = arguments[ 1 ];
+
+            } else {
+
+                var instance = arguments[ 0 ];
+                var method = arguments[ 1 ];
+
+                var fn = instance[ method ];
+                var callback = arguments[ 2 ];
+
+            }
+
+            if ( typeof callback === 'undefined' ) {
+                callback = function ( calledByNew, instance, args ) {
+                    var verb = calledByNew ? 'instancied' : 'called';
+                    var argString = JSON.stringify( Array.prototype.slice.call( args ) );
+                    console.trace( 'Monitored function "' + ( method || fn.name ) + '" ' + verb + ' with arguments ' + argString );
+                };
+            }
+
+            var trap = function ( ) {
+
+                var calledByNew = this instanceof trap;
+
+                if ( callback )
+                    callback( calledByNew, this, arguments );
+
+                if ( ! calledByNew ) {
+                    return fn.apply( this, arguments );
+                } else {
+                    var bindArguments = [ null ].concat( Array.prototype.slice.call( arguments ) );
+                    var bindedConstructor = Function.prototype.bind.apply( fn, bindArguments );
+                    return new bindedConstructor( );
+                }
+
+            };
+
+            trap.drop = function ( ) {
+                callback = null;
+            };
+
+            if ( instance )
+                instance[ method ] = trap;
+
+            return trap;
+
+        },
+
         preprocessFunction : function ( /* ( instance, member | function ), preprocess */ ) {
 
             if ( arguments.length <= 2 ) {
@@ -101,18 +170,7 @@ define( [
             if ( usesUndeclaredVariables( ast ) )
                 throw new Error( 'Preprocessed functions cannot make use of non-local variables' );
 
-            var newFn = eval( ( instance ? 'instance.' + method + ' = ' : '' ) + Escodegen.generate( findBranches( ast, function ( node ) {
-
-                if ( ! usesPreprocessVariable( node.test ) )
-                    return node;
-
-                if ( usesUndeclaredVariables( node.test, [ 'this', 'arguments', 'preprocess' ] ) )
-                    throw new Error( 'Preprocessed branches cannot access other variables than `preprocess`' );
-
-                var test = Escodegen.generate( node.test );
-                return eval( test ) ? node.consequent : node.alternate;
-
-            } ) ) );
+            var newFn = eval( ( instance ? 'instance.' + method + ' = ' : '' ) + Escodegen.generate( executePreprocessing( preprocess, ast ) ) );
 
             return newFn;
 

@@ -19,9 +19,6 @@ define( [
             this._engine.environment.nombcRomBank = new Uint8Array( 32768 );
             this._engine.environment.nombcRamBank = new Uint8Array( 8192 );
 
-            this._romMap = [ this._romAccess.bind( this ), null ];
-            this._ramMap = [ this._engine.environment.nombcRamBank, null ];
-
             var rom = this._engine.environment.rom;
             for ( var t = 0, T = rom.length; t < T; ++ t ) {
                 this._engine.environment.nombcRomBank[ t ] = rom[ t ];
@@ -31,24 +28,23 @@ define( [
 
         romMapping : function ( address ) {
 
-            this._romMap[ 1 ] = address;
-            return this._romMap;
+            return Virtjs.MemoryUtil.accessor( this._romAccess, this, address );
 
         },
 
         ramMapping : function ( address ) {
 
-            this._ramMap[ 1 ] = address;
-            return this._ramMap;
+            return Virtjs.MemoryUtil.plainOldData( this._engine.environment.nombcRamBank, address );
 
         },
 
         _romAccess : function ( address, value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._engine.environment.nombcRomBank[ address ];
-
-            // No set
+            } else {
+                return void 0;
+            }
 
         }
 

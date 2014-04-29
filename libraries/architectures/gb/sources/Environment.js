@@ -59,6 +59,7 @@ define( [
             this.gpuWindowPosition    = new Uint8Array( 2 );
 
             this.gpuClock             = 0;
+            this.gpuFrameClock        = 0;
             this.gpuLine              = 0;
 
             this.cpuInterruptFeature = false;

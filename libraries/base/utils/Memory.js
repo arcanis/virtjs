@@ -1,22 +1,43 @@
 define( [
 
-    './Format'
+    './Format',
+    './Function'
 
-], function ( FormatUtil ) {
-
-    var unadressableHandlers = { };
+], function ( FormatUtil, FunctionUtil ) {
 
     return {
 
-        unaddressable : function ( bits ) {
+        unaddressable : function ( address, bits ) {
 
-            if ( typeof unadressableHandlers[ bits ] === 'undefined' ) {
-                unadressableHandlers[ bits ] = function ( address, value, user ) {
-                    throw new Error( 'Address ' + FormatUtil.address( user, bits ) + ' is unaddressable' );
-                };
-            }
+            return function ( value, user ) {
+                throw new Error( 'Address ' + FormatUtil.address( user, bits ) + ' is unaddressable' );
+            };
 
-            return unadressableHandlers[ bits ];
+        },
+
+        immutable : function ( value ) {
+
+            return function ( ) {
+                return value;
+            };
+
+        },
+
+        accessor : function ( /* accessor, context, ... bindings */ ) {
+
+            if ( ! arguments[ 0 ] )
+                throw new Error( 'Undefined accessor cannot be bound' );
+
+            return FunctionUtil.fastBind.apply( FunctionUtil, arguments );
+
+        },
+
+        plainOldData : function ( object, key ) {
+
+            if ( ! object )
+                throw new Error( 'Un undefined object cannot be mapped' );
+
+            return [ object, key ];
 
         }
 

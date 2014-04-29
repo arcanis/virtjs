@@ -3459,6 +3459,35 @@ define( [
 
             }
 
+        },
+
+        interruptions : {
+
+            RST_n : {
+
+                command : function RST_n( ) {
+
+                    this.push( engine.environment.pc[ 0 ] );
+
+                    engine.environment.pc[ 0 ] = parameters[ 0 ];
+
+                    return 4;
+
+                },
+
+                debug : function ( address ) {
+
+                    return {
+                        size : 1,
+                        label : 'rst ' + [
+                            Virtjs.FormatUtil.hexadecimal( parameters[ 0 ], 8 )
+                        ].join( ', ' )
+                    };
+
+                }
+
+            }
+
         }
 
     };

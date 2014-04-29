@@ -24,24 +24,6 @@ define( [
 
             this._scanline = new Uint16Array( 160 );
 
-            // Creates all the mappers now, avoiding garbage collection
-
-            this._settingsMapper       = [ this._settingsAccess.bind( this ),          null ];
-            this._lcdStatusMapper      = [ this._lcdStatusAccess.bind( this ),         null ];
-            this._scrollXMapper        = [ this._scrollAccess.bind( this, 0 ),         null ];
-            this._scrollYMapper        = [ this._scrollAccess.bind( this, 1 ),         null ];
-            this._lineMapper           = [ this._lineAccess.bind( this ),              null ];
-            this._lycMapper            = [ this._lycAccess.bind( this ),               null ];
-            this._oamDmaMapper         = [ this._oamDmaAccess.bind( this ),            null ];
-            this._bgPaletteMapper      = [ this._paletteAccess.bind( this, 0 ),        null ];
-            this._sprite1PaletteMapper = [ this._paletteAccess.bind( this, 1 ),        null ];
-            this._sprite2PaletteMapper = [ this._paletteAccess.bind( this, 2 ),        null ];
-            this._windowXMapper        = [ this._windowPositionAccess.bind( this, 0 ), null ];
-            this._windowYMapper        = [ this._windowPositionAccess.bind( this, 1 ), null ];
-
-            this._oamMapper  = [ this._oamAccess.bind( this ),  null ];
-            this._vramMapper = [ this._vramAccess.bind( this ), null ];
-
         },
 
         setup : function ( ) {
@@ -68,119 +50,132 @@ define( [
 
         },
 
+        reclock : function ( time ) {
+
+            this._states.reclock( time );
+
+            this._states.step( 0 );
+
+        },
+
         settingsMapping : function ( address ) {
 
             if ( address === 0x00 )
-                return this._settingsMapper;
+                return Virtjs.MemoryUtil.accessor( this._settingsAccess, this );
 
             if ( address === 0x01 )
-                return this._lcdStatusMapper;
+                return Virtjs.MemoryUtil.accessor( this._lcdStatusAccess, this );
 
             if ( address === 0x02 )
-                return this._scrollYMapper;
+                return Virtjs.MemoryUtil.accessor( this._scrollAccess, this, 1 );
 
             if ( address === 0x03 )
-                return this._scrollXMapper;
+                return Virtjs.MemoryUtil.accessor( this._scrollAccess, this, 0 );
 
             if ( address === 0x04 )
-                return this._lineMapper;
+                return Virtjs.MemoryUtil.accessor( this._lineAccess, this );
 
             if ( address === 0x05 )
-                return this._lycMapper;
+                return Virtjs.MemoryUtil.accessor( this._lycAccess, this );
 
             if ( address === 0x06 )
-                return this._oamDmaMapper;
+                return Virtjs.MemoryUtil.accessor( this._oamDmaAccess, this );
 
             if ( address === 0x07 )
-                return this._bgPaletteMapper;
+                return Virtjs.MemoryUtil.accessor( this._paletteAccess, this, 0 );
 
             if ( address === 0x08 )
-                return this._sprite1PaletteMapper;
+                return Virtjs.MemoryUtil.accessor( this._paletteAccess, this, 1 );
 
             if ( address === 0x09 )
-                return this._sprite2PaletteMapper;
+                return Virtjs.MemoryUtil.accessor( this._paletteAccess, this, 2 );
 
             if ( address === 0x0A )
-                return this._windowYMapper;
+                return Virtjs.MemoryUtil.accessor( this._windowPositionAccess, this, 1 );
 
             if ( address === 0x0B )
-                return this._windowXMapper;
+                return Virtjs.MemoryUtil.accessor( this._windowPositionAccess, this, 0 );
 
-            return [ Virtjs.MemoryUtil.unaddressable( 16 ), address ];
+            return Virtjs.MemoryUtil.unaddressable( address, 16 );
 
         },
 
         oamMapping : function ( address ) {
 
-            this._oamMapper[ 1 ] = address;
-
-            return this._oamMapper;
+            return Virtjs.MemoryUtil.accessor( this._oamAccess, this, address );
 
         },
 
         vramMapping : function ( address ) {
 
-            this._vramMapper[ 1 ] = address;
-
-            return this._vramMapper;
+            return Virtjs.MemoryUtil.accessor( this._vramAccess, this, address );
 
         },
 
-        _settingsAccess : function ( address, value ) {
+        _settingsAccess : function ( value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._packSettings( );
-
-            this._unpackSettings( value );
+            } else {
+                this._unpackSettings( value );
+            }
 
         },
 
-        _scrollAccess : function ( index, address, value ) {
+        _scrollAccess : function ( index, value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._engine.environment.gpuScrolls[ index ];
-
-            this._engine.environment.gpuScrolls[ index ] = value;
+            } else {
+                this._engine.environment.gpuScrolls[ index ] = value;
+            }
 
         },
 
-        _windowPositionAccess : function ( index, address, value ) {
+        _windowPositionAccess : function ( index, value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._engine.environment.gpuWindowPosition[ index ];
-
-            this._engine.environment.gpuWindowPosition[ index ] = value;
+            } else {
+                this._engine.environment.gpuWindowPosition[ index ] = value;
+            }
 
         },
 
-        _lcdStatusAccess : function ( address, value ) {
+        _lcdStatusAccess : function ( value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._packLcdStatus( );
-
-            this._engine.environment.gpuInterrupts = value & 0x78;
-
-        },
-
-        _lineAccess : function ( address, value, user ) {
-
-            if ( typeof value === 'undefined' )
-                return this._engine.environment.gpuLine;
-
-            throw new Error( 'Invalid write at ' + Virtjs.FormatUtil.address( user, 16 ) );
+            } else {
+                this._engine.environment.gpuInterrupts = value & 0x78;
+            }
 
         },
 
-        _lycAccess : function ( address, value ) {
+        _lineAccess : function ( value, user ) {
 
-            if ( typeof value === 'undefined' )
+            // READ ONLY
+
+            if ( typeof value !== 'undefined' )
+                throw new Error( 'Invalid write at ' + Virtjs.FormatUtil.address( user, 16 ) );
+
+            return this._engine.environment.gpuLine;
+
+        },
+
+        _lycAccess : function ( value ) {
+
+            if ( typeof value === 'undefined' ) {
                 return this._engine.environment.gpuLyCompare;
-
-            this._engine.environment.gpuLyCompare = value;
+            } else {
+                this._engine.environment.gpuLyCompare = value;
+            }
 
         },
 
-        _oamDmaAccess : function ( address, value, user ) {
+        _oamDmaAccess : function ( value, user ) {
+
+            // WRITE ONLY
 
             if ( typeof value === 'undefined' )
                 throw new Error( 'Invalid read at ' + Virtjs.FormatUtil.address( user, 16 ) );
@@ -194,35 +189,42 @@ define( [
 
         },
 
-        _paletteAccess : function ( index, address, value ) {
+        _paletteAccess : function ( index, value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._packPalette( index );
-
-            this._unpackPalette( index, value );
+            } else {
+                this._unpackPalette( index, value );
+            }
 
         },
 
         _oamAccess : function ( address, value, user ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
+
                 return this._engine.environment.oam[ address ];
 
-            if ( ! this._engine.environment.gpuLCDFeature || this._engine.environment.gpuMode === 0x00 || this._engine.environment.gpuMode === 0x01 ) {
+            } else if ( ! this._engine.environment.gpuLCDFeature || this._engine.environment.gpuMode === 0x00 || this._engine.environment.gpuMode === 0x01 ) {
+
                 this._engine.environment.oam[ address ] = value;
                 this._updateSprite( address );
+
             }
 
         },
 
         _vramAccess : function ( address, value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
+
                 return this._engine.environment.vram[ address ];
 
-            if ( ! this._engine.environment.gpuLCDFeature || this._engine.environment.gpuMode !== 0x03 ) {
+            } else if ( ! this._engine.environment.gpuLCDFeature || this._engine.environment.gpuMode !== 0x03 ) {
+
                 this._engine.environment.vram[ address ] = value;
                 this._updateTile( address );
+
             }
 
         },
@@ -369,7 +371,8 @@ define( [
 
             this._engine.environment.pendingInterrupts |= 0x01;
 
-            this._engine._options.screen.flushScreen( );
+            if ( ! this._engine._disableFlush )
+                this._engine._options.screen.flushScreen( );
 
             this._engine._continue = false;
 

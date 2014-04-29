@@ -24,13 +24,17 @@ define( [
             this._engine.environment.mbc1RomBank = 0x01;
             this._engine.environment.mbc1RamBank = 0x00;
 
-            this._romBank00 = new Uint8Array( this._engine.environment.rom.buffer, 0x0000, 0x4000 );
+            this._romBanks = [ ];
+            for ( var romBank = 0; romBank * 0x4000 < this._engine.environment.rom.buffer.byteLength; ++ romBank )
+                this._romBanks[ romBank ] = new Uint8Array( this._engine.environment.rom.buffer, romBank * 0x4000, 0x4000 );
+
+            this._ramBanks = [ ];
+            for ( var ramBank = 0; ramBank * 0x2000 < this._engine.environment.mbc1Ram.buffer.byteLength; ++ ramBank )
+                this._ramBanks[ ramBank ] = new Uint8Array( this._engine.environment.mbc1Ram.buffer, ramBank * 0x2000, 0x2000 );
+
+            this._romBank00 = this._romBanks[ 0x00 ];
             this._romBankNN = null;
             this._ramBankNN = null;
-
-            this._romBank00Map = [ this._romBank00Access.bind( this ), null ];
-            this._romBankNNMap = [ this._romBankNNAccess.bind( this ), null ];
-            this._ramBankNNMap = [ this._ramBankNNAccess.bind( this ), null ];
 
             this._rebank( );
 
@@ -39,23 +43,16 @@ define( [
         romMapping : function ( address ) {
 
             if ( address < 0x4000 ) {
-
-                this._romBank00Map[ 1 ] = address;
-                return this._romBank00Map;
-
+                return Virtjs.MemoryUtil.accessor( this._romBank00Access, this, address );
             } else {
-
-                this._romBankNNMap[ 1 ] = address - 0x4000;
-                return this._romBankNNMap;
-
+                return Virtjs.MemoryUtil.accessor( this._romBankNNAccess, this, address - 0x4000 );
             }
 
         },
 
         ramMapping : function ( address ) {
 
-            this._ramBankNNMap[ 1 ] = address;
-            return this._ramBankNNMap;
+            return Virtjs.MemoryUtil.accessor( this._ramBankNNAccess, this, address );
 
         },
 
@@ -72,8 +69,8 @@ define( [
                 romBank &= 0x1F;
             }
 
-            this._romBankNN = new Uint8Array( this._engine.environment.rom.buffer, romBank * 0x4000, 0x4000 );
-            this._ramBankNN = new Uint8Array( this._engine.environment.mbc1Ram.buffer, ramBank * 0x2000, 0x2000 );
+            this._romBankNN = this._romBanks[ romBank ];
+            this._ramBankNN = this._ramBanks[ ramBank ];
 
         },
 

@@ -6,15 +6,13 @@ define( [
 
 ], function ( Virtjs ) {
 
+    var frequencies = { 0 : 1, 1 : 64, 2 : 16, 3 : 4 };
+
     return Virtjs.ClassUtil.extend( {
 
         initialize : function ( engine ) {
 
             this._engine = engine;
-
-            // Bind mappers in order to keep the context when passing them around
-            this._dividerMapper_ = this._dividerMapper.bind( this );
-            this._controlMapper_ = this._controlMapper.bind( this );
 
         },
 
@@ -43,12 +41,7 @@ define( [
 
         step : function ( time ) {
 
-            this._buffers[ 0 ] += time * 4 * 4;
-
-            while ( this._buffers[ 0 ] >= 4 ) {
-                this._buffers[ 0 ] -= 4;
-                this._clocks[ 0 ] += 1;
-            }
+            this._clocks[ 0 ] += time * 4;
 
             if ( ! this._enableTimer )
                 return ;
@@ -69,48 +62,50 @@ define( [
         timerMapping : function ( address ) {
 
             if ( address === 0x00 )
-                return [ this._dividerMapper_, address ];
+                return Virtjs.MemoryUtil.accessor( this._dividerAccess, this );
 
             if ( address === 0x01 )
-                return [ this._clocks, 1 ];
+                return Virtjs.MemoryUtil.plainOldData( this._clocks, this, 1 );
 
             if ( address === 0x02 )
-                return [ this._counterLimits, 0 ];
+                return Virtjs.MemoryUtil.plainOldData( this._counterLimits, this, 0 );
 
             if ( address === 0x03 )
-                return [ this._controlMapper_, address ];
+                return Virtjs.MemoryUtil.accessor( this._controlAccess, this );
 
-            return [ Virtjs.MemoryUtil.unadressable( 16 ), address ];
+            return Virtjs.MemoryUtil.unadressable( address, 16 );
 
         },
 
-        _dividerMapper : function ( address, value ) {
+        _dividerAccess : function ( value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
                 return this._clocks[ 0 ];
-
-            this._clocks[ 0 ] = 0;
-
-            return undefined;
+            } else {
+                this._clocks[ 0 ] = 0;
+            }
 
         },
 
-        _controlMapper : function ( address, value ) {
+        _controlAccess : function ( value ) {
 
-            if ( typeof value === 'undefined' )
+            if ( typeof value === 'undefined' ) {
+
                 return this._flags[ 0 ];
 
-            this._flags[ 0 ] = value;
-            this._unpackFlags( value );
+            } else {
 
-            return undefined;
+                this._flags[ 0 ] = value;
+                this._unpackFlags( value );
+
+            }
 
         },
 
         _unpackFlags : function ( value ) {
 
             this._enableTimer = !! ( value & 4 );
-            this._counterLimits[ 1 ] = ( { 0 : 1, 1 : 64, 2 : 16, 3 : 4 } )[ value & 3 ];
+            this._counterLimits[ 1 ] = frequencies[ value & 3 ];
 
         }
 

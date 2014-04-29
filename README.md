@@ -4,6 +4,14 @@
 
 > Virt.js is a library designed to easily emulate various architectures using a common Javascript API. These emulators can be plugged to multiple input and output devices.
 
+## Why another emulation library ?
+
+Actually, there isn't any JS emulation library (yet). There is a lot of proof-of-concept emulators, originally developed as applications, and a few of them have been repackaged to be npm-compatible, but as far as I know, none of them has a strong focus on its public API.
+
+Virt.js wants to fill this space by providing a consistent API to the developer. This way, any application can start manage an emulator to do various tasks, such as writing AIs, sharing demo ROM, trying new gameplay concepts, revisiting old games, ...
+
+A stretch goal is to achieve acceptable performances on mobile (at least Android).
+
 ## Requirements
 
 - [Typed Arrays](http://caniuse.com/#feat=typedarrays)

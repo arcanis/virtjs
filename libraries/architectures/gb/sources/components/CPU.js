@@ -60,11 +60,11 @@ define( [
                         return this._engine.environment[ specialization[ 1 ] ];
                     }.bind( this ) ) };
 
-                    // We copy each method of the original instruction, recompiling it with the preprocessor then binding it onto the CPU
+                    // We copy each method of the original instruction, recompiling it with the preprocessor then binding it onto the CPU with fastBind
 
                     var instruction = Object.keys( definition ).reduce( function ( newDefinition, method ) {
                         Virtjs.ReflectionUtil.resetScope( newDefinition, method, definition[ method ], resolvedArguments );
-                        newDefinition[ method ] = newDefinition[ method ].bind( this );
+                        newDefinition[ method ] = Virtjs.FunctionUtil.fastBind( newDefinition[ method ], this );
                         return newDefinition;
                     }.bind( this ), { } );
 
@@ -81,11 +81,6 @@ define( [
 
             }.bind( this ) );
 
-            // Creates all the mappers now, avoiding garbage collection
-
-            this._enabledInterruptsMapper = [ this._engine.environment, 'enabledInterrupts' ];
-            this._pendingInterruptsMapper = [ this._engine.environment, 'pendingInterrupts' ];
-
         },
 
         step : function step( ) {
@@ -101,8 +96,11 @@ define( [
 
                 // The halt doesn't execute the instruction, but otherwise it's pretty much the same
 
-                this._engine.gpu.step( 1 );
-                this._engine.timer.step( 1 );
+                var time = this._calculateHaltPeriod( );
+
+                var time = 1;
+                this._engine.gpu.step( time );
+                this._engine.timer.step( time );
 
             } else {
 
@@ -139,57 +137,40 @@ define( [
             var pendingInterrupts = this._engine.environment.pendingInterrupts;
             var firedInterrupts = pendingInterrupts & enabledInterrupts;
 
-            if ( firedInterrupts ) {
+            if ( ! firedInterrupts )
+                return ;
 
-                // An enabled interrupt will always wake up the engine
+            // An enabled interrupt will always wake up the engine
 
-                this._engine.environment.cpuStop = false;
-                this._engine.environment.cpuHalt = false;
-
-            }
+            this._engine.environment.cpuStop = false;
+            this._engine.environment.cpuHalt = false;
 
             // However, an interrupt will not always be triggered (the IME flag may be false)
 
-            if ( this._engine.environment.cpuInterruptFeature && firedInterrupts ) {
+            if ( ! this._engine.environment.cpuInterruptFeature )
+                return ;
 
-                // Triggering an interrupt silences the IME flag
+            // Triggering an interrupt silences the IME flag
 
-                this._engine.environment.cpuInterruptFeature = false;
+            this._engine.environment.cpuInterruptFeature = false;
 
-                // If multiple interrupts should trigger at the same time (multiple bits set), only the first one is executed
+            // If multiple interrupts should trigger at the same time (multiple bits set), only the first one is executed
 
-                if ( firedInterrupts & 0x01 ) {
+            for ( var bit = 0; bit < 5; ++ bit ) {
 
-                    this._engine.environment.pendingInterrupts &= 0x01 ^ 0xFF;
-                    var time = this._instructionSets.unprefixed[ 'RST_n:0x40' ].command.call( this );
+                var mask = 1 << bit;
 
-                } else if ( firedInterrupts & 0x02 ) {
-
-                    this._engine.environment.pendingInterrupts &= 0x02 ^ 0xFF;
-                    var time = this._instructionSets.unprefixed[ 'RST_n:0x48' ].command.call( this );
-
-                } else if ( firedInterrupts & 0x04 ) {
-
-                    this._engine.environment.pendingInterrupts &= 0x04 ^ 0xFF;
-                    var time = this._instructionSets.unprefixed[ 'RST_n:0x50' ].command.call( this );
-
-                } else if ( firedInterrupts & 0x10 ) {
-
-                    this._engine.environment.pendingInterrupts &= 0x10 ^ 0xFF;
-                    var time = this._instructionSets.unprefixed[ 'RST_n:0x60' ].command.call( this );
-
-                } else {
-
-                    // throw new Error( 'Unimplemented interrupt(s)' );
-
+                if ( firedInterrupts & mask ) {
+                    break ;
                 }
 
-                // Don't forget to update the GPU & timer to process the new execution time
-
-                this._engine.gpu.step( time );
-                this._engine.timer.step( time );
-
             }
+
+            this._engine.environment.pendingInterrupts -= mask;
+            var interruptionTime = this._opcodeMaps.interruptions[ bit ].call( this );
+
+            this._engine.gpu.step( time );
+            this._engine.timer.step( time );
 
         },
 
@@ -233,6 +214,31 @@ define( [
             this._engine.environment.sp[ 0 ] += 2;
 
             return value;
+
+        },
+
+        // This function is a clever trick found in GameBoy-Online and adapted here.
+        // Its goal is to detect the number of cycles until the next interruption. This way, we don't have to trigger the elements too much.
+
+        _calculateHaltPeriod : function ( ) {
+
+            if ( this._engine.environment.gpuLCDFeature ) {
+
+                // VRAM interruption
+
+                if ( this._engine.environment.enabledInterrupts & 0x01 ) {
+
+                    var interrupt01Period = this._engine.environment.gpuMode !== 0x01
+                        ? 144 * 114 - this._engine.environment.gpuFrameClock
+                        : 298 * 114 - this._engine.environment.gpuFrameClock;
+
+                    return interrupt01Period;
+
+                }
+
+            }
+
+            throw new Error( );
 
         }
 

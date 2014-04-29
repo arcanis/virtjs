@@ -65,7 +65,9 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
                         timer : timer,
                         data : data,
 
-                        skipBios : true
+                        skipBios : true,
+
+                        iterationCountPerFrame : 2
 
                     } );
 

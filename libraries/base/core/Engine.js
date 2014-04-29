@@ -18,6 +18,8 @@ define( [
             this._setStatus( 'stopped' );
             this._waiting = false;
 
+            this._nextTick_ = this._nextTick.bind( this );
+
         },
 
         load : function ( ) {
@@ -102,11 +104,11 @@ define( [
 
             } else {
 
+                this._options.timer.nextTick( this._nextTick_ );
+
                 this.step( );
 
                 this._waiting = true;
-
-                this._options.timer.nextTick( this._nextTick.bind( this ) );
 
             }
 

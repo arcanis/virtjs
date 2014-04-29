@@ -44,6 +44,7 @@ define( [
 
             Virtjs.DebugUtil.preprocessFunction( this, '_load', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'step', this._options );
+            Virtjs.DebugUtil.preprocessFunction( this, 'setIterationCountPerFrame', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, 'setMaxSubIterations', this._options );
             Virtjs.DebugUtil.preprocessFunction( this, '_setupEnvironment', this._options );
 
@@ -71,18 +72,39 @@ define( [
 
         step : function ( ) {
 
-            this._continue = true;
-
             // If the user has specified a `maxSubIterations` option, we prevent the CPU from running more than this number in a single pass.
-            // In order to get an optimized execution path, this function will be preprocessed in order to remove unneeded branches.
 
             if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations !== 'undefined' ) {
+
+                this._continue = true;
 
                 for ( var t = 0; this._status === 'running' && this._continue && t < this._options.maxSubIterations; ++ t ) {
                     this.cpu.step( );
                 }
 
+            // If the user has specified a `iterationCountPerFrame` option, we execute this number of iterations at each frame (ie. will run until <N> vblank)
+
+            } else if ( typeof preprocess !== 'undefined' && typeof preprocess.iterationCountPerFrame !== 'undefined' ) {
+
+                this._disableFlush = true;
+
+                for ( var t = 0, T = this._options.iterationCountPerFrame; t < T && this._status === 'running'; ++ t ) {
+
+                    this._continue = true;
+
+                    while ( this._status === 'running' && this._continue ) {
+                        this.cpu.step( );
+                    }
+
+                }
+
+                this._options.screen.flushScreen( );
+
+            // Finally, in a default case, the emulator will execute a single iteration (ie. will run until vblank)
+
             } else {
+
+                this._continue = true;
 
                 while ( this._status === 'running' && this._continue ) {
                     this.cpu.step( );
@@ -130,9 +152,18 @@ define( [
         setMaxSubIterations : function ( maxSubIterations ) {
 
             if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations === 'undefined' )
-                throw new Error( 'Cannot change the max sub iteration number of this engine - please set maxSubIterations to non-nil at creation' );
+                throw new Error( 'Cannot change the sub iteration limit of this engine - please set maxSubIterations to non-nil at creation' );
 
             this._options.maxSubIterations = maxSubIterations;
+
+        },
+
+        setIterationCountPerFrame : function ( iterationCountPerFrame ) {
+
+            if ( typeof preprocess !== 'undefined' && typeof preprocess.iterationCountPerFrame === 'undefined' )
+                throw new Error( 'Cannot change the iteration count per frame of this engine - please set iterationCountPerFrame to non-nil at creation' );
+
+            this._options.iterationCountPerFrame = iterationCountPerFrame;
 
         },
 

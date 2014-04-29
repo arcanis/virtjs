@@ -42,6 +42,25 @@
             this._options = options || { };
 
             this._canvas = this._options.element || document.createElement( 'canvas' );
+
+            this._canvas.addEventListener( 'webglcontextlost', function ( ) {
+                this._context = null;
+            }.bind( this ) );
+
+            this._canvas.addEventListener( 'webglcontextrestored', function ( ) {
+                this._setupContext( );
+                this.setOutputSize( this._canvas.width, this._canvas.height );
+            }.bind( this ) );
+
+            this._setupContext( );
+
+            // Expose the canvas
+            this.canvas = this._canvas;
+
+        },
+
+        _setupContext : function ( ) {
+
             this._context = this._canvas.getContext( 'webgl', { antialias : true } ) || this._canvas.getContext( 'experimental-webgl' );
 
             this._context.clearColor( 0.0, 0.0, 0.0, 0.0);
@@ -58,9 +77,6 @@
             this._vertexIndexBuffer = this._createBuffer( this._context.ELEMENT_ARRAY_BUFFER, 4, new Uint16Array( [ 0, 1, 3, 2 ] ) );
 
             this._linkShaders( this._fragmentShader, this._vertexShader );
-
-            // Expose the canvas
-            this.canvas = this._canvas;
 
         },
 
@@ -80,7 +96,8 @@
             this._canvas.width = width;
             this._canvas.height = height;
 
-            this._context.viewport( 0, 0, this._canvas.width, this._canvas.height );
+            if ( this._context ) // No error when context lost
+                this._context.viewport( 0, 0, this._canvas.width, this._canvas.height );
 
             this._updateViewport( );
 
@@ -177,6 +194,9 @@
 
         _updateViewport : function ( ) {
 
+            if ( ! this._context )
+                return ; // No error in context lost
+
             var widthRatio = this._canvas.width / this._width;
             var heightRatio = this._canvas.height / this._height;
 
@@ -192,6 +212,9 @@
         },
 
         _draw : function ( ) {
+
+            if ( ! this._context )
+                return ; // No error in context lost
 
             this._context.clear( this._context.COLOR_BUFFER_BIT | this._context.DEPTH_BUFFER_BIT );
 

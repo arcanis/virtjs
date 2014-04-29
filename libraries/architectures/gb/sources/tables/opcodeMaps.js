@@ -6,6 +6,16 @@ define( [
 
     return {
 
+        interruptions : [
+
+            'RST_n:0x40',
+            'RST_n:0x48',
+            'RST_n:0x50',
+            'RST_n:0x60',
+            null
+
+        ],
+
         unprefixed : [
 
             // 00
@@ -294,14 +304,7 @@ define( [
             null,
             null,
             'CP_n',
-            'RST_n:0x38',
-
-            // INTERNAL USE EXCLUSIVES
-
-            'RST_n:0x40',
-            'RST_n:0x48',
-            'RST_n:0x50',
-            'RST_n:0x60'
+            'RST_n:0x38'
 
         ],
 
