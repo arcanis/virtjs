@@ -8,18 +8,20 @@
 
 Actually, there isn't any JS emulation library (yet). There is a lot of proof-of-concept emulators, originally developed as applications, and a few of them have been repackaged to be npm-compatible, but as far as I know, none of them has a strong focus on its public API.
 
-Virt.js wants to fill this space by providing a consistent API to the developer. This way, any application can start manage an emulator to do various tasks, such as writing AIs, sharing demo ROM, trying new gameplay concepts, revisiting old games, ...
+Virt.js wants to fill this space by providing a consistent and convenient API to the developers. This way, new kind of applications can be made, using emulators for various purposes, such as writing AIs, sharing homebrews, trying new gameplay concepts on old games, ...
 
 A stretch goal is to achieve acceptable performances on mobile (at least Android).
 
-## Requirements
+## Supported architectures
 
-- [Typed Arrays](http://caniuse.com/#feat=typedarrays)
+- Game Boy (many thanks to the [#gbdev @EFnet](irc://irc.efnet.pl/#gbdev) irc network)
+    * Performances are fine, but not enough. I would like to achieve the same than on [GameBoy-Online](https://github.com/grantgalitz/GameBoy-Online/)
+    * Some cartridge types are not supported yet
+    * Sound is missing, I could need help here
+    * Have to find a way to automate testing
 
-## Current architectures
-
-- Game Boy
+- More to come after completing the listed goals
 
 ## Maintainer
 
-Virt.js is maintained by Maël Nison ([@arcanis](https://twitter.com/arcanis)).
+Virt.js is maintained by Maël Nison ([@arcanis](https://twitter.com/arcanis) on Twitter).
