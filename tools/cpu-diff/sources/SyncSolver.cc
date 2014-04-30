@@ -4,6 +4,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 #include "PartSet.hh"
 #include "Stream.hh"
@@ -25,16 +26,31 @@ SyncSolver::SyncSolver( Stream & data, Stream & control )
 
 bool SyncSolver::readParts( Stream & stream, PartSet & destination )
 {
-    do {
+fetchLine:
 
-        String line;
+    String line, comment;
 
-        if ( ! stream.readLine( line ) )
-            return false;
+    if ( ! stream.readLine( line ) )
+        return false;
 
-        boost::algorithm::split( destination, line, boost::algorithm::is_any_of( " " ) );
+    auto commentOffset = line.find_first_of( "#" );
+    if ( commentOffset != String::npos ) {
+        comment = line.substr( commentOffset + 1 );
+        line = line.substr( 0, commentOffset );
+    }
 
-    } while ( std::find( m_ExclusionList.begin( ), m_ExclusionList.end( ), destination[ 1 ] ) != m_ExclusionList.end( ) );
+    boost::trim( line );
+    boost::trim( comment );
+
+    if ( line.empty( ) )
+        goto fetchLine;
+
+    boost::algorithm::split( destination, line, boost::algorithm::is_any_of( " " ) );
+
+    if ( std::find( m_ExclusionList.begin( ), m_ExclusionList.end( ), destination[ 1 ] ) != m_ExclusionList.end( ) )
+        goto fetchLine;
+
+    destination.push_back( comment );
 
     return true;
 }

@@ -51,7 +51,12 @@ void DiffFinder::desynced( int index, PartSet const & data, PartSet const & cont
 
 void DiffFinder::compare( int index, PartSet const & data, PartSet const & control )
 {
-    bool isSame = data.size( ) == control.size( ) && std::equal( data.begin( ), data.end( ), control.begin( ) );
+    PartSet uncommentedData = data;
+    uncommentedData.pop_back( );
+    PartSet uncommentedControl = control;
+    uncommentedControl.pop_back( );
+
+    bool isSame = data.size( ) == control.size( ) && std::equal( uncommentedData.begin( ), uncommentedData.end( ), uncommentedControl.begin( ) );
 
     std::ostringstream prefixGenerator;
     prefixGenerator << std::setw( 10 ) << index;

@@ -43,7 +43,8 @@ void DiffBlock::printDiff( String const & prefix, PartSet const & data, PartSet 
 
     while ( dataIt != data.end( ) ) {
 
-        if ( controlIt == control.end( ) || * dataIt != * controlIt ) {
+        // The last element of a PartSet is the comment, which should not be diff-colored
+        if ( std::next( dataIt ) != data.end( ) && ( controlIt == control.end( ) || * dataIt != * controlIt ) ) {
             coloredData.push_back( color + * dataIt + NORMAL );
         } else {
             coloredData.push_back( * dataIt );
