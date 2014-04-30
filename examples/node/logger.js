@@ -46,7 +46,9 @@ engine.cpu.on( 'instruction', function ( e ) {
         'bc:' + Virtjs.FormatUtil.hexadecimal( engine.environment.bc[ 0 ], 16 ),
         'de:' + Virtjs.FormatUtil.hexadecimal( engine.environment.de[ 0 ], 16 ),
         'hl:' + Virtjs.FormatUtil.hexadecimal( engine.environment.hl[ 0 ], 16 ),
-        'sp:' + Virtjs.FormatUtil.hexadecimal( engine.environment.sp[ 0 ], 16 )
+        'sp:' + Virtjs.FormatUtil.hexadecimal( engine.environment.sp[ 0 ], 16 ),
+        '## ' + Virtjs.FormatUtil.string( engine.disassembleAt( e.address ).label, 20, true ),
+        'clock:' + engine.timer._clocks[ 1 ]
     ].join( ' ' ) );
 
 } );

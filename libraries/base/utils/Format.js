@@ -27,6 +27,28 @@ define( [
 
         },
 
+        string : function ( str, size, leftAligned ) {
+
+            str = str.toString( );
+
+            if ( typeof size === 'undefined' )
+                return str;
+
+            if ( typeof leftAligned === 'undefined' )
+                leftAligned = true;
+
+            for ( var t = str.length; t < size; ++ t ) {
+                if ( leftAligned ) {
+                    str += ' ';
+                } else {
+                    str = ' ' + str;
+                }
+            }
+
+            return str;
+
+        },
+
         address : function ( address, bits ) {
 
             if ( isNaN( address ) )
