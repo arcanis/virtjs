@@ -6,7 +6,8 @@ define( [
 
 ], function ( Virtjs ) {
 
-    var frequencies = { 0 : 1, 1 : 64, 2 : 16, 3 : 4 };
+    // Frequencies used by the TIMA register
+    var frequencies = { 0 : 1024, 1 : 16, 2 : 64, 3 : 256 };
 
     return Virtjs.ClassUtil.extend( {
 
@@ -19,10 +20,9 @@ define( [
         setup : function ( ) {
 
             // Clock buffers
-            //  - #0 : Base clock buffer
-            //  - #1 : Divider buffer
-            //  - #3 : Counter buffer
-            this._buffers = new Uint8Array( 4 );
+            //  - #0 : Divider buffer
+            //  - #1 : Counter buffer
+            this._buffers = [ 0, 0, 0 ];
 
             // Timers
             //  - #0 : Divider clock
@@ -41,20 +41,63 @@ define( [
 
         step : function ( time ) {
 
-            this._clocks[ 0 ] += time * 4;
+            this._buffers[ 0 ] += time * 4;
+
+            while ( this._buffers[ 0 ] >= 256 ) {
+
+                this._buffers[ 0 ] -= 256;
+                this._clocks[ 0 ] += 1;
+
+            }
 
             if ( ! this._enableTimer )
                 return ;
 
-            this._buffers[ 1 ] += time * 4 * 4;
+            this._buffers[ 1 ] += time * 4;
 
-            while ( this._buffers[ 1 ] >= this._counterLimits[ 1 ] ) {
-                this._buffers[ 1 ] -= this._counterLimits[ 1 ];
+            var frequency = frequencies[ this._counterLimits[ 1 ] ];
+
+            while ( this._buffers[ 1 ] >= frequency ) {
+
+                this._buffers[ 1 ] -= frequency;
                 this._clocks[ 1 ] += 1;
+
                 if ( this._clocks[ 1 ] === 0 ) {
                     this._clocks[ 1 ] = this._counterLimits[ 0 ];
                     this._engine.environment.pendingInterrupts |= 0x04;
                 }
+
+            }
+
+        },
+
+        oldStep : function ( time ) {
+
+            this._buffers[ 0 ] += time;
+
+            if ( this._buffers[ 0 ] >= 4 ) {
+
+                this._buffers[ 0 ] -= 4;
+
+                this._buffers[ 1 ] += 1;
+
+                if ( this._buffers[ 1 ] === 16 ) {
+                    this._clocks[ 0 ] += 1;
+                    this._buffers[ 1 ] = 0;
+                }
+
+                if ( this._enableTimer )
+                    this._buffers[ 2 ] += 1;
+
+                if ( this._buffers[ 2 ] === this._counterLimits[ 1 ] ) {
+                    this._clocks[ 1 ] += 1;
+                    this._buffers[ 2 ] = 0;
+                    if ( this._clocks[ 1 ] === 0 ) {
+                        this._clocks[ 1 ] = this._counterLimits[ 0 ];
+                        this._engine.environment.pendingInterrupts |= 0x04;
+                    }
+                }
+
             }
 
         },
@@ -65,10 +108,10 @@ define( [
                 return Virtjs.MemoryUtil.accessor( this._dividerAccess, this );
 
             if ( address === 0x01 )
-                return Virtjs.MemoryUtil.plainOldData( this._clocks, this, 1 );
+                return Virtjs.MemoryUtil.plainOldData( this._clocks, 1 );
 
             if ( address === 0x02 )
-                return Virtjs.MemoryUtil.plainOldData( this._counterLimits, this, 0 );
+                return Virtjs.MemoryUtil.plainOldData( this._counterLimits, 0 );
 
             if ( address === 0x03 )
                 return Virtjs.MemoryUtil.accessor( this._controlAccess, this );
@@ -90,22 +133,26 @@ define( [
         _controlAccess : function ( value ) {
 
             if ( typeof value === 'undefined' ) {
-
-                return this._flags[ 0 ];
-
+                return this._packFlags( );
             } else {
-
-                this._flags[ 0 ] = value;
                 this._unpackFlags( value );
-
             }
+
+        },
+
+        _packFlags : function ( ) {
+
+            return (
+                ( this._enableTimer ? 1 << 2 : 0 ) |
+                ( this._counterLimits[ 1 ] )
+            );
 
         },
 
         _unpackFlags : function ( value ) {
 
             this._enableTimer = !! ( value & 4 );
-            this._counterLimits[ 1 ] = frequencies[ value & 3 ];
+            this._counterLimits[ 1 ] = value & 3;
 
         }
 
