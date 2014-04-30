@@ -69,6 +69,9 @@ define( [
                 romBank &= 0x1F;
             }
 
+            if ( ( romBank & 0x1F ) === 0 )
+                romBank += 1;
+
             this._romBankNN = this._romBanks[ romBank ];
             this._ramBankNN = this._ramBanks[ ramBank ];
 
@@ -87,9 +90,6 @@ define( [
 
                 this._engine.environment.mbc1RomBank &= 0x60;
                 this._engine.environment.mbc1RomBank |= ( value & 0x1F ) << 0;
-
-                if ( ( this._engine.environment.mbc1RomBank & 0x1F ) === 0 )
-                    this._engine.environment.mbc1RomBank += 1;
 
                 this._rebank( );
 

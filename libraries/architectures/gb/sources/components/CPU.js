@@ -222,6 +222,8 @@ define( [
 
         _calculateHaltPeriod : function ( ) {
 
+            return ;
+
             if ( this._engine.environment.gpuLCDFeature ) {
 
                 // VRAM interruption

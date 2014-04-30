@@ -150,9 +150,14 @@ define( [
             if ( ! this._engine.environment.mmuBiosLocked && address === 0xFF50 )
                 return Virtjs.MemoryUtil.accessor( this._biosLockAccess, this );
 
-            // [GPU] GPU binding [0xFF40;0xFF80[
+            // [IO]  Miscellaneous / Unused registers [0xFF70;0xFF80[
 
-            if ( address >= 0xFF40 && address < 0xFF80 )
+            if ( address >= 0xFF70 && address < 0xFF80 )
+                return Virtjs.MemoryUtil.immutable( 0x00 );
+
+            // [GPU] GPU binding [0xFF40;0xFF70[
+
+            if ( address >= 0xFF40 && address < 0xFF70 )
                 return this._engine.gpu.settingsMapping( address - 0xFF40 );
 
             // [SND] Sound binding [0xFF10;0xFF30[

@@ -96,6 +96,12 @@ define( [
             if ( address === 0x0B )
                 return Virtjs.MemoryUtil.accessor( this._windowPositionAccess, this, 0 );
 
+            if ( address === 0x0F )
+                return Virtjs.MemoryUtil.immutable( 0x00 );
+
+            if ( address >= 0x28 && address <= 0x2B )
+                return Virtjs.MemoryUtil.immutable( 0x00 );
+
             return Virtjs.MemoryUtil.unaddressable( address, 16 );
 
         },

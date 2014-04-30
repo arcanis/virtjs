@@ -170,6 +170,10 @@ define( [
         _createRomMBC : function ( environment ) {
 
             var mbcType = environment.rom[ 0x0147 ];
+
+            if ( ! mbcTypes[ mbcType ] )
+                throw new Error( 'Unexpected MBC type (' + Virtjs.FormatUtil.hexadecimal( mbcType, 8 ) + ')' );
+
             return new ( mbcTypes[ mbcType ] )( this );
 
         },
