@@ -35,7 +35,7 @@ fetchLine:
 
     auto commentOffset = line.find_first_of( "#" );
     if ( commentOffset != String::npos ) {
-        comment = line.substr( commentOffset + 1 );
+        comment = line.substr( commentOffset );
         line = line.substr( 0, commentOffset );
     }
 

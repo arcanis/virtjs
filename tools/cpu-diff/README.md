@@ -2,6 +2,10 @@
 
     $> cpu-diff [--exclude <addresses>] <data file> <control file>
 
+## Fair Warning
+
+This utility is a debug utility. As such, it is not especially clean, nor bug-free. However, it does the work.
+
 ## Description
 
 The `cpu-diff` utility is used to compare two CPU execution logs, formatted as such :
