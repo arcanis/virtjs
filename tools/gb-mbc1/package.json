@@ -1,0 +1,9 @@
+{
+    "name": "gb-mbc3",
+    "description": "A GameBoy test rom builder",
+    "version": "0.0.1",
+
+    "dependencies": {
+        "swig": "*"
+    }
+}
