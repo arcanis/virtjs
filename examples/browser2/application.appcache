@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Generated Tue Apr 29 02:01:19 CEST 2014
+# Generated Thu May  1 14:14:43 CEST 2014
 
 CACHE:
 ../../libraries/architectures/gb/sources/bios.js
@@ -9,6 +9,7 @@ CACHE:
 ../../libraries/architectures/gb/sources/components/Timer.js
 ../../libraries/architectures/gb/sources/components/cpu/instructionSets.js
 ../../libraries/architectures/gb/sources/components/MMU.js
+../../libraries/architectures/gb/sources/components/mbc/MBC5.js
 ../../libraries/architectures/gb/sources/components/mbc/MBC1.js
 ../../libraries/architectures/gb/sources/components/mbc/Table.js
 ../../libraries/architectures/gb/sources/components/mbc/NoMBC.js

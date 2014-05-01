@@ -26,7 +26,7 @@ define( [
 
             // Set screen size
 
-            this._options.screen.setInputSize( 160, 144 );
+            this._options.devices.screen.setInputSize( 160, 144 );
 
             // No environment at the beginning - we need to load() one later on
 
@@ -98,7 +98,7 @@ define( [
 
                 }
 
-                this._options.screen.flushScreen( );
+                this._options.devices.screen.flushScreen( );
 
             // Finally, in a default case, the emulator will execute a single iteration (ie. will run until vblank)
 

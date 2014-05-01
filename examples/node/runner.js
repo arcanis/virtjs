@@ -12,17 +12,18 @@ var Timer = require( './devices/timers/Ticker' );
 // Instanciates a few input / output devices which will be used by the emulator
 
 var screen = new Screen( );
-var keyboard = new Keyboard( );
+var input = new Keyboard( );
 var timer = new Timer( );
 
 // This done, we can ask Virt.js to create an emulator based on specified options
 
 var engine = Virtjs.create( GB, {
 
-    // Customize devices
-    screen   : screen,
-    timer    : timer,
-    keyboard : keyboard,
+    devices : {
+        screen : screen,
+        timer  : timer,
+        input  : input
+    },
 
     // Directly skips the bios
     skipBios : true

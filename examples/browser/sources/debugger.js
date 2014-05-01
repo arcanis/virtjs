@@ -36,8 +36,8 @@ require( [
     var screen = new Virtjs.screen.WebGL( { element : document.querySelector( '#display canvas' ) } );
     screen.canvas.className = 'screen';
 
-    var keyboard = new Virtjs.input.Keyboard( AZERTY );
-    keyboard.listen( document.body );
+    var input = new Virtjs.input.Keyboard( AZERTY );
+    input.listen( document.body );
 
     var timer = new Virtjs.timer.RAFrame( { fpsMeter : fpsMeter } );
 
@@ -45,9 +45,11 @@ require( [
 
     var engine = window.engine = Virtjs.create( GB, {
 
-        screen   : screen,
-        timer    : timer,
-        keyboard : keyboard,
+        devices : {
+            screen : screen,
+            timer  : timer,
+            input  : input
+        },
 
         skipBios : true,
 

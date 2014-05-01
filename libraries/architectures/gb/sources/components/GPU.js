@@ -370,7 +370,7 @@ define( [
 
                 var trueColor = this._scanline[ x ] & 0xFF;
 
-                this._engine._options.screen.setPixel( x, y, trueColor, trueColor, trueColor );
+                this._engine._options.devices.screen.setPixel( x, y, trueColor, trueColor, trueColor );
 
             }
 
@@ -381,7 +381,7 @@ define( [
             this._engine.environment.pendingInterrupts |= 0x01;
 
             if ( ! this._engine._disableFlush )
-                this._engine._options.screen.flushScreen( );
+                this._engine._options.devices.screen.flushScreen( );
 
             this._engine._continue = false;
 

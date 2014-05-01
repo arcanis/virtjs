@@ -18,7 +18,7 @@ define( [
 
             // When a key is pressed, its associed bit is set to 0
 
-            this._engine._options.keyboard.on( 'keydown', function ( key ) {
+            this._engine._options.devices.input.on( 'keydown', function ( key ) {
 
                 if ( ! ( this._keys[ key & 0xF0 ] & ( key & 0x0F ) ) )
                     return ;
@@ -33,7 +33,7 @@ define( [
 
             // When a key is released, its associed bit is set to 1
 
-            this._engine._options.keyboard.on( 'keyup', function ( key ) {
+            this._engine._options.devices.input.on( 'keyup', function ( key ) {
 
                 this._keys[ key & 0xF0 ] |= key & 0x0F;
 

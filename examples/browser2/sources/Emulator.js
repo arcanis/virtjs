@@ -60,14 +60,16 @@ angular.module( 'emulator', [ 'basicAuth', 'emulatorTypes' ] )
 
                     engine = window.engine = Virtjs.create( emulatorTypes[ type ].engine, {
 
-                        screen : screen,
-                        keyboard : input,
-                        timer : timer,
-                        data : data,
+                        devices : {
+                            screen : screen,
+                            input : input,
+                            timer : timer,
+                            data : data
+                        },
 
                         skipBios : true,
 
-                        iterationCountPerFrame : 2
+                        iterationCountPerFrame : 1
 
                     } );
 

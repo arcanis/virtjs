@@ -7,22 +7,23 @@ var GB = require( 'virtjs-gb' );
 
 var Screen = require( './devices/screens/Sink' );
 var Keyboard = require( './devices/inputs/Null' );
-var Timer = require( './devices/timers/Ticker' );
+var Timer = require( './devices/timers/Sink' );
 
 // Instanciates a few input / output devices which will be used by the emulator
 
 var screen = new Screen( );
-var keyboard = new Keyboard( );
+var input = new Keyboard( );
 var timer = new Timer( );
 
 // This done, we can ask Virt.js to create an emulator based on specified options
 
 var engine = Virtjs.create( GB, {
 
-    // Customize devices
-    screen   : screen,
-    timer    : timer,
-    keyboard : keyboard,
+    devices : {
+        screen : screen,
+        timer  : timer,
+        input  : input
+    },
 
     // Directly skips the bios
     skipBios : true

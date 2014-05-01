@@ -34,8 +34,8 @@ require( [
         var screen = new Virtjs.screen.WebGL( { className : 'screen' } );
         document.body.appendChild( screen.canvas );
 
-        var keyboard = new Virtjs.input.Keyboard( AZERTY );
-        keyboard.listen( document.body );
+        var input = new Virtjs.input.Keyboard( AZERTY );
+        input.listen( document.body );
 
         var timer = new Virtjs.timer.RAFrame( );
 
@@ -43,10 +43,11 @@ require( [
 
         var engine = Virtjs.create( GB, {
 
-            // Customize devices
-            screen   : screen,
-            timer    : timer,
-            keyboard : keyboard,
+            devices : {
+                screen : screen,
+                timer  : timer,
+                input  : input
+            },
 
             // Directly skips the bios
             skipBios : true
@@ -54,7 +55,7 @@ require( [
         } );
 
         loadRom( rom, function ( response ) {
-            engine.start( response );
+            engine.load( response );
         } );
 
         return engine;
