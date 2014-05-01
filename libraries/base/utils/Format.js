@@ -21,9 +21,12 @@ define( [
 
         relativeAddress : function ( sourceAddress, relativeAddress, sourceBits, relativeBits ) {
 
-            var sign = relativeAddress >= 0 ? '+' : '-';
+            var sign = relativeAddress < 0 ? '-' : '+';
 
-            return this.address( sourceAddress, sourceBits ) + sign + this.address( Math.abs( relativeAddress ), relativeBits );
+            if ( typeof relativeAddress !== 'string' || ! isNaN( relativeAddress ) )
+                relativeAddress = this.address( Math.abs( relativeAddress ), relativeBits );
+
+            return this.address( sourceAddress, sourceBits ) + sign + relativeAddress;
 
         },
 
