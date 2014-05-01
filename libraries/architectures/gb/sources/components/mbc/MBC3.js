@@ -12,16 +12,18 @@ define( [
 
             this._engine = engine;
 
-            this._engine._options.data.on( 'requestSave', function ( ) {
+            if ( this._engine._options.data ) {
+                this._engine._options.data.on( 'requestSave', function ( ) {
 
-                if ( ! this._storageName )
-                    return ;
+                    if ( ! this._storageName )
+                        return ;
 
-                this._engine._options.data.save( this._storageName, {
-                    ram : this._engine.environment.mbc3Ram.buffer
-                } );
+                    this._engine._options.data.save( this._storageName, {
+                        ram : this._engine.environment.mbc3Ram.buffer
+                    } );
 
-            }.bind( this ) );
+                }.bind( this ) );
+            }
 
         },
 
@@ -30,7 +32,9 @@ define( [
             this._storageName = this._engine.environment.ident ? this._engine.environment.ident + '.' : '';
             this._storageName += 'cartridge';
 
-            var saved = this._engine._options.data.restore( this._storageName ) || { };
+            var saved = this._engine._options.data
+                ? this._engine._options.data.restore( this._storageName ) || { }
+                : { };
 
             this._engine.environment.mbc3Mode = 0x00;
             this._engine.environment.mbc3RamFeature = false;
