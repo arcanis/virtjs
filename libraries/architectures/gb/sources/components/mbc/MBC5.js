@@ -61,9 +61,6 @@ define( [
             var romBank = this._engine.environment.mbc5RomBank;
             var ramBank = this._engine.environment.mbc5RamBank;
 
-            if ( this._romBankNN !== this._romBanks[ romBank ] )
-                console.log( '# ROM bank switched to ' + romBank );
-
             this._romBankNN = this._romBanks[ romBank ];
             this._ramBankNN = this._ramBanks[ ramBank ];
 
