@@ -1,3 +1,5 @@
+/*global define, module*/
+
 define( [
 
     './core/Engine',
@@ -15,7 +17,13 @@ define( [
 
 ], function ( Engine, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, FunctionUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
 
-    return {
+    if ( typeof window !== 'undefined' ) {
+        var root = window, key = 'Virtjs';
+    } else {
+        var root = module, key = 'exports';
+    }
+
+    return root[ key ] = {
 
         ClassUtil      : ClassUtil,
         DebugUtil      : DebugUtil,

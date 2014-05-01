@@ -22,6 +22,13 @@ A stretch goal is to achieve acceptable performances on mobile (at least Android
 
 - More to come after completing the listed goals
 
+## Build
+
+    > sudo npm install -g requirejs
+    > make
+
+Generated libraries will be located into the [builds](https://github.com/arcanis/virt.js/tree/master/builds) directory.
+
 ## Maintainer
 
 Virt.js is maintained by Maël Nison ([@arcanis](https://twitter.com/arcanis) on Twitter).

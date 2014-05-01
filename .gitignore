@@ -1,3 +1,2 @@
-/builds/
-!/builds/.gitignore
 node_modules
+/builds/*-latest.*
