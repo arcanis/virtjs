@@ -16,6 +16,7 @@ release:
 	git add .
 	git commit --allow-empty -m "Releases `cat VERSION.md`"
 	git tag -a `cat VERSION.md` -m ''
-	git push
+	git push --tags
+	git push origin master:gh-pages
 
 .PHONY: all release Virtjs Virtjs.GameBoy
