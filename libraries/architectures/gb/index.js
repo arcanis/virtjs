@@ -194,7 +194,7 @@ define( [
 
             // A register -> 0x01 : DMG  |  0x11 : CGB  |  0xFF : MGB
 
-            environment.a[ 0 ] = 0x11;
+            environment.a[ 0 ] = 0x01;
             environment.f[ 0 ] = 0xb0;
 
             environment.b[ 0 ] = 0x00;

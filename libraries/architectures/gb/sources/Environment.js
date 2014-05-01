@@ -42,15 +42,15 @@ define( [
 
             this.mmuBiosLocked = false;
 
-            this.gpuBackgroundFeature = false;
+            this.gpuBackgroundFeature = true;
             this.gpuSpriteFeature     = false;
-            this.gpuLCDFeature        = false;
+            this.gpuLCDFeature        = true;
             this.gpuCoincidence       = false;
             this.gpuMode              = 0x02;
             this.gpuInterrupts        = 0x00;
             this.gpuLyCompare         = 0;
             this.gpuSpriteSize        = 0;
-            this.gpuTilesetBase       = 0;
+            this.gpuTilesetBase       = 1;
             this.gpuBackgroundBase    = 0;
             this.gpuScrolls           = new Uint8Array( 2 );
 
