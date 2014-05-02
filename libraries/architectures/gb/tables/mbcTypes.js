@@ -1,9 +1,9 @@
 define( [
 
-    '../components/mbc/MBC1',
-    '../components/mbc/MBC3',
-    '../components/mbc/MBC5',
-    '../components/mbc/NoMBC'
+    '../cartridges/MBC1',
+    '../cartridges/MBC3',
+    '../cartridges/MBC5',
+    '../cartridges/NoMBC'
 
 ], function ( MBC1, MBC3, MBC5, NoMBC ) {
 
