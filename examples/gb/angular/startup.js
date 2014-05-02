@@ -3,13 +3,7 @@
 require( [
 
     'virtjs',
-    'virtjs-gb',
-
-    'devices/data/LocalStorage',
-    'devices/inputs/Button',
-    'devices/inputs/Keyboard',
-    'devices/screens/WebGL',
-    'devices/timers/RAFrame'
+    'virtjs-gb'
 
 ], function ( Virtjs ) {
 

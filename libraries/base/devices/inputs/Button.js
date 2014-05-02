@@ -1,20 +1,24 @@
-/*global Virtjs, require*/
+/*global define*/
 
-( function ( Virtjs ) {
+define( [
 
-    Virtjs.input.Mouse = Virtjs.ClassUtil.extend( [
+    '../../utils/Class',
+    '../../utils/Object',
 
-        Virtjs.EmitterMixin
+    '../../mixins/Emitter'
+
+], function ( ClassUtil, ObjectUtil, EmitterMixin ) {
+
+    return ClassUtil.extend( [
+
+        EmitterMixin
 
     ], {
 
         initialize : function ( options ) {
 
-            options = Virtjs.ObjectUtil.extend( {
-
-                // Element which should be monitored
+            this._options = ObjectUtil.extend( {
                 element : document.body
-
             } );
 
             this._onMouseDown_ = this._onMouseDown.bind( this );
@@ -64,4 +68,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'virtjs' ) );
+} );

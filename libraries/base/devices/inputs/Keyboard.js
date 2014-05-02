@@ -1,23 +1,25 @@
-/*global Virtjs, require*/
+/*global define*/
 
-( function ( Virtjs ) {
+define( [
 
-    Virtjs.input.Keyboard = Virtjs.ClassUtil.extend( [
+    '../../utils/Class',
+    '../../utils/Object',
 
-        Virtjs.EmitterMixin
+    '../../mixins/Emitter'
+
+], function ( ClassUtil, ObjectUtil, EmitterMixin ) {
+
+    return ClassUtil.extend( [
+
+        EmitterMixin
 
     ], {
 
         initialize : function ( options ) {
 
-            this._options = Virtjs.ObjectUtil.extend( {
-
-                // Element which should be monitored
+            this._options = ObjectUtil.extend( {
                 element : document.body,
-
-                // A map of key code -> engine input code
                 map : { }
-
             }, options );
 
             this._onKeyDown_ = this._onKeyDown.bind( this );
@@ -69,4 +71,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'virtjs' ) );
+} );

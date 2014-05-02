@@ -104,7 +104,7 @@ define( [
 
             } else {
 
-                this._options.devices.timer.nextTick( this._nextTick_ );
+                this.devices.timer.nextTick( this._nextTick_ );
 
                 this.step( );
 

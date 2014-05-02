@@ -4,6 +4,18 @@ define( [
 
     './core/Engine',
 
+    './devices/data/LocalStorage',
+    './devices/debug/Tracer',
+    './devices/inputs/Button',
+    './devices/inputs/Keyboard',
+    './devices/inputs/Mixed',
+    './devices/inputs/Null',
+    './devices/screens/Sink',
+    './devices/screens/WebGL',
+    './devices/timers/Immediate',
+    './devices/timers/RAFrame',
+    './devices/timers/Sink',
+
     './mixins/Emitter',
 
     './utils/Class',
@@ -15,55 +27,54 @@ define( [
     './utils/Object',
     './utils/Reflection'
 
-], function ( Engine, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, FunctionUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
+], function ( Engine, LocalStorageDataDevice, TracerDebugDevice, ButtonInputDevice, KeyboardInputDevice, MixedInputDevice, NullInputDevice, SinkScreenDevice, WebGLScreenDevice, ImmediateTimerDevice, RAFrameTimerDevice, SinkTimerDevice, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, FunctionUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
 
-    if ( typeof window !== 'undefined' ) {
-        var root = window, key = 'Virtjs';
-    } else {
-        var root = module, key = 'exports';
-    }
+    return {
 
-    return root[ key ] = {
+        ClassUtil        : ClassUtil,
+        DebugUtil        : DebugUtil,
+        FormatUtil       : FormatUtil,
+        FunctionUtil     : FunctionUtil,
+        LogUtil          : LogUtil,
+        MemoryUtil       : MemoryUtil,
+        ObjectUtil       : ObjectUtil,
+        ReflectionUtil   : ReflectionUtil,
 
-        ClassUtil      : ClassUtil,
-        DebugUtil      : DebugUtil,
-        FormatUtil     : FormatUtil,
-        FunctionUtil   : FunctionUtil,
-        LogUtil        : LogUtil,
-        MemoryUtil     : MemoryUtil,
-        ObjectUtil     : ObjectUtil,
-        ReflectionUtil : ReflectionUtil,
+        EmitterMixin     : EmitterMixin,
 
-        EmitterMixin : EmitterMixin,
-
-        Engine : Engine,
-
-        create : function ( Engine, options ) {
-            return new Engine( options );
-        },
+        Engine           : Engine,
 
         data : {
-            // Plugins register here
+            LocalStorage : LocalStorageDataDevice
+        },
+
+        input : {
+            Button       : ButtonInputDevice,
+            Keyboard     : KeyboardInputDevice,
+            Null         : NullInputDevice
+        },
+
+        screen : {
+            Sink         : SinkScreenDevice,
+            WebGL        : WebGLScreenDevice
+        },
+
+        timer : {
+            RAFrame      : RAFrameTimerDevice,
+            Immediate    : ImmediateTimerDevice,
+            Sink         : SinkTimerDevice
+        },
+
+        debug : {
+            Tracer       : TracerDebugDevice
         },
 
         engine : {
             // Plugins register here
         },
 
-        input : {
-            // Plugins register here
-        },
-
-        screen : {
-            // Plugins register here
-        },
-
-        timer : {
-            // Plugins register here
-        },
-
-        debug : {
-            // Plugins register here
+        create : function ( Engine, options ) {
+            return new Engine( options );
         }
 
     };

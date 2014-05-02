@@ -1,14 +1,18 @@
-/*global Virtjs, require*/
+/*global define*/
 
-( function ( Virtjs ) {
+define( [
 
-    Virtjs.timer.RAFrame = Virtjs.ClassUtil.extend( {
+    '../../utils/Class'
+
+], function ( ClassUtil ) {
+
+    return ClassUtil.extend( {
 
         initialize : function ( options ) {
 
             options = options || { };
 
-            this._tick_ = this._tick.bind( this );
+            this._onTick_ = this._onTick.bind( this );
 
             this._tickRequest = null;
             this._nextTicks = [ ];
@@ -26,7 +30,7 @@
             this._nextTicks.push( callback );
 
             if ( this._tickRequest === null ) {
-                this._tickRequest = window.requestAnimationFrame( this._tick_ );
+                this._tickRequest = window.requestAnimationFrame( this._onTick_ );
             }
 
         },
@@ -45,7 +49,7 @@
 
         },
 
-        _tick : function ( ) {
+        _onTick : function ( ) {
 
             this._tickRequest = null;
 
@@ -66,4 +70,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'virtjs' ) );
+} );

@@ -1,10 +1,16 @@
-/*global Virtjs, require*/
+/*global define*/
 
-( function ( Virtjs ) {
+define( [
 
-    Virtjs.input.Mixed = Virtjs.ClassUtil.extend( [
+    '../../utils/Class',
 
-        Virtjs.EmitterMixin
+    '../../mixins/Emitter'
+
+], function ( ClassUtil, EmitterMixin ) {
+
+    return ClassUtil.extend( [
+
+        EmitterMixin
 
     ], {
 
@@ -36,4 +42,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'virtjs' ) );
+} );

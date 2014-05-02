@@ -1,6 +1,10 @@
-/*global Virtjs, require*/
+/*global define*/
 
-( function ( Virtjs ) {
+define( [
+
+    '../../utils/Class'
+
+], function ( ClassUtil ) {
 
     var fragmentShaderCode = [
         'precision mediump float;',
@@ -35,7 +39,7 @@
         '}'
     ].join( '\n' );
 
-    Virtjs.screen.WebGL = Virtjs.ClassUtil.extend( {
+    return ClassUtil.extend( {
 
         initialize : function ( options ) {
 
@@ -239,4 +243,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'virtjs' ) );
+} );

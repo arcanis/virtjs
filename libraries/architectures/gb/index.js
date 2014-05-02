@@ -24,9 +24,13 @@ define( [
 
             Virtjs.Engine.prototype.initialize.apply( this, arguments );
 
+            // Publish the devices
+
+            this.devices = this._options.devices;
+
             // Set screen size
 
-            this._options.devices.screen.setInputSize( 160, 144 );
+            this.devices.screen.setInputSize( 160, 144 );
 
             // No environment at the beginning - we need to load() one later on
 

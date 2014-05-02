@@ -1,11 +1,16 @@
-/*global Virtjs, Slick, require*/
+/*global Slick, define*/
 
-( function ( Virtjs ) {
+define( [
+
+    '../../utils/Class',
+    '../../utils/Format'
+
+], function ( ClassUtil, FormatUtil ) {
 
     var SlickBreakpointFormatter = function ( row, cell, value ) {
         return value ? '✓' : ''; };
 
-    Virtjs.debug.Tracer = Virtjs.ClassUtil.extend( {
+    return ClassUtil.extend( {
 
         initialize : function ( engine, options ) {
 
@@ -29,12 +34,12 @@
             }.bind( this );
 
             var addressFormatter = function ( row, cell, value ) {
-                return Virtjs.FormatUtil.address( value, this._options.addressSize );
+                return FormatUtil.address( value, this._options.addressSize );
             }.bind( this );
 
             var opcodeFormatter = function ( row, cell, value ) {
                 return value.map( function ( opcode ) {
-                    return Virtjs.FormatUtil.hexadecimal( opcode, this._options.opcodeSize );
+                    return FormatUtil.hexadecimal( opcode, this._options.opcodeSize );
                 }.bind( this ) ).join( ' ' );
             }.bind( this );
 
@@ -363,4 +368,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'Virtjs' ) );
+} );

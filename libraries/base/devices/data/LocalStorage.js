@@ -1,16 +1,22 @@
-/*global Virtjs, require*/
+/*global define*/
 
-( function ( Virtjs ) {
+define( [
 
-    Virtjs.data.LocalStorage = Virtjs.ClassUtil.extend( [
+    '../../mixins/Emitter',
 
-        Virtjs.EmitterMixin
+    '../../utils/Class'
+
+], function ( EmitterMixin, ClassUtil ) {
+
+    return ClassUtil.extend( [
+
+        EmitterMixin
 
     ], {
 
         initialize : function ( ) {
 
-            this.localStorage = window.localStorage;
+            this._localStorage = window.localStorage;
 
         },
 
@@ -64,7 +70,7 @@
 
             var serialization = this._serialize( data );
 
-            this.localStorage.setItem( name, serialization );
+            this._localStorage.setItem( name, serialization );
 
         },
 
@@ -82,7 +88,7 @@
 
         _restoreData : function ( name ) {
 
-            var serialized = this.localStorage.getItem( name );
+            var serialized = this._localStorage.getItem( name );
 
             if ( serialized === null )
                 return null;
@@ -128,4 +134,4 @@
 
     } );
 
-} )( window.Virtjs || require( 'virtjs' ) );
+} );

@@ -5,9 +5,9 @@ var Fs = require( 'fs' );
 var Virtjs = require( 'virtjs' );
 var GB = require( 'virtjs-gb' );
 
-var Screen = require( '../assets/devices/screens/Sink' );
-var Keyboard = require( '../assets/devices/inputs/Null' );
-var Timer = require( '../assets/devices/timers/Ticker' );
+var Screen = require( '../../devices/screens/Sink' );
+var Keyboard = require( '../../devices/inputs/Null' );
+var Timer = require( '../../devices/timers/Ticker' );
 
 // Instanciates a few input / output devices which will be used by the emulator
 

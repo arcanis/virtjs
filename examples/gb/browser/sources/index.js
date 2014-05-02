@@ -2,11 +2,7 @@
 
 require( [
 
-    'architectures/gb/index',
-
-    'devices/inputs/Keyboard',
-    'devices/screens/WebGL',
-    'devices/timers/RAFrame'
+    'architectures/gb/index'
 
 ], function ( GB ) {
 
