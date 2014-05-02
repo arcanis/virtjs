@@ -31,6 +31,52 @@ A stretch goal is to achieve acceptable performances on mobile (at least Android
 
 Generated libraries will be located into the [builds](https://github.com/arcanis/virt.js/tree/master/builds) directory.
 
+## Usage
+
+```html
+<script src="Virtjs-latest.min.js"></script>
+<script src="Virtjs.GameBoy-latest.min.js"></script>
+
+<script>
+
+    var startEmulator = function ( rom ) {
+
+        var engine = Virtjs.create( Virtjs.engine.GameBoy, {
+
+            devices : {
+                screen : new Virtjs.screen.WebGL( ),
+                input : new Virtjs.input.Keyboard( { map : map } ),
+                timer : new Virtjs.timer.RAFrame( ),
+                data : new Virtjs.data.LocalStorage( )
+            },
+
+            skipBios : true
+
+        } ).load( rom );
+
+        document.body.appendChild( engine.devices.screen.canvas );
+
+    };
+
+    ( function ( ) {
+
+        var xhr = new XMLHttpRequest( );
+
+        xhr.open( 'GET', 'http://example.org', true );
+
+        xhr.responseType = 'arraybuffer';
+
+        xhr.addEventListener( 'load', function ( ) {
+            startEmulator( xhr.response );
+        } );
+
+        xhr.send( null );
+
+    } )( );
+
+</script>
+```
+
 ## Maintainer
 
 Virt.js is maintained by Maël Nison ([@arcanis](https://twitter.com/arcanis) on Twitter).
