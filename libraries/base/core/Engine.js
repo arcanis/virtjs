@@ -38,9 +38,10 @@ define( [
             if ( this._status !== 'paused' )
                 this._setStatus( 'paused' );
 
-            if ( autoResume ) {
+            if ( autoResume )
                 this.resume( );
-            }
+
+            return this;
 
         },
 

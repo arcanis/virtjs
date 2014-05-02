@@ -1,32 +1,34 @@
 define( [
 
+    'virtjs',
+
     '../cartridges/MBC1',
     '../cartridges/MBC3',
     '../cartridges/MBC5',
     '../cartridges/NoMBC'
 
-], function ( MBC1, MBC3, MBC5, NoMBC ) {
+], function ( Virtjs, MBC1, MBC3, MBC5, NoMBC ) {
 
     return {
 
-        0 : NoMBC,
+         0 : NoMBC,
 
-        1 : MBC1,
-        2 : MBC1,
-        3 : MBC1,
+         1 : MBC1.bindConstructor( { } ),
+         2 : MBC1.bindConstructor( { ram : true } ),
+         3 : MBC1.bindConstructor( { ram : true, battery : true } ),
 
-        15 : MBC3,
-        16 : MBC3,
-        17 : MBC3,
-        18 : MBC3,
-        19 : MBC3,
+        15 : MBC3.bindConstructor( { } ),
+        16 : MBC3.bindConstructor( { timer : true } ),
+        17 : MBC3.bindConstructor( { timer : true, battery : true } ),
+        18 : MBC3.bindConstructor( { ram : true } ),
+        19 : MBC3.bindConstructor( { ram : true, battery : true } ),
 
-        25 : MBC5,
-        26 : MBC5,
-        27 : MBC5,
-        28 : MBC5,
-        29 : MBC5,
-        30 : MBC5
+        25 : MBC5.bindConstructor( { } ),
+        26 : MBC5.bindConstructor( { ram : true } ),
+        27 : MBC5.bindConstructor( { ram : true, battery : true } ),
+        28 : MBC5.bindConstructor( { rumble : true } ),
+        29 : MBC5.bindConstructor( { rumble : true, ram : true } ),
+        30 : MBC5.bindConstructor( { rumble : true, ram : true, battery : true } )
 
     };
 

@@ -8,21 +8,31 @@ define( [
 
     return Virtjs.ClassUtil.extend( {
 
-        initialize : function ( engine ) {
+        initialize : function ( features, engine ) {
 
+            this._features = features;
             this._engine = engine;
 
-            if ( this._engine.devices.data ) {
+            if ( this._engine.devices.data && this._features.battery ) {
                 this._engine.devices.data.on( 'requestSave', function ( ) {
-
-                    if ( ! this._storageName )
-                        return ;
-
-                    this._engine.devices.data.save( this._storageName, {
-                        ram : this._engine.environment.mbc3Ram.buffer
-                    } );
-
+                    this.save( );
                 }.bind( this ) );
+            }
+
+        },
+
+        save : function ( ) {
+
+            if ( ! this._features.battery )
+                return ;
+
+            if ( ! this._engine.devices.data )
+                return ;
+
+            if ( this._features.ram ) {
+                this._engine.devices.data.save( this._storageName, {
+                    ram : this._engine.environment.mbc1Ram.buffer
+                } );
             }
 
         },
@@ -32,14 +42,15 @@ define( [
             this._storageName = this._engine.environment.ident ? this._engine.environment.ident + '.' : '';
             this._storageName += 'cartridge';
 
-            var saved = this._engine.devices.data
+            var saved = this._engine.devices.data && this._features.battery
                 ? this._engine.devices.data.restore( this._storageName ) || { }
                 : { };
 
             this._engine.environment.mbc3Mode = 0x00;
             this._engine.environment.mbc3RamFeature = false;
 
-            this._engine.environment.mbc3Ram = new Uint8Array( saved.ram || new ArrayBuffer( 0x8000 ) );
+            var ramBuffer = saved.ram || new ArrayBuffer( 0x2000 * 0x04 );
+            this._engine.environment.mbc3Ram = new Uint8Array( ramBuffer );
             this._engine.environment.mbc3Rtc = new Uint8Array( 5 );
             this._engine.environment.mbc3Latch = new Uint8Array( 1 );
 

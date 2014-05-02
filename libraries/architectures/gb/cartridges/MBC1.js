@@ -8,18 +8,49 @@ define( [
 
     return Virtjs.ClassUtil.extend( {
 
-        initialize : function ( engine ) {
+        initialize : function ( features, engine ) {
 
+            this._features = features;
             this._engine = engine;
+
+            if ( this._engine.devices.data && this._features.battery ) {
+                this._engine.devices.data.on( 'requestSave', function ( ) {
+                    this.save( );
+                }.bind( this ) );
+            }
+
+        },
+
+        save : function ( ) {
+
+            if ( ! this._features.battery )
+                return ;
+
+            if ( ! this._engine.devices.data )
+                return ;
+
+            if ( this._features.ram ) {
+                this._engine.devices.data.save( this._storageName, {
+                    ram : this._engine.environment.mbc1Ram.buffer
+                } );
+            }
 
         },
 
         setup : function ( ) {
 
+            this._storageName = this._engine.environment.ident ? this._engine.environment.ident + '.' : '';
+            this._storageName += 'cartridge';
+
+            var saved = this._engine.devices.data && this._features.battery
+                ? this._engine.devices.data.restore( this._storageName ) || { }
+                : { };
+
             this._engine.environment.mbc1Mode = 0x00;
             this._engine.environment.mbc1RamFeature = false;
 
-            this._engine.environment.mbc1Ram = new Uint8Array( 0x6000 );
+            var ramBuffer = saved.ram || new ArrayBuffer( 0x2000 * 0x04 );
+            this._engine.environment.mbc1Ram = new Uint8Array( ramBuffer );
 
             this._engine.environment.mbc1RomBank = 0x01;
             this._engine.environment.mbc1RamBank = 0x00;

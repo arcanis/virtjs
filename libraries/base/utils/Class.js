@@ -38,6 +38,14 @@ define( [
 
     };
 
+    Class.bindConstructor = function ( ) {
+
+        var args = Array.prototype.slice.call( arguments );
+
+        return this.bind.apply( this, [ null ].concat( args ) );
+
+    };
+
     Class.prototype.initialize = function ( ) {
 
     };
