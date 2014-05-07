@@ -30,6 +30,20 @@ define( [
 
         },
 
+        decimal : function ( value, size ) {
+
+            value = value.toString( );
+
+            if ( typeof size === 'undefined' )
+                return value;
+
+            for ( var t = value.length; t < size; ++ t )
+                value = '0' + value;
+
+            return value;
+
+        },
+
         string : function ( str, size, leftAligned ) {
 
             str = str.toString( );

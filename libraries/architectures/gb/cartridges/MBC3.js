@@ -31,7 +31,7 @@ define( [
 
             if ( this._features.ram ) {
                 this._engine.devices.data.save( this._storageName, {
-                    ram : this._engine.environment.mbc1Ram.buffer
+                    ram : this._engine.environment.mbc3Ram.buffer
                 } );
             }
 

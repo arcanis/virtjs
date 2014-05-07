@@ -73,8 +73,8 @@ define( [
             // Plugins register here
         },
 
-        create : function ( Engine, options ) {
-            return new Engine( options );
+        create : function ( library, options ) {
+            return new library.Engine( options );
         }
 
     };
