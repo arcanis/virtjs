@@ -17,6 +17,7 @@ define( [
     './devices/timers/Sink',
 
     './mixins/Emitter',
+    './mixins/Iterable',
 
     './utils/Class',
     './utils/Debug',
@@ -27,7 +28,7 @@ define( [
     './utils/Object',
     './utils/Reflection'
 
-], function ( Engine, LocalStorageDataDevice, TracerDebugDevice, ButtonInputDevice, KeyboardInputDevice, MixedInputDevice, NullInputDevice, SinkScreenDevice, WebGLScreenDevice, ImmediateTimerDevice, RAFrameTimerDevice, SinkTimerDevice, EmitterMixin, ClassUtil, DebugUtil, FormatUtil, FunctionUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
+], function ( Engine, LocalStorageDataDevice, TracerDebugDevice, ButtonInputDevice, KeyboardInputDevice, MixedInputDevice, NullInputDevice, SinkScreenDevice, WebGLScreenDevice, ImmediateTimerDevice, RAFrameTimerDevice, SinkTimerDevice, EmitterMixin, IterableMixin, ClassUtil, DebugUtil, FormatUtil, FunctionUtil, LogUtil, MemoryUtil, ObjectUtil, ReflectionUtil ) {
 
     return {
 
@@ -41,6 +42,7 @@ define( [
         ReflectionUtil   : ReflectionUtil,
 
         EmitterMixin     : EmitterMixin,
+        IterableMixin    : IterableMixin,
 
         Engine           : Engine,
 
