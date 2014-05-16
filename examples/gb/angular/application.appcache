@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Generated Wed May  7 03:02:43 CEST 2014
+# Generated Fri May 16 22:18:43 CEST 2014
 
 CACHE:
 ../../../libraries/architectures/gb/cartridges/MBC5.js
@@ -20,6 +20,7 @@ CACHE:
 ../../../libraries/architectures/gb/Environment.js
 ../../../libraries/architectures/gb/index.js
 ../../../libraries/base/mixins/Emitter.js
+../../../libraries/base/mixins/Iterable.js
 ../../../libraries/base/core/Engine.js
 ../../../libraries/base/devices/debug/Tracer.js
 ../../../libraries/base/devices/inputs/Null.js
