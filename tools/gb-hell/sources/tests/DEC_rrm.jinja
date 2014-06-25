@@ -1,9 +1,0 @@
-{## DEC rrm ##}
-{# 'rrm' can only be 'hl' #}
-
-{% set rrm = "hl" %}
-
-{% asmfor rrm, addresses %}
-    dec [{{rrm}}]
-    inc [{{rrm}}]
-{% endasmfor %}

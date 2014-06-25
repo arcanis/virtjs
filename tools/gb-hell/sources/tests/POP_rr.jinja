@@ -1,8 +1,0 @@
-{## POP rr ##}
-{# Check PUSH rr for more tests #}
-
-{# The lower 4 bits of AF should be left unaffected #}
-ld sp,$c420
-ld bc,$ffff
-push bc
-pop af

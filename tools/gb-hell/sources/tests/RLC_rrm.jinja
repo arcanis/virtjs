@@ -1,9 +1,0 @@
-{## RLC rrm ##}
-{# 'rrm' can only be 'hl' #}
-
-{% set rrm = "hl" %}
-
-{% asmfor rrm, addresses %}
-    rlc [{{rrm}}]
-    rrc [{{rrm}}]
-{% endasmfor %}

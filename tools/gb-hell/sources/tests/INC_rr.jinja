@@ -1,9 +1,0 @@
-{## INC rr ##}
-
-{% for rr in r16 %}
-    {% set rr_ = (r16 | except(rr))[0] %}
-    {% asmfor rr_, relevant16Bits %}
-        {{r16cpy(rr, rr_)}}
-        inc {{rr}}
-    {% endasmfor %}
-{% endfor %}
