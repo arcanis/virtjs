@@ -2,11 +2,11 @@
 
 ![](http://arcanis.github.io/virt.js/documents/assets/github-banner.png)
 
-**Warning :** This library is still in a very early development phase. APIs may be subject to changes. Take a look in the [example](https://github.com/arcanis/Virt.js/tree/master/examples) directory to check how to use the current revision.
-
-**Quick example :** The [Pokelib](https://github.com/arcanis/pokelib) is a library allowing to access a running Pokemon game using a simple Javascript API. Check out this [angular.js demo](http://arcanis.github.io/pokelib/example/)!
-
 > Virt.js is a library designed to easily emulate various architectures using a common Javascript API. These emulators can be plugged to multiple input and output devices.
+
+**Fair warning :** This library is still in a very early development phase. APIs may be subject to changes. Take a look in the [example](https://github.com/arcanis/Virt.js/tree/master/examples) directory to check how to use the current revision, and feel free to ask if you have any doubt.
+
+**Quick example :** The [Pokelib](https://github.com/arcanis/pokelib) is a library allowing to access a running Pokemon game using a simple Javascript API. Check out this [angular.js demo](http://arcanis.github.io/pokelib/example/), where angular data are directly providen by the Pokelib!
 
 ## Why another emulation library ?
 
