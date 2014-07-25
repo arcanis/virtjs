@@ -87,7 +87,7 @@ export class MBC1 {
         var ramBank = this._engine.environment.mbc1RamBank;
 
         if ( this._engine.environment.mbc1Mode === 0 ) {
-            // "the only limitiation is that only RAM Bank 00h can be used during Mode 0 ..."
+            // "the only limitation is that only RAM Bank 00h can be used during Mode 0 ..."
             ramBank = 0x00;
         } else {
             // "and only ROM Banks 00-1Fh can be used during Mode 1"

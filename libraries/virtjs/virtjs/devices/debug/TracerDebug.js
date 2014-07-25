@@ -1,8 +1,5 @@
 import { formatAddress, formatHexadecimal } from '../../utils/FormatUtils';
 
-var SlickBreakpointFormatter = function ( row, cell, value ) {
-    return value ? '✓' : ''; };
-
 export class TracerDebug {
 
     constructor( engine, options = { } ) {
@@ -10,36 +7,33 @@ export class TracerDebug {
         this._engine = engine;
         this._options = options;
 
-        this._instructions = [ ];
-        this._byAddress = { };
-        this._breakpoints = { };
-
         this._breakDelay = 0;
         this._skipBreakpoint = false;
         this._domEnabled = true;
 
+        this._instructions = [ ];
+        this._byAddress = { };
+        this._breakpoints = { };
+
         this._instructions.getItemMetadata = index => {
-            return { 'cssClasses' : [
-                'tracer-row',
-                this._currentAddress === this._instructions[ index ].address
-                    ? 'tracer-current' : ''
-            ].join( ' ' ) };
+
+            var metadata = { cssClasses : 'tracer-row' };
+
+            if ( this._currentAddress === this._instructions[ index ].address )
+                metadata.cssClasses +=' tracer-current';
+
+            return metadata;
+
         };
 
-        var addressFormatter = function ( row, cell, value ) {
-            return formatAddress( value, this._options.addressSize );
-        }.bind( this );
+        var slickBreakpointFormatter = ( row, cell, value ) => value ? '✓' : '';
+        var addressFormatter         = ( row, cell, value ) => formatAddress( value, this._options.addressSize );
+        var opcodeFormatter          = ( row, cell, value ) => value.map( opcode => formatHexadecimal( opcode, this._options.opcodeSize ) ).join( ' ' );
 
-        var opcodeFormatter = function ( row, cell, value ) {
-            return value.map( function ( opcode ) {
-                return formatHexadecimal( opcode, this._options.opcodeSize );
-            }.bind( this ) ).join( ' ' );
-        }.bind( this );
-
-        var columns = [ { name : 'Breakpoint',  field : 'breakpoint', cssClass : 'tracer-cell tracer-cell-breakpoint', minWidth : 100, maxWidth : 100, formatter : SlickBreakpointFormatter }
-                        , { name : 'Address',     field : 'address',    cssClass : 'tracer-cell tracer-cell-address',    minWidth : 120, maxWidth : 120, formatter : addressFormatter }
-                        , { name : 'Opcode',      field : 'opcode',     cssClass : 'tracer-cell tracer-cell-opcode',     minWidth : 200, maxWidth : 200, formatter : opcodeFormatter }
-                        , { name : 'Instruction', field : 'label',      cssClass : 'tracer-cell tracer-cell-label'       } ];
+        var columns = [ { name : 'Breakpoint',  field : 'breakpoint', cssClass : 'tracer-cell tracer-cell-breakpoint', minWidth : 100, maxWidth : 100, formatter : slickBreakpointFormatter }
+                      , { name : 'Address',     field : 'address',    cssClass : 'tracer-cell tracer-cell-address',    minWidth : 120, maxWidth : 120, formatter : addressFormatter }
+                      , { name : 'Opcode',      field : 'opcode',     cssClass : 'tracer-cell tracer-cell-opcode',     minWidth : 200, maxWidth : 200, formatter : opcodeFormatter }
+                      , { name : 'Instruction', field : 'label',      cssClass : 'tracer-cell tracer-cell-label'       } ];
 
         this._grid = new Slick.Grid( this._options.container, this._instructions, columns, {
             enableTextSelectionOnCells : true,
@@ -63,12 +57,12 @@ export class TracerDebug {
             this._refreshFrom( this._findInstruction( e.address ) );
         } );
 
-        this._engine.on( 'load', ( ) => {
+        this._engine.on( 'setup', ( ) => {
             this._refreshAll( );
             this.enableDOM( );
         } );
 
-        this._engine.cpu.on( 'instruction', ( e ) => {
+        this._engine.on( 'instruction', ( e ) => {
             this._jumpCheck( e );
             this._breakCheck( e );
             this._updateCurrent( e );
@@ -120,7 +114,7 @@ export class TracerDebug {
         this._render( );
         this._currentAddress = currentAddress;
 
-        this._options.container.className += ' tracer-disabled';
+        this._options.container.classList.add( 'tracer-disabled' );
 
         this._domEnabled = false;
 
@@ -133,7 +127,7 @@ export class TracerDebug {
 
         this._domEnabled = true;
 
-        this._options.container.className = this._options.container.className.replace( /\btracer-disabled\b/g, '' );
+        this._options.container.className = this._options.container.classList.remove( 'tracer-disabled' );
 
         this._invalidate( );
         this._updateRowCount( );
@@ -250,7 +244,9 @@ export class TracerDebug {
         if ( this._pendingRendering )
             return ;
 
-        this._pendingRendering = window.setTimeout( this._render.bind( this ), 500 );
+        this._pendingRendering = setTimeout( ( ) => {
+            this._render( );
+        }, 500 );
 
     }
 
@@ -292,7 +288,7 @@ export class TracerDebug {
 
     _render( ) {
 
-        window.clearTimeout( this._pendingRendering );
+        clearTimeout( this._pendingRendering );
         this._pendingRendering = undefined;
 
         this._grid.render( );

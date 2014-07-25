@@ -3,9 +3,9 @@ export function formatRelativeAddress( sourceAddress, relativeAddress, sourceBit
     var sign = relativeAddress < 0 ? '-' : '+';
 
     if ( typeof relativeAddress !== 'string' || ! isNaN( relativeAddress ) )
-        relativeAddress = this.address( Math.abs( relativeAddress ), relativeBits );
+        relativeAddress = formatAddress( Math.abs( relativeAddress ), relativeBits, false );
 
-    return this.address( sourceAddress, sourceBits ) + sign + relativeAddress;
+    return formatAddress( sourceAddress, sourceBits ) + sign + relativeAddress;
 
 };
 
@@ -14,15 +14,15 @@ export function formatDecimal( value, size ) {
     if ( isNaN( value ) )
         return 'NaN';
 
-    value = value.toString( );
+    var str = str.toString( );
 
     if ( typeof size === 'undefined' )
-        return value;
+        return str;
 
-    for ( var t = value.length; t < size; ++ t )
-        value = '0' + value;
+    for ( var t = str.length; t < size; ++ t )
+        str = '0' + str;
 
-    return value;
+    return str;
 
 };
 
@@ -48,7 +48,7 @@ export function formatString( str, size, leftAligned ) {
 
 };
 
-export function formatAddress( address, bits ) {
+export function formatAddress( address, bits, withPrefix = true ) {
 
     if ( isNaN( address ) )
         return 'NaN';
@@ -59,11 +59,14 @@ export function formatAddress( address, bits ) {
         while ( str.length < Math.ceil( bits / 4 ) )
             str = '0' + str;
 
-    return '$' + str;
+    if ( withPrefix )
+        str = '$' + str;
+
+    return str;
 
 };
 
-export function formatHexadecimal( value, bits ) {
+export function formatHexadecimal( value, bits, withPrefix = true ) {
 
     if ( isNaN( value ) )
         return 'NaN';
@@ -74,7 +77,10 @@ export function formatHexadecimal( value, bits ) {
         while ( str.length < Math.ceil( bits / 4 ) )
             str = '0' + str;
 
-    return '0x' + str;
+    if ( withPrefix )
+        str = '0x' + str;
+
+    return str;
 
 };
 

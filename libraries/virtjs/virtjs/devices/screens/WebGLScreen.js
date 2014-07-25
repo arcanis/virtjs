@@ -1,34 +1,185 @@
 var fragmentShaderCode = `
-precision mediump float;
+    precision mediump float;
 
-varying vec2 vTextureCoordinates;
+    uniform sampler2D uScreenTexture;
+    uniform vec2      uInputResolution;
 
-uniform sampler2D uSampler;
-uniform vec2 uResolution;
+    varying vec4 texCoord[8];
 
-void main( void ) {
-    vec2 uv2 = vTextureCoordinates * 2.0 - 1.0;
-    gl_FragColor = texture2D( uSampler, vec2( vTextureCoordinates.s, 1.0 - vTextureCoordinates.t ) );
-  //gl_FragColor.rgb *= vec3( .4, .5, .4 );
-  //gl_FragColor.a *= 1. - pow( length( uv2 * uv2 * uv2 * uv2 * uv2 ), 5. );
-  //gl_FragColor.r *= ( ( .5 + abs( .5 - mod( uv2.y       , .021 ) / .021 ) * .5 ) * 3.5 );
-  //gl_FragColor.g *= ( ( .5 + abs( .5 - mod( uv2.y + .007, .021 ) / .021 ) * .5 ) * 3.5 );
-  //gl_FragColor.b *= ( ( .5 + abs( .5 - mod( uv2.y + .014, .021 ) / .021 ) * .5 ) * 3.5 );
-}
+    const float coef      =  2.0;
+    const float threshold = 15.0;
+
+    const float y_weight  = 48.0;
+    const float u_weight  =  7.0;
+    const float v_weight  =  6.0;
+
+    const mat3 yuv = mat3(0.299, -0.169, 0.499, 0.587, -0.331, -0.418, 0.114, 0.499, -0.0813);
+    const mat3 yuv_weighted = yuv; // Is it useful ?
+
+    vec4 RGBtoYUV(vec3 v0, vec3 v1, vec3 v2, vec3 v3) {
+
+        float a = yuv_weighted[0].x * v0.x + yuv_weighted[0].y * v0.y + yuv_weighted[0].z * v0.z;
+        float b = yuv_weighted[0].x * v1.x + yuv_weighted[0].y * v1.y + yuv_weighted[0].z * v1.z;
+        float c = yuv_weighted[0].x * v2.x + yuv_weighted[0].y * v2.y + yuv_weighted[0].z * v2.z;
+        float d = yuv_weighted[0].x * v3.x + yuv_weighted[0].y * v3.y + yuv_weighted[0].z * v3.z;
+
+        return vec4(a, b, c, d);
+
+    }
+
+    bvec4 _and_(bvec4 A, bvec4 B) {
+
+        return bvec4(A.x && B.x, A.y && B.y, A.z && B.z, A.w && B.w);
+
+    }
+
+    bvec4 _or_(bvec4 A, bvec4 B) {
+
+        return bvec4(A.x || B.x, A.y || B.y, A.z || B.z, A.w || B.w);
+
+    }
+
+    vec4 df(vec4 A, vec4 B) {
+
+        return vec4(abs(A - B));
+
+    }
+
+    bvec4 close(vec4 A, vec4 B) {
+
+        return lessThan(df(A, B), vec4(threshold));
+
+    }
+
+    vec4 weighted_distance(vec4 a, vec4 b, vec4 c, vec4 d, vec4 e, vec4 f, vec4 g, vec4 h) {
+
+        return df(a, b) + df(a, c) + df(d, e) + df(d, f) + 4.0 * df(g, h);
+
+    }
+
+    void main() {
+
+        vec2 fp = fract(texCoord[0].xy * uInputResolution);
+
+        vec3 A1 = texture2D(uScreenTexture, texCoord[1].xw).rgb;
+        vec3 B1 = texture2D(uScreenTexture, texCoord[1].yw).rgb;
+        vec3 C1 = texture2D(uScreenTexture, texCoord[1].zw).rgb;
+
+        vec3 A  = texture2D(uScreenTexture, texCoord[2].xw).rgb;
+        vec3 B  = texture2D(uScreenTexture, texCoord[2].yw).rgb;
+        vec3 C  = texture2D(uScreenTexture, texCoord[2].zw).rgb;
+
+        vec3 D  = texture2D(uScreenTexture, texCoord[3].xw).rgb;
+        vec3 E  = texture2D(uScreenTexture, texCoord[3].yw).rgb;
+        vec3 F  = texture2D(uScreenTexture, texCoord[3].zw).rgb;
+
+        vec3 G  = texture2D(uScreenTexture, texCoord[4].xw).rgb;
+        vec3 H  = texture2D(uScreenTexture, texCoord[4].yw).rgb;
+        vec3 I  = texture2D(uScreenTexture, texCoord[4].zw).rgb;
+
+        vec3 G5 = texture2D(uScreenTexture, texCoord[5].xw).rgb;
+        vec3 H5 = texture2D(uScreenTexture, texCoord[5].yw).rgb;
+        vec3 I5 = texture2D(uScreenTexture, texCoord[5].zw).rgb;
+
+        vec3 A0 = texture2D(uScreenTexture, texCoord[6].xy).rgb;
+        vec3 D0 = texture2D(uScreenTexture, texCoord[6].xz).rgb;
+        vec3 G0 = texture2D(uScreenTexture, texCoord[6].xw).rgb;
+
+        vec3 C4 = texture2D(uScreenTexture, texCoord[7].xy).rgb;
+        vec3 F4 = texture2D(uScreenTexture, texCoord[7].xz).rgb;
+        vec3 I4 = texture2D(uScreenTexture, texCoord[7].xw).rgb;
+
+        vec4 b = RGBtoYUV(B, D, H, F);
+        vec4 c = RGBtoYUV(C, A, G, I);
+        vec4 e = RGBtoYUV(E, E, E, E);
+        vec4 d = b.yzwx;
+        vec4 f = b.wxyz;
+        vec4 g = c.zwxy;
+        vec4 h = b.zwxy;
+        vec4 i = c.wxyz;
+
+        vec4 i4 = RGBtoYUV(I4, C1, A0, G5);
+        vec4 i5 = RGBtoYUV(I5, C4, A1, G0);
+        vec4 h5 = RGBtoYUV(H5, F4, B1, D0);
+        vec4 f4 = h5.yzwx;
+
+        vec4 Ao = vec4( 1.0, -1.0, -1.0,  1.0 );
+        vec4 Bo = vec4( 1.0,  1.0, -1.0, -1.0 );
+        vec4 Co = vec4( 1.5,  0.5, -0.5,  0.5 );
+        vec4 Ax = vec4( 1.0, -1.0, -1.0,  1.0 );
+        vec4 Bx = vec4( 0.5,  2.0, -0.5, -2.0 );
+        vec4 Cx = vec4( 1.0,  1.0, -0.5,  0.0 );
+        vec4 Ay = vec4( 1.0, -1.0, -1.0,  1.0 );
+        vec4 By = vec4( 2.0,  0.5, -2.0, -0.5 );
+        vec4 Cy = vec4( 2.0,  0.0, -1.0,  0.5 );
+
+        // These inequations define the line below which interpolation occurs
+        bvec4 fx      = greaterThan(Ao * fp.y + Bo * fp.x, Co);
+        bvec4 fx_left = greaterThan(Ax * fp.y + Bx * fp.x, Cx);
+        bvec4 fx_up   = greaterThan(Ay * fp.y + By * fp.x, Cy);
+
+        bvec4 t1 = _and_( notEqual(e, f), notEqual(e, h) );
+        bvec4 t2 = _and_( not(close(f, b)), not(close(h, d)) );
+        bvec4 t3 = _and_( _and_( close(e, i), not(close(f, i4)) ), not(close(h, i5)) );
+        bvec4 t4 = _or_( close(e, g), close(e, c) );
+        bvec4 interp_restriction_lv1 = _and_( t1, _or_( _or_(t2, t3), t4 ) );
+
+        bvec4 interp_restriction_lv2_left = _and_( notEqual(e, g), notEqual(d, g) );
+        bvec4 interp_restriction_lv2_up   = _and_( notEqual(e, c), notEqual(b, c) );
+
+        bvec4 edr      = _and_( lessThan(weighted_distance(e, c, g, i, h5, f4, h, f),
+                                         weighted_distance(h, d, i5, f, i4, b, e, i)), interp_restriction_lv1 );
+        bvec4 edr_left = _and_( lessThanEqual(coef * df(f, g), df(h, c)), interp_restriction_lv2_left );
+        bvec4 edr_up   = _and_( greaterThanEqual(df(f, g), coef * df(h, c)), interp_restriction_lv2_up );
+
+        bvec4 nc = _and_( edr, _or_( _or_( fx, _and_(edr_left, fx_left) ), _and_(edr_up, fx_up) ) );
+
+        bvec4 px = lessThanEqual(df(e, f), df(e, h));
+
+        vec3 res = nc.x ? px.x ? F : H : nc.y ? px.y ? B : F : nc.z ? px.z ? D : B : nc.w ? px.w ? H : D : E;
+
+        gl_FragColor.rgb = res;
+        gl_FragColor.a = 1.0;
+
+    }
 `;
 
 var vertexShaderCode = `
-uniform mat4 uMatrix;
+    precision mediump float;
 
-attribute vec3 aVertexPosition;
-attribute vec2 aVertexTexture;
+    uniform mat4 uMatrix;
+    uniform vec2 uInputResolution;
 
-varying vec2 vTextureCoordinates;
+    attribute vec3 aVertexPosition;
+    attribute vec2 aVertexTextureUv;
 
-void main( void ) {
-    gl_Position = uMatrix * vec4(aVertexPosition, 1);
-    vTextureCoordinates = aVertexTexture;
-}
+    varying vec4 texCoord[8];
+
+    void main(void) {
+
+        float dx = 1.0 / uInputResolution.x;
+        float dy = 1.0 / uInputResolution.y;
+
+        //     A1 B1 C1
+        //  A0  A  B  C C4
+        //  D0  D  E  F F4
+        //  G0  G  H  I I4
+        //     G5 H5 I5
+
+        vec4 texCoordBase = vec4( aVertexTextureUv.s, 1.0 - aVertexTextureUv.t, 0.0, 0.0 );
+
+        texCoord[0] = texCoordBase;
+        texCoord[1] = texCoordBase.xxxy + vec4(    -dx,   0,  dx, -2.0*dy);  //  A1 B1 C1
+        texCoord[2] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,     -dy);  //   A  B  C
+        texCoord[3] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,       0);  //   D  E  F
+        texCoord[4] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,      dy);  //   G  H  I
+        texCoord[5] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,  2.0*dy);  //  G5 H5 I5
+        texCoord[6] = texCoordBase.xyyy + vec4(-2.0*dx, -dy,   0,      dy);  //  A0 D0 G0
+        texCoord[7] = texCoordBase.xyyy + vec4( 2.0*dx, -dy,   0,      dy);  //  C4 F4 I4
+
+        gl_Position = uMatrix * vec4(aVertexPosition, 1);
+
+    }
 `;
 
 export class WebGLScreen {
@@ -142,7 +293,8 @@ export class WebGLScreen {
 
     _setupContext( ) {
 
-        this._context = this._canvas.getContext( 'webgl' ) || this._canvas.getContext( 'experimental-webgl' );
+        var options = { antialias : true };
+        this._context = this._canvas.getContext( 'webgl', options ) || this._canvas.getContext( 'experimental-webgl', options );
 
         this._context.clearColor( 0.0, 0.0, 0.0, 0.0);
         this._context.blendFunc( this._context.SRC_ALPHA, this._context.ONE_MINUS_SRC_ALPHA );
@@ -154,7 +306,7 @@ export class WebGLScreen {
         this._vertexShader = this._createShader( this._context.VERTEX_SHADER, vertexShaderCode );
 
         this._vertexPositionBuffer = this._createBuffer( this._context.ARRAY_BUFFER, 4, new Float32Array( [ -1, -1, 0, /**/ 1, -1, 0, /**/ 1, 1, 0, /**/ -1, 1, 0 ] ) );
-        this._vertexTextureBuffer = this._createBuffer( this._context.ARRAY_BUFFER, 4, new Float32Array( [ 0, 0, /**/ 1, 0, /**/ 1, 1, /**/ 0, 1 ] ) );
+        this._vertexTextureUvBuffer = this._createBuffer( this._context.ARRAY_BUFFER, 4, new Float32Array( [ 0, 0, /**/ 1, 0, /**/ 1, 1, /**/ 0, 1 ] ) );
         this._vertexIndexBuffer = this._createBuffer( this._context.ELEMENT_ARRAY_BUFFER, 4, new Uint16Array( [ 0, 1, 3, 2 ] ) );
 
         this._linkShaders( this._fragmentShader, this._vertexShader );
@@ -170,22 +322,24 @@ export class WebGLScreen {
         this._context.linkProgram( shaderProgram );
 
         if ( ! this._context.getProgramParameter( shaderProgram, this._context.LINK_STATUS ) )
-            throw new Error( 'Shader linking failed' );
+            throw new Error( 'Shader linking failed : ' + this._context.getError( ) );
 
         this._context.useProgram( shaderProgram );
 
         this._matrixLocation = this._context.getUniformLocation( shaderProgram, 'uMatrix' );
 
-        this._samplerUniform = this._context.getUniformLocation( shaderProgram, 'uSample' );
-        this._context.uniform1i( this._samplerUniform, 0 );
+        this._screenTextureLocation = this._context.getUniformLocation( shaderProgram, 'uScreenTexture' );
+        this._context.uniform1i( this._screenTextureLocation, 0 );
 
-        this._resolutionwebglLocation = this._context.getUniformLocation( shaderProgram, 'uResolution' );
+        this._inputResolutionLocation = this._context.getUniformLocation( shaderProgram, 'uInputResolution' );
+        this._outputResolutionLocation = this._context.getUniformLocation( shaderProgram, 'uOutputResolution' );
+        this._viewportResolutionLocation = this._context.getUniformLocation( shaderProgram, 'uViewportResolution' );
 
         this._vertexPositionAttribute = this._context.getAttribLocation( shaderProgram, 'aVertexPosition' );
         this._context.enableVertexAttribArray( this._vertexPositionAttribute );
 
-        this._vertexTextureAttribute = this._context.getAttribLocation( shaderProgram, 'aVertexTexture' );
-        this._context.enableVertexAttribArray( this._vertexTextureAttribute );
+        this._vertexTextureUvAttribute = this._context.getAttribLocation( shaderProgram, 'aVertexTextureUv' );
+        this._context.enableVertexAttribArray( this._vertexTextureUvAttribute );
 
     }
 
@@ -194,8 +348,14 @@ export class WebGLScreen {
         if ( ! this._context )
             return ; // No error in context lost
 
-        var widthRatio = this._canvas.width / this._width;
-        var heightRatio = this._canvas.height / this._height;
+        var inputWidth = this._width;
+        var inputHeight = this._height;
+
+        var outputWidth = this._canvas.width;
+        var outputHeight = this._canvas.height;
+
+        var widthRatio = outputWidth / inputWidth;
+        var heightRatio = outputHeight / inputHeight;
 
         var ratio = Math.min( widthRatio, heightRatio );
 
@@ -204,7 +364,9 @@ export class WebGLScreen {
 
         var matrix = this._createOrthoMatrix( - viewportWidth, viewportWidth, - viewportHeight, viewportHeight, - 100, 100 );
         this._context.uniformMatrix4fv( this._matrixLocation, false, matrix );
-        this._context.uniform2f( this._resolutionLocation, viewportWidth, viewportHeight );
+        this._context.uniform2f( this._inputResolutionLocation, inputWidth, inputHeight );
+        this._context.uniform2f( this._outputResolutionLocation, outputWidth, outputHeight );
+        this._context.uniform2f( this._viewportResolutionLocation, viewportWidth, viewportHeight );
 
     }
 
@@ -213,15 +375,15 @@ export class WebGLScreen {
         this._context.bindBuffer( this._vertexPositionBuffer.bufferTarget, this._vertexPositionBuffer );
         this._context.vertexAttribPointer( this._vertexPositionAttribute, this._vertexPositionBuffer.itemSize, this._context.FLOAT, false, 0, 0 );
 
-        this._context.bindBuffer( this._vertexTextureBuffer.bufferTarget, this._vertexTextureBuffer );
-        this._context.vertexAttribPointer( this._vertexTextureAttribute, this._vertexTextureBuffer.itemSize, this._context.FLOAT, false, 0, 0 );
+        this._context.bindBuffer( this._vertexTextureUvBuffer.bufferTarget, this._vertexTextureUvBuffer );
+        this._context.vertexAttribPointer( this._vertexTextureUvAttribute, this._vertexTextureUvBuffer.itemSize, this._context.FLOAT, false, 0, 0 );
 
         this._context.activeTexture( this._context.TEXTURE0 );
 
         this._textures.forEach( texture => {
             this._context.bindTexture( this._context.TEXTURE_2D, texture );
             this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_MAG_FILTER, this._context.NEAREST );
-            this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_MIN_FILTER, this._context.LINEAR );
+            this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_MIN_FILTER, this._context.NEAREST );
             this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_WRAP_S, this._context.CLAMP_TO_EDGE );
             this._context.texParameteri( this._context.TEXTURE_2D, this._context.TEXTURE_WRAP_T, this._context.CLAMP_TO_EDGE );
         } );
