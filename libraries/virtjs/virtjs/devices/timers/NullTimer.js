@@ -6,15 +6,11 @@ export class NullTimer {
 
     */ }
 
-    createTimeout( callback, delay ) { /*
+    cancelTimeout( marker ) { /*
 
-        An engine will call this function if it wants a function to be called in X milliseconds.
+        An engine will call this function if it wants to cancel a delayed frame callback.
 
-    */ }
-
-    cancelTimeout( timeout ) { /*
-
-        An engine will call this function if it wants to disable a timeout.
+        The argument passed to cancelTick should be the return value of the matching nextTick call.
 
     */ }
 

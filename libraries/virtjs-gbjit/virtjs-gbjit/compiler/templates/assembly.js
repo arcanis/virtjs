@@ -4,7 +4,7 @@ export var templates = {
 
     'NOP'          : ( address, nextAddress, parameters ) => `nop`,
 
-    'STOP'         : ( address, nextAddress, parameters ) => `stop`,
+    'STOP_u8'      : ( address, nextAddress, parameters ) => `stop`,
     'HALT'         : ( address, nextAddress, parameters ) => `halt`,
 
     'DI'           : ( address, nextAddress, parameters ) => `di`,
@@ -62,6 +62,7 @@ export var templates = {
     'ADD_r8_r8'    : ( address, nextAddress, parameters ) => `add ${parameters[0]}, ${parameters[1]}`,
     'ADD_r8_u8'    : ( address, nextAddress, parameters ) => `add ${parameters[0]}, ${formatHexadecimal(parameters[1], 8)}`,
     'ADD_r8_(r16)' : ( address, nextAddress, parameters ) => `add ${parameters[0]}, [${parameters[1]}]`,
+    'ADD_r16_i8'   : ( address, nextAddress, parameters ) => `add ${parameters[0]}, ${parameters[1]}`,
     'ADD_r16_r16'  : ( address, nextAddress, parameters ) => `add ${parameters[0]}, ${parameters[1]}`,
 
     'SBC_r8_r8'    : ( address, nextAddress, parameters ) => `sbc ${parameters[0]}, ${parameters[1]}`,
@@ -139,6 +140,7 @@ export var templates = {
     'LD_(r16)_r8'  : ( address, nextAddress, parameters ) => `ld [${parameters[0]}], ${parameters[1]}`,
     'LD_r8_(u16)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${formatAddress(parameters[1], 16)}]`,
     'LD_r8_(r16)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${parameters[1]}]`,
+    'LD_r8_(r8)'   : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${parameters[1]}]`,
     'LD_(r8)_r8'   : ( address, nextAddress, parameters ) => `ld [${parameters[0]}], ${parameters[1]}`,
 
     'LDH_r8_(u8)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${formatRelativeAddress(0xFF00, parameters[1], 16, 8)}]`,

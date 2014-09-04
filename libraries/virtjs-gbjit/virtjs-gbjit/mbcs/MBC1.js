@@ -1,6 +1,6 @@
 export class MBC1 {
 
-    constructor( ) {
+    constructor( features ) {
 
         this._environment = null;
 
@@ -13,6 +13,12 @@ export class MBC1 {
 
     }
 
+    link( { jit } ) {
+
+        this._jit = jit;
+
+    }
+
     setup( environment ) {
 
         this._environment = environment;
@@ -22,6 +28,8 @@ export class MBC1 {
 
         for ( var ramBank = 0; ramBank * 0x2000 < this._environment.ramBuffer.byteLength; ++ ramBank )
             this._ramBanks[ ramBank ] = new Uint8Array( this._environment.ramBuffer, ramBank * 0x2000, 0x2000 );
+
+        this._romBank00 = this._romBanks[ 0x00 ];
 
         this._rebank( );
 
@@ -103,9 +111,15 @@ export class MBC1 {
         if ( ( romBank & 0x1F ) === 0 )
             romBank += 1;
 
-        this._romBank00 = this._romBanks[ 0x00 ];
-        this._romBankNN = this._romBanks[ romBank ];
-        this._ramBankNN = this._ramBanks[ ramBank ];
+        if ( this._romBankNN !== this._romBanks[ romBank ] ) {
+            this._romBankNN = this._romBanks[ romBank ];
+            this._jit.switchPageSetTarget( 'romNN', romBank );
+        }
+
+        if ( this._ramBankNN !== this._ramBanks[ ramBank ] ) {
+            this._ramBankNN = this._ramBanks[ ramBank ];
+            this._jit.switchPageSetTarget( 'ramNN', ramBank );
+        }
 
     }
 

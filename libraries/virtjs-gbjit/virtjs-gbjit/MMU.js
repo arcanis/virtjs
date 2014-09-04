@@ -34,7 +34,9 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
     constructor( { events = [ ] } ) {
 
-        this._readEvent = !!~events.indexOf( 'read' ) ? { } : null;
+        super( );
+
+        this._fastReadUint8dEvent = !!~events.indexOf( 'read' ) ? { } : null;
         this._writeEvent = !!~events.indexOf( 'write' ) ? { } : null;
         this._postWriteEvent = this._writeEvent ? { } : null;
 
@@ -49,8 +51,9 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
     }
 
-    link( { gpu, keyio } ) {
+    link( { gpu, keyio, jit } ) {
 
+        this._jit = jit;
         this._gpu = gpu;
         this._keyio = keyio;
 
@@ -66,7 +69,9 @@ export class MMU extends mixin( null, EmitterMixin ) {
         this._oam = new Uint8Array( environment.oamBuffer );
 
         var type = new Uint8Array( environment.romBuffer )[ 0x0147 ];
+
         this._mbc = new ( cartridgeTypes[ type ] )( );
+        this._mbc.link( { jit : this._jit } );
         this._mbc.setup( environment );
 
     }
@@ -96,6 +101,8 @@ export class MMU extends mixin( null, EmitterMixin ) {
         this._postWriteEvent.address = address;
         this._postWriteEvent.value = value;
         this.emit( 'post-write', this._postWriteEvent );
+
+        jit.invalidateAddress( address );
 
     }
 

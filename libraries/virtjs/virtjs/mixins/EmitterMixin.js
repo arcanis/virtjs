@@ -1,9 +1,13 @@
 export class EmitterMixin {
 
+    constructor( ) {
+
+        this._listeners = { '*' : [ ] };
+
+    }
+
     on( event, callback, context ) {
 
-        if ( typeof this._listeners === 'undefined' )
-            this._listeners = { };
         if ( typeof this._listeners[ event ] === 'undefined' )
             this._listeners[ event ] = [ ];
 
@@ -13,8 +17,6 @@ export class EmitterMixin {
 
     off( event, callback, context ) {
 
-        if ( typeof this._listeners === 'undefined' )
-            return ;
         if ( typeof this._listeners[ event ] === 'undefined' )
             return ;
 
@@ -32,17 +34,12 @@ export class EmitterMixin {
 
     emit( event, data ) {
 
-        if ( typeof this._listeners === 'undefined' )
-            return ;
         if ( typeof this._listeners[ event ] === 'undefined' )
             return ;
 
         this._listeners[ event ].forEach( ( [ callback, context ] ) => {
             callback.call( context, data );
         } );
-
-        if ( typeof this._listeners[ '*' ] === 'undefined' )
-            return ;
 
         this._listeners[ '*' ].forEach( ( [ callback, context ] ) => {
             callback.call( context, event, data );

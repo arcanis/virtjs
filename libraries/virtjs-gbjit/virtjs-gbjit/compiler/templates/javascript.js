@@ -145,6 +145,8 @@ export var templates = {
 
         ${h.applyClockCycles(3)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'DEC_r8' : ( address, nextAddress, parameters, h ) => `
@@ -182,6 +184,8 @@ export var templates = {
         ${h.half('mAfter', '>', 'mBefore')};
 
         ${h.applyClockCycles(3)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -637,6 +641,21 @@ export var templates = {
 
     `,
 
+    'ADD_r16_i8' : ( address, nextAddress, parameters, h ) => `
+
+        var rrBefore = ${h.readR16(parameters[0])};
+        ${h.writeR16(h.add16(parameters[0], parameters[1]))};
+        var rrAfter = ${h.readR16(parameters[0])};
+
+        ${h.bcd(false)};
+        ${h.zero(false)};
+        ${h.half('rrAfter', '<', 'rrBefore')};
+        ${h.half('rrAfter', '<', 'rrBefore')};
+
+        ${h.applyClockCycles(4)};
+
+    `,
+
     'SBC_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
@@ -975,6 +994,8 @@ export var templates = {
 
         ${h.applyClockCycles(4)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'RRC_r8' : ( address, nextAddress, parameters, h ) => `
@@ -1020,6 +1041,8 @@ export var templates = {
         }
 
         ${h.applyClockCycles(4)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1111,6 +1134,8 @@ export var templates = {
 
         ${h.applyClockCycles(4)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'RLC_r8' : ( address, nextAddress, parameters, h ) => `
@@ -1156,6 +1181,8 @@ export var templates = {
         }
 
         ${h.applyClockCycles(4)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1247,6 +1274,8 @@ export var templates = {
 
         ${h.applyClockCycles(4)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'SRA_r8' : ( address, nextAddress, parameters, h ) => `
@@ -1295,6 +1324,8 @@ export var templates = {
 
         ${h.applyClockCycles(4)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'SRL_r8' : ( address, nextAddress, parameters, h ) => `
@@ -1340,6 +1371,8 @@ export var templates = {
         }
 
         ${h.applyClockCycles(4)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1453,6 +1486,8 @@ export var templates = {
 
         ${h.applyClockCycles(4)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'LD_(u16)_r16' : ( address, nextAddress, parameters, h ) => `
@@ -1460,6 +1495,8 @@ export var templates = {
         ${h.writeMem16(h.readR16(parameters[0]), h.readR16(parameters[1]))};
 
         ${h.applyClockCycles(5)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1469,6 +1506,8 @@ export var templates = {
 
         ${h.applyClockCycles(3)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'LD_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
@@ -1476,6 +1515,8 @@ export var templates = {
         ${h.writeMem8(h.readR16(parameters[0]), h.readR8(parameters[1]))};
 
         ${h.applyClockCycles(2)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1487,11 +1528,21 @@ export var templates = {
 
     `,
 
+    'LD_r8_(r8)' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, h.readR8(parameters[1]))))};
+
+        ${h.applyClockCycles(2)};
+
+    `,
+
     'LD_(r8)_r8' : ( address, nextAddress, parameters, h ) => `
 
         ${h.writeMem8(h.add16(0xFF00, h.readR8(parameters[0])), h.readR8(parameters[1]))};
 
         ${h.applyClockCycles(2)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1508,6 +1559,8 @@ export var templates = {
         ${h.writeMem8(h.add16(0xFF00, parameters[0]), h.readR8(parameters[1]))};
 
         ${h.applyClockCycles(2)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1535,6 +1588,8 @@ export var templates = {
 
         ${h.applyClockCycles(2)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'LDI_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
@@ -1556,6 +1611,8 @@ export var templates = {
         ${h.writeR16(parameters[0], h.sub16('position', 1))}
 
         ${h.applyClockCycles(2)};
+
+        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -1602,13 +1659,13 @@ export var templates = {
 
         ${h.applyClockCycles(4)};
 
+        ${h.checkForInvalidation(nextAddress)};
+
     `,
 
     'STOP_u8' : ( address, nextAddress, parameters, h ) => `
 
         // env.exit(jit);
-
-        console.log( 'stop' );
 
         ${h.applyClockCycles(1)};
 
@@ -1619,8 +1676,6 @@ export var templates = {
     'HALT' : ( address, nextAddress, parameters, h ) => `
 
         // env.exit(jit);
-
-        console.log( 'halt' );
 
         ${h.applyClockCycles(1)};
 

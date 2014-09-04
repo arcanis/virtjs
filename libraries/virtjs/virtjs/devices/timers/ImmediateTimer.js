@@ -2,23 +2,13 @@ export class ImmediateTimer {
 
     nextTick( callback ) {
 
-        setImmediate( ( ) => {
-            callback( );
-        } );
+        return setImmediate( callback );
 
     }
 
-    createTimeout( callback, delay ) {
+    cancelTick( marker ) {
 
-        return setTimeout( ( ) => {
-            callback( );
-        }, delay );
-
-    }
-
-    cancelTimeout( timeout ) {
-
-        clearTimeout( timeout );
+        clearImmediate( marker );
 
     }
 

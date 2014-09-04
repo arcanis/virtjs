@@ -2,7 +2,7 @@ import { createAccessor } from 'virtjs/utils/MemoryUtils';
 
 export class MBC1 {
 
-    constructor( features, engine ) {
+    constructor( features, engine, jit ) {
 
         this._features = features;
         this._engine = engine;
@@ -97,8 +97,15 @@ export class MBC1 {
         if ( ( romBank & 0x1F ) === 0 )
             romBank += 1;
 
-        this._romBankNN = this._romBanks[ romBank ];
-        this._ramBankNN = this._ramBanks[ ramBank ];
+        if ( this._romBankNN !== this._romBanks[ romBank ] ) {
+            this._romBankNN = this._romBanks[ romBank ];
+            this._jit.invalidateRange( 0x4000, 0x8000 );
+        }
+
+        if ( this._ramBankNN !== this._ramBanks[ ramBank ] ) {
+            this._ramBankNN = this._ramBanks[ ramBank ];
+            this._jit.invalidateRange( 0xA000, 0xBFFF );
+        }
 
     }
 

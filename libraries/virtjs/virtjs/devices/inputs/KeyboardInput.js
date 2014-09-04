@@ -18,10 +18,10 @@ var automapData = {
 
 export class KeyboardInput extends mixin( null, EmitterMixin ) {
 
-    constructor( options = { } ) {
+    constructor( { element = document.body } ) {
 
         this._map = options.map || this._createAutomap( options.inputs );
-        this._element = options.element || document.body;
+        this._element = options.element;
 
         this._onKeyDown_ = this._onKeyDown.bind( this );
         this._onKeyUp_ = this._onKeyUp.bind( this );

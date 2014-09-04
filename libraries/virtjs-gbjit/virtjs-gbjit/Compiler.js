@@ -10,14 +10,15 @@ import { i8_t, u8_t, u16_t }                       from 'virtjs-gbjit/compiler/o
 
 export class Compiler {
 
-    constructor( { testMode, emitEvents } = { } ) {
+    constructor( { testMode, emitEvents, monoInstructionBlocks } = { } ) {
 
         this._mmu = null;
 
         this._extraDebug = false;
-        this._debugMode = true;
+        this._debugMode = false;
         this._testMode = testMode;
         this._emitEvents = emitEvents;
+        this._monoInstructionBlocks = monoInstructionBlocks;
 
         this._helpers = this._testMode ?
             new TestHelpers( ) :
@@ -34,6 +35,9 @@ export class Compiler {
 
     compileFrom( base, limit ) {
 
+        if ( this._monoInstructionBlocks )
+            limit = 1;
+
         this._helpers.baseAddress = base;
 
         var instructions = this._getInstructions( base, limit );
@@ -45,15 +49,20 @@ export class Compiler {
         var sourceCode = this._linkInstructions( instructions, this._debugMode )
         var jittedFunction = this._evalSourceCode( sourceCode );
 
-        return jittedFunction;
+        return { fn : jittedFunction, end : 0, overflow : 0,  };
 
     }
 
     disassembleAt( address ) {
 
-        var { type, begin, end, parameters } = this._peekInstruction( address );
+        var instruction = this._peekInstruction( address );
+        var { type, opcode, begin, end, parameters } = instruction;
 
-        return assemblyTemplates[ type ]( begin, end, parameters );
+        instruction.assembly = type === null ?
+            `<invalid opcode ${formatHexadecimal(opcode, 8)}>` :
+            assemblyTemplates[ type ]( begin, end, parameters );
+
+        return instruction;
 
     }
 
@@ -61,7 +70,7 @@ export class Compiler {
 
         var instructions = [ ];
 
-        for ( var offset = 0; offset < limit; offset += instruction.size ) {
+        for ( var offset = 0; ! instructions.length || offset < limit; offset += instruction.size ) {
 
             var instruction = this._peekInstruction( base + offset );
             instructions.push( instruction );
@@ -137,8 +146,11 @@ export class Compiler {
         var sourceCode = instructions.map( ( { javascript } ) => javascript );
         var sourceMaps = instructions.map( ( { sourceMap } ) => sourceMap );
 
+        var nextAddress = instructions[ instructions.length - 1 ].end;
+
         sourceCode.unshift( '(function(jit,env){while(true){' );
-        sourceCode.push('}})');
+        sourceCode.push( this._helpers.jumpTo( nextAddress ) );
+        sourceCode.push( '}})' );
 
         if ( ! withSourceMaps )
             return sourceCode.join( '\n' );
@@ -174,7 +186,7 @@ export class Compiler {
             opcode = 0xCB00 | this._mmu.readUint8( begin + size++ );
         }
 
-        var [ type, parametersTypes, flags = { } ] = table[ opcode & 0xFF ];
+        var [ type, parametersTypes = [ ], flags = { } ] = table[ opcode & 0xFF ];
 
         var parameters = parametersTypes.map( value => {
 

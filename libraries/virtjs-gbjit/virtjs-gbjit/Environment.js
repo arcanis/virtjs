@@ -1,11 +1,9 @@
 import { TestEnvironment as TestEnvironmentBase } from 'virtjs/core/tests/TestEnvironment';
 import { CYCLES_PER_OAM }                         from 'virtjs-gbjit/GPU';
 
-export class Environment extends TestEnvironmentBase {
+export class Environment {
 
-    constructor( { romBuffer, expectations } = { } ) {
-
-        super( { expectations } );
+    constructor( { romBuffer } = { } ) {
 
         this.pc = 0x0100;
         this.sp = 0xFFFE;

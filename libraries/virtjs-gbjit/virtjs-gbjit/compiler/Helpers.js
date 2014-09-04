@@ -18,20 +18,20 @@ export class Helpers {
 
     }`; }
 
+    checkForInvalidation( nextAddress ) { return `{
+
+        if ( ! jit.stillValid( ) ) {
+            return ${nextAddress};
+        }
+
+    }`; }
+
     jumpTo( addressExpression ) {
 
         if ( this.baseAddress === addressExpression ) { return `
-
             continue ;
-
         `; } else { return `{
-
-            window.foo = window.foo || [ ];
-            if ( window.foo[ window.foo.length - 1 ] !== ${ addressExpression } )
-                window.foo.push( ${ addressExpression } );
-
             return ${addressExpression};
-
         }`; }
 
     }

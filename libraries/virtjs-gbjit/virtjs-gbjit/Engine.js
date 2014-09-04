@@ -1,5 +1,8 @@
+import { JIT }                  from 'virtjs/core/jit/JIT';
+import { PageSet }              from 'virtjs/core/jit/PageSet';
+import { ReadOnlyPage }         from 'virtjs/core/jit/ReadOnlyPage';
+import { VersionedPage }        from 'virtjs/core/jit/VersionedPage';
 import { Engine as BaseEngine } from 'virtjs/core/Engine';
-import { JIT }                  from 'virtjs/core/JIT';
 import { EmitterMixin }         from 'virtjs/mixins/EmitterMixin';
 import { mixin }                from 'virtjs/utils/ObjectUtils';
 
@@ -27,41 +30,67 @@ export var inputs = {
 
 export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
-    constructor( { testMode, devices, events = [ ] } = { } ) {
+    constructor( { testMode, devices, advanced = { }, events = [ ] } = { } ) {
 
+        super( );
+
+        this._startEvent = !!~events.indexOf( 'start' ) ? { } : null;
+        this._stopEvent = !!~events.indexOf( 'start' ) ? { } : null;
         this._instructionEvent = !!~events.indexOf( 'instruction' ) ? { } : null;
+        this._postInstructionEvent = !!~events.indexOf( 'instruction' ) ? { } : null;
         this._setupEvent = !!~events.indexOf( 'setup' ) ? { } : null;
 
+        this._enableJitLoop = advanced.enableJitLoop;
+        this._monoInstructionBlocks = advanced.monoInstructionBlocks;
+
         this.screen = devices.screen;
+        this.timer = devices.timer;
 
         this._gpu = new GPU( {
             screen : devices.screen
         } );
 
         this._keyio = new KeyIO( {
-            input : devices.keys
+            input : devices.input
         } );
 
         this._mmu = new MMU( {
+            events : events
         } );
 
         this._compiler = new Compiler( {
             testMode : testMode,
-            emitEvents : this._instructionEvent
+            emitEvents : this._instructionEvent ? true : false,
+            monoInstructionBlocks : this._monoInstructionBlocks
+        } );
+
+        this._jit = new JIT( {
+            enableLoop : this._enableJitLoop
+        } );
+
+        this._compiler.link( {
+            mmu : this._mmu
+        } );
+
+        this._jit.link( {
+            compiler : this._compiler
         } );
 
         this._mmu.link( {
             keyio : this._keyio,
-            gpu : this._gpu
+            gpu : this._gpu,
+            jit : this._jit
         } );
 
         this._gpu.link( {
             mmu : this._mmu
         } );
 
-        this._compiler.link( {
-            mmu : this._mmu
-        } );
+        this._jit.declarePageSet( 'rom00', 0x0000, 0x3FFF, VersionedPage );
+        this._jit.declarePageSet( 'romNN', 0x4000, 0x7FFF, PageSet.bind( null, VersionedPage ) );
+        this._jit.declarePageSet( 'misc0', 0x8000, 0x9FFF, VersionedPage );
+        this._jit.declarePageSet( 'ramNN', 0xA000, 0xBFFF, PageSet.bind( null, VersionedPage ) );
+        this._jit.declarePageSet( 'misc1', 0xC000, 0xFFFF, VersionedPage );
 
         this._runTimer = null;
 
@@ -70,23 +99,24 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
     setup( environment ) {
 
         this.environment = environment;
-        environment.engine = this;
+        this.environment.engine = this;
 
-        environment.exit = ( jit ) => { this.stop( ); }
+        this.environment.exit = ( jit ) => { this.stop( ); }
 
-        environment.readUint8 = ( address ) => this._mmu.readUint8( address );
-        environment.writeUint8 = ( address, value ) => this._mmu.writeUint8( address, value );
+        this.environment.readUint8 = ( address ) => this._mmu.readUint8( address );
+        this.environment.writeUint8 = ( address, value ) => this._mmu.writeUint8( address, value );
 
-        environment.triggerInstructionEvent = ( address, opcode ) => this._triggerInstructionEvent( address, opcode );
-        environment.triggerInterrupts = ( retAddress ) => this._triggerInterrupts( retAddress );
-        environment.triggerGpuCycle = ( ) => this._gpu.nextMode( );
+        this.environment.triggerInstructionEvent = ( address, opcode ) => this._triggerInstructionEvent( address, opcode );
+        this.environment.triggerPostInstructionEvent = ( address, opcode ) => this._triggerPostInstructionEvent( address );
+        this.environment.triggerInterrupts = ( retAddress ) => this._triggerInterrupts( retAddress );
+        this.environment.triggerGpuCycle = ( ) => this._gpu.nextMode( );
 
-        this._gpu.setup( environment );
-        this._keyio.setup( environment );
-        this._mmu.setup( environment );
+        this._jit.setup( this.environment );
+        this._gpu.setup( this.environment );
+        this._keyio.setup( this.environment );
+        this._mmu.setup( this.environment );
 
-        this._jit = new JIT( this._compiler, environment );
-        this._jit.jumpTo( environment.pc );
+        this._jit.jumpTo( this.environment.pc );
 
         if ( this._setupEvent ) {
             this.emit( 'setup', this._setupEvent );
@@ -94,10 +124,10 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
     }
 
-    loadBuffer( buffer, { autostart } = { } ) {
+    loadArrayBuffer( arrayBuffer, { autostart = true } = { } ) {
 
         this.setup( new Environment( {
-            romBuffer : fixRomSize( buffer )
+            romBuffer : fixRomSize( arrayBuffer )
         } ) );
 
         if ( autostart ) {
@@ -108,28 +138,47 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
     disassembleAt( address ) {
 
-        this._compiler.disassembleAt( address );
+        return this._compiler.disassembleAt( address );
+
+    }
+
+    isRunning( ) {
+
+        return this._runTimer !== null;
 
     }
 
     stop( ) {
 
-        if ( this._jit )
-            this._jit.stop( );
+        if ( ! this._runTimer )
+            return ;
 
-        window.cancelAnimationFrame( this._runTimer );
+        this._jit.stop( );
+
+        this.timer.cancelTick( this._runTimer );
+        this._runTimer = null;
+
+        if ( this._stopEvent ) {
+            this.emit( 'stop', this._stopEvent );
+        }
 
     }
 
     run( ) {
 
+        if ( this._runTimer )
+            return ;
+
         var run = ( ) => {
 
-            this._runTimer = window.requestAnimationFrame( run );
+            this._runTimer = this.timer.nextTick( run );
 
-            this._jit.continue( );
+            this._jit.resume( );
 
         };
+
+        if ( this._startEvent )
+            this.emit( 'start', this._startEvent );
 
         run( );
 
