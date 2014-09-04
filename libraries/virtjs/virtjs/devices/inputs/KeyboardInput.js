@@ -18,10 +18,12 @@ var automapData = {
 
 export class KeyboardInput extends mixin( null, EmitterMixin ) {
 
-    constructor( { element = document.body } ) {
+    constructor( { map, inputs, element = document.body } ) {
 
-        this._map = options.map || this._createAutomap( options.inputs );
-        this._element = options.element;
+        super( );
+
+        this._map = map || this._createAutomap( inputs );
+        this._element = element;
 
         this._onKeyDown_ = this._onKeyDown.bind( this );
         this._onKeyUp_ = this._onKeyUp.bind( this );
@@ -70,6 +72,9 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
     }
 
     _onKeyDown( e ) {
+
+        if ( e.keyCode === 8 /* backspace */ )
+            e.preventDefault( );
 
         if ( typeof this._map[ e.keyCode ] === 'undefined' )
             return ;
