@@ -2,19 +2,23 @@ export var templates = {
 
     'NOP' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
     'DI' : ( address, nextAddress, parameters, h ) => `
 
-        env.cpuInterruptFeature = false;
+        environment.cpuInterruptFeature = false;
+
+        ${h.applyClockCycles(4)};
 
     `,
 
     'EI' : ( address, nextAddress, parameters, h ) => `
 
-        env.cpuInterruptFeature = true;
+        environment.cpuInterruptFeature = true;
+
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -22,7 +26,7 @@ export var templates = {
 
         ${h.pushStack(h.readR16(parameters[0]))};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
     `,
 
@@ -32,7 +36,7 @@ export var templates = {
         ${h.popStack('value')};
         ${h.writeR16(parameters[0], 'value')};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
 
     `,
 
@@ -42,7 +46,194 @@ export var templates = {
         ${h.popStack('value')};
         ${h.writeR16('af', 'value & 0xFFF0')};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
+
+    `,
+
+    'LD_r16_r16' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR16(parameters[0], h.readR16(parameters[1]))};
+
+        ${h.applyClockCycles(8)};
+
+    `,
+
+    'LD_r16_u16' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR16(parameters[0], parameters[1])};
+
+        ${h.applyClockCycles(12)};
+
+    `,
+
+    'LD_r8_r8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], h.readR8(parameters[1]))};
+
+        ${h.applyClockCycles(4)};
+
+    `,
+
+    'LD_r8_u8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], parameters[1])};
+
+        ${h.applyClockCycles(8)};
+
+    `,
+
+    'LD_r8_(u16)' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], h.readMem8(parameters[1]))};
+
+        ${h.applyClockCycles(16)};
+
+    `,
+
+    'LD_(u16)_r8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeMem8(parameters[0], h.readR8(parameters[1]))};
+
+        ${h.applyClockCycles(16)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LD_(u16)_r16' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeMem16(h.readR16(parameters[0]), h.readR16(parameters[1]))};
+
+        ${h.applyClockCycles(20)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LD_(r16)_u8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeMem8(h.readR16(parameters[0]), parameters[1])};
+
+        ${h.applyClockCycles(12)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LD_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeMem8(h.readR16(parameters[0]), h.readR8(parameters[1]))};
+
+        ${h.applyClockCycles(8)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LD_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], h.readMem8(h.readR16(parameters[1])))};
+
+        ${h.applyClockCycles(8)};
+
+    `,
+
+    'LD_r8_(r8)' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, h.readR8(parameters[1]))))};
+
+        ${h.applyClockCycles(8)};
+
+    `,
+
+    'LD_(r8)_r8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeMem8(h.add16(0xFF00, h.readR8(parameters[0])), h.readR8(parameters[1]))};
+
+        ${h.applyClockCycles(8)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LDH_r8_(u8)' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, parameters[1])))};
+
+        ${h.applyClockCycles(8)};
+
+    `,
+
+    'LDH_(u8)_r8' : ( address, nextAddress, parameters, h ) => `
+
+        ${h.writeMem8(h.add16(0xFF00, parameters[0]), h.readR8(parameters[1]))};
+
+        ${h.applyClockCycles(8)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LDHL_r16_i8' : ( address, nextAddress, parameters, h ) => `
+
+        var hlBefore = ${h.readR16(parameters[0])};
+        ${h.writeR16('hl', h.add16('hlBefore', parameters[1]))};
+        var hlAfter = ${h.readR16('hl')};
+
+        ${h.bcd(false)};
+        ${h.zero(false)};
+        ${h.half('hlAfter', '<', 'hlBefore')};
+        ${h.carry('hlAfter', '<', 'hlBefore')};
+
+        ${h.applyClockCycles(12)};
+
+    `,
+
+    'LDI_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
+
+        var position = ${h.readR16(parameters[0])};
+        ${h.writeMem8('position', h.readR8(parameters[1]))};
+
+        ${h.writeR16(parameters[0], h.add16('position', 1))}
+
+        ${h.applyClockCycles(8)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LDI_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
+
+        var position = ${h.readR16(parameters[1])};
+        ${h.writeR8(parameters[0], h.readMem8('position'))};
+
+        ${h.writeR16(parameters[1], h.add16('position', 1))};
+
+        ${h.applyClockCycles(8)};
+
+    `,
+
+    'LDD_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
+
+        var position = ${h.readR16(parameters[0])};
+        ${h.writeMem8('position', h.readR8(parameters[1]))};
+
+        ${h.writeR16(parameters[0], h.sub16('position', 1))}
+
+        ${h.applyClockCycles(8)};
+
+        ${h.checkForInvalidation(nextAddress)};
+
+    `,
+
+    'LDD_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
+
+        var position = ${h.readR16(parameters[1])};
+        ${h.writeR8(parameters[0], h.readMem8('position'))};
+
+        ${h.writeR16(parameters[1], h.sub16('position', 1))};
+
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -57,7 +248,7 @@ export var templates = {
             ${h.carry(true)};
         }
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -67,7 +258,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(true)};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -105,7 +296,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -119,7 +310,7 @@ export var templates = {
         ${h.zero('rAfter')};
         ${h.half('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -127,23 +318,23 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.add16(h.readR16(parameters[0]), 1))};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'INC_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[0])};
 
-        var mBefore = ${h.readMem8('address')};
-        ${h.writeMem8('address', h.add8('mBefore', 1))};
-        var mAfter = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
+        ${h.writeMem8('target', h.add8('mBefore', 1))};
+        var mAfter = ${h.readMem8('target')};
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
         ${h.half('mAfter', '<', 'mBefore')};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -159,7 +350,7 @@ export var templates = {
         ${h.zero('rAfter')};
         ${h.half('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -167,23 +358,23 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.sub16(h.readR16(parameters[0]), 1))};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'DEC_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[0])};
 
-        var mBefore = ${h.readMem8('address')};
-        ${h.writeMem8('address', h.sub8('mBefore', 1))};
-        var mAfter = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
+        ${h.writeMem8('target', h.sub8('mBefore', 1))};
+        var mAfter = ${h.readMem8('target')};
 
         ${h.bcd(true)};
         ${h.zero('mAfter')};
         ${h.half('mAfter', '>', 'mBefore')};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -193,12 +384,12 @@ export var templates = {
 
         if (${h.zero()} === 0) {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -208,12 +399,12 @@ export var templates = {
 
         if (${h.zero()} === 1) {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -223,12 +414,12 @@ export var templates = {
 
         if (${h.carry()} === 0) {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -238,12 +429,12 @@ export var templates = {
 
         if (${h.carry()} === 1) {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -251,7 +442,7 @@ export var templates = {
 
     'JR_i8' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
         ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
     `,
@@ -260,12 +451,12 @@ export var templates = {
 
         if (${h.zero()} === 0) {
 
-            ${h.applyClockCycles(4)};
+            ${h.applyClockCycles(16)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -275,12 +466,12 @@ export var templates = {
 
         if (${h.zero()} === 1) {
 
-            ${h.applyClockCycles(4)};
+            ${h.applyClockCycles(16)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -290,12 +481,12 @@ export var templates = {
 
         if (${h.carry()} === 0) {
 
-            ${h.applyClockCycles(4)};
+            ${h.applyClockCycles(16)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -305,12 +496,12 @@ export var templates = {
 
         if (${h.carry()} === 1) {
 
-            ${h.applyClockCycles(4)};
+            ${h.applyClockCycles(16)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -318,14 +509,14 @@ export var templates = {
 
     'JP_u16' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
         ${h.jumpTo(parameters[0])};
 
     `,
 
     'JP_r16' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
         ${h.jumpTo(h.readR16(parameters[0]))};
 
     `,
@@ -335,13 +526,13 @@ export var templates = {
         if (${h.zero()} === 0) {
 
             ${h.pushStack(nextAddress)};
-
-            ${h.applyClockCycles(6)};
             ${h.jumpTo(parameters[0])};
+
+            ${h.applyClockCycles(24)};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -352,13 +543,13 @@ export var templates = {
         if (${h.zero()} === 1) {
 
             ${h.pushStack(nextAddress)};
-
-            ${h.applyClockCycles(6)};
             ${h.jumpTo(parameters[0])};
+
+            ${h.applyClockCycles(24)};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -369,13 +560,13 @@ export var templates = {
         if (${h.carry()} === 0) {
 
             ${h.pushStack(nextAddress)};
-
-            ${h.applyClockCycles(6)};
             ${h.jumpTo(parameters[0])};
+
+            ${h.applyClockCycles(24)};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -386,13 +577,13 @@ export var templates = {
         if (${h.carry()} === 1) {
 
             ${h.pushStack(nextAddress)};
-
-            ${h.applyClockCycles(6)};
             ${h.jumpTo(parameters[0])};
+
+            ${h.applyClockCycles(24)};
 
         } else {
 
-            ${h.applyClockCycles(3)};
+            ${h.applyClockCycles(12)};
 
         }
 
@@ -401,9 +592,9 @@ export var templates = {
     'CALL_u16' : ( address, nextAddress, parameters, h ) => `
 
         ${h.pushStack(nextAddress)};
-
-        ${h.applyClockCycles(6)};
         ${h.jumpTo(parameters[0])};
+
+        ${h.applyClockCycles(24)};
 
     `,
 
@@ -412,14 +603,15 @@ export var templates = {
         if (${h.zero()} === 0) {
 
             var retTarget;
-            ${h.popStack('retTarget')};
 
-            ${h.applyClockCycles(5)};
+            ${h.popStack('retTarget')};
             ${h.jumpTo('retTarget')};
+
+            ${h.applyClockCycles(20)};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -430,14 +622,15 @@ export var templates = {
         if (${h.zero()} === 1) {
 
             var retTarget;
-            ${h.popStack('retTarget')};
 
-            ${h.applyClockCycles(5)};
+            ${h.popStack('retTarget')};
             ${h.jumpTo('retTarget')};
+
+            ${h.applyClockCycles(20)};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -448,14 +641,15 @@ export var templates = {
         if (${h.carry()} === 0) {
 
             var retTarget;
-            ${h.popStack('retTarget')};
 
-            ${h.applyClockCycles(5)};
+            ${h.popStack('retTarget')};
             ${h.jumpTo('retTarget')};
+
+            ${h.applyClockCycles(20)};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -466,14 +660,15 @@ export var templates = {
         if (${h.carry()} === 1) {
 
             var retTarget;
-            ${h.popStack('retTarget')};
 
-            ${h.applyClockCycles(5)};
+            ${h.popStack('retTarget')};
             ${h.jumpTo('retTarget')};
+
+            ${h.applyClockCycles(20)};
 
         } else {
 
-            ${h.applyClockCycles(2)};
+            ${h.applyClockCycles(8)};
 
         }
 
@@ -482,31 +677,33 @@ export var templates = {
     'RET' : ( address, nextAddress, parameters, h ) => `
 
         var retTarget;
-        ${h.popStack('retTarget')};
 
-        ${h.applyClockCycles(4)};
+        ${h.popStack('retTarget')};
         ${h.jumpTo('retTarget')};
+
+        ${h.applyClockCycles(16)};
 
     `,
 
     'RETI' : ( address, nextAddress, parameters, h ) => `
 
-        env.cpuInterruptFeature = true;
+        environment.cpuInterruptFeature = true;
 
         var retTarget;
-        ${h.popStack('retTarget')};
 
-        ${h.applyClockCycles(4)};
+        ${h.popStack('retTarget')};
         ${h.jumpTo('retTarget')};
+
+        ${h.applyClockCycles(16)};
 
     `,
 
     'RST_u8' : ( address, nextAddress, parameters, h ) => `
 
         ${h.pushStack(nextAddress)};
-
-        ${h.applyClockCycles(4)};
         ${h.jumpTo(parameters[0])};
+
+        ${h.applyClockCycles(16)};
 
     `,
 
@@ -530,7 +727,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '<', 'rAfter')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -554,7 +751,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '<', 'rAfter')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -578,7 +775,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '<', 'rAfter')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -593,7 +790,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore')};
         ${h.carry('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -608,7 +805,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore')};
         ${h.carry('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -622,7 +819,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore', 0x0FFF)};
         ${h.carry('rAfter', '<', 'rBefore', 0xFFFF)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -637,14 +834,14 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore')};
         ${h.carry('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'ADD_r16_i8' : ( address, nextAddress, parameters, h ) => `
 
         var rrBefore = ${h.readR16(parameters[0])};
-        ${h.writeR16(h.add16(parameters[0], parameters[1]))};
+        ${h.writeR16(parameters[0], h.add16(parameters[0], parameters[1]))};
         var rrAfter = ${h.readR16(parameters[0])};
 
         ${h.bcd(false)};
@@ -652,7 +849,7 @@ export var templates = {
         ${h.half('rrAfter', '<', 'rrBefore')};
         ${h.half('rrAfter', '<', 'rrBefore')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
     `,
 
@@ -676,7 +873,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '>', 'rAfter')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -700,7 +897,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '>', 'rAfter')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -724,7 +921,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '>', 'rAfter')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -738,7 +935,7 @@ export var templates = {
         ${h.half('cmp', '>', 'tmp')};
         ${h.carry('cmp', '>', 'tmp')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -752,7 +949,7 @@ export var templates = {
         ${h.half('cmp', '>', 'tmp')};
         ${h.carry('cmp', '>', 'tmp')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -766,7 +963,7 @@ export var templates = {
         ${h.half('cmp', '>', 'tmp')};
         ${h.carry('cmp', '>', 'tmp')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -781,7 +978,7 @@ export var templates = {
         ${h.half('rAfter', '>', 'rBefore')};
         ${h.carry('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -796,7 +993,7 @@ export var templates = {
         ${h.half('rAfter', '>', 'rBefore')};
         ${h.carry('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -811,7 +1008,7 @@ export var templates = {
         ${h.half('rAfter', '>', 'rBefore')};
         ${h.carry('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -825,7 +1022,7 @@ export var templates = {
         ${h.half(true)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -839,7 +1036,7 @@ export var templates = {
         ${h.half(true)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -853,7 +1050,7 @@ export var templates = {
         ${h.half(true)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -867,7 +1064,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -881,7 +1078,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -895,7 +1092,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -909,7 +1106,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -923,7 +1120,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -937,7 +1134,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
@@ -952,11 +1149,11 @@ export var templates = {
 
     'RR_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = (rBefore >>> 1) | (${h.carry()} << 7);
-        ${h.writeR8(parameters[0], 'rAfter')}
+        ${h.writeR8(parameters[1], 'rAfter')}
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -968,19 +1165,19 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'RR_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var mBefore = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
         var rightMostBit = mBefore & 0x01;
 
         var mAfter = (mBefore >>> 1) | (${h.carry()} << 7);
-        ${h.writeMem8('address', 'mAfter')};
+        ${h.writeMem8('target', 'mAfter')};
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -992,7 +1189,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1000,11 +1197,11 @@ export var templates = {
 
     'RRC_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = (rBefore >>> 1) | (rightMostBit << 7);
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1016,19 +1213,19 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'RRC_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var mBefore = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
         var rightMostBit = mBefore & 0x01;
 
         var mAfter = (mBefore >>> 1) | (rightMostBit << 7);
-        ${h.writeMem8('address', 'mAfter')};
+        ${h.writeMem8('target', 'mAfter')};
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1040,7 +1237,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1064,7 +1261,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -1086,17 +1283,17 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
     'RL_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
 
         var rAfter = ((rBefore << 1) | ${h.carry()}) & 0xFF;
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1108,19 +1305,19 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'RL_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var mBefore = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
         var leftMostBit = mBefore >>> 7;
 
         var mAfter = ((mBefore << 1) | ${h.carry()}) & 0xFF;
-        ${h.writeMem8('address', 'mAfter')};
+        ${h.writeMem8('target', 'mAfter')};
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1132,7 +1329,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1140,11 +1337,11 @@ export var templates = {
 
     'RLC_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
 
         var rAfter = ((rBefore << 1) | leftMostBit) & 0xFF;
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1156,19 +1353,19 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'RLC_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var mBefore = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
         var leftMostBit = mBefore >>> 7;
 
         var mAfter = ((mBefore << 1) | leftMostBit) & 0xFF;
-        ${h.writeMem8('address', 'mAfter')};
+        ${h.writeMem8('target', 'mAfter')};
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1180,7 +1377,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1204,7 +1401,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -1226,17 +1423,17 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(1)};
+        ${h.applyClockCycles(4)};
 
     `,
 
     'SLA_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
 
         var rAfter = (rBefore << 1) & 0xFF;
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1248,19 +1445,19 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'SLA_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var rBefore = ${h.readMem8('address')};
+        var rBefore = ${h.readMem8('target')};
         var leftMostBit = rBefore >>> 7;
 
         var rAfter = (rBefore << 1) & 0xFF;
-        ${h.writeMem8('address', 'rAfter')};
+        ${h.writeMem8('target', 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1272,7 +1469,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1280,12 +1477,12 @@ export var templates = {
 
     'SRA_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = (rBefore >>> 1) | (leftMostBit << 7);
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1297,20 +1494,20 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'SRA_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var rBefore = ${h.readMem8('address')};
+        var rBefore = ${h.readMem8('target')};
         var leftMostBit = rBefore >>> 7;
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = (rBefore >>> 1) | (leftMostBit << 7);
-        ${h.writeMem8('address', 'rAfter')};
+        ${h.writeMem8('target', 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1322,7 +1519,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1330,11 +1527,11 @@ export var templates = {
 
     'SRL_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = rBefore >>> 1;
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1346,19 +1543,19 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'SRL_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var rBefore = ${h.readMem8('address')};
+        var rBefore = ${h.readMem8('target')};
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = rBefore >> 1;
-        ${h.writeMem8('address', 'rAfter')};
+        ${h.writeMem8('target', 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1370,7 +1567,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1378,286 +1575,99 @@ export var templates = {
 
     'BIT_u8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var bit = ${h.readR8(parameters[1])} & (1 << ${parameters[0]});
+        var bit = ${h.readR8(parameters[2])} & (1 << ${parameters[1]});
 
         ${h.bcd(false)};
         ${h.zero('bit')};
         ${h.half(true)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'BIT_u8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var bit = ${h.readMem8(h.readR16(parameters[1]))} & (1 << ${parameters[0]});
+        var bit = ${h.readMem8(h.readR16(parameters[2]))} & (1 << ${parameters[1]});
 
         ${h.bcd(false)};
         ${h.zero('bit')};
         ${h.half(true)};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
 
     `,
 
     'RES_u8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rAfter = ${h.readR8(parameters[1])} & ~(1 << ${parameters[0]});
-        ${h.writeR8(parameters[1], 'rAfter')};
+        var rAfter = ${h.readR8(parameters[2])} & ~(1 << ${parameters[1]});
+        ${h.writeR8(parameters[2], 'rAfter')};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
 
     `,
 
     'RES_u8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[2])};
 
-        var rAfter = ${h.readMem8('address')} & ~(1 << ${parameters[0]});
-        ${h.writeMem8('address', 'rAfter')};
+        var rAfter = ${h.readMem8('target')} & ~(1 << ${parameters[1]});
+        ${h.writeMem8('target', 'rAfter')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
     `,
 
     'SET_u8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rAfter = ${h.readR8(parameters[1])} | (1 << ${parameters[0]});
-        ${h.writeR8(parameters[1], 'rAfter')};
+        var rAfter = ${h.readR8(parameters[2])} | (1 << ${parameters[1]});
+        ${h.writeR8(parameters[2], 'rAfter')};
 
-        ${h.applyClockCycles(3)};
+        ${h.applyClockCycles(12)};
 
     `,
 
     'SET_u8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[2])};
 
-        var rAfter = ${h.readMem8('address')} | (1 << ${parameters[0]});
-        ${h.writeMem8('address', 'rAfter')};
+        var rAfter = ${h.readMem8('target')} | (1 << ${parameters[1]});
+        ${h.writeMem8('target', 'rAfter')};
 
-        ${h.applyClockCycles(4)};
-
-    `,
-
-    'LD_r16_r16' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR16(parameters[0], h.readR16(parameters[1]))};
-
-        ${h.applyClockCycles(2)};
-
-    `,
-
-    'LD_r16_u16' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR16(parameters[0], parameters[1])};
-
-        ${h.applyClockCycles(3)};
-
-    `,
-
-    'LD_r8_r8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR8(parameters[0], h.readR8(parameters[1]))};
-
-        ${h.applyClockCycles(1)};
-
-    `,
-
-    'LD_r8_u8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR8(parameters[0], parameters[1])};
-
-        ${h.applyClockCycles(2)};
-
-    `,
-
-    'LD_r8_(u16)' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR8(parameters[0], h.readMem8(parameters[1]))};
-
-        ${h.applyClockCycles(4)};
-
-    `,
-
-    'LD_(u16)_r8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeMem8(parameters[0], h.readR8(parameters[1]))};
-
-        ${h.applyClockCycles(4)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LD_(u16)_r16' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeMem16(h.readR16(parameters[0]), h.readR16(parameters[1]))};
-
-        ${h.applyClockCycles(5)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LD_(r16)_u8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeMem8(h.readR16(parameters[0]), parameters[1])};
-
-        ${h.applyClockCycles(3)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LD_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeMem8(h.readR16(parameters[0]), h.readR8(parameters[1]))};
-
-        ${h.applyClockCycles(2)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LD_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR8(parameters[0], h.readMem8(h.readR16(parameters[1])))};
-
-        ${h.applyClockCycles(2)};
-
-    `,
-
-    'LD_r8_(r8)' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, h.readR8(parameters[1]))))};
-
-        ${h.applyClockCycles(2)};
-
-    `,
-
-    'LD_(r8)_r8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeMem8(h.add16(0xFF00, h.readR8(parameters[0])), h.readR8(parameters[1]))};
-
-        ${h.applyClockCycles(2)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LDH_r8_(u8)' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, parameters[1])))};
-
-        ${h.applyClockCycles(2)};
-
-    `,
-
-    'LDH_(u8)_r8' : ( address, nextAddress, parameters, h ) => `
-
-        ${h.writeMem8(h.add16(0xFF00, parameters[0]), h.readR8(parameters[1]))};
-
-        ${h.applyClockCycles(2)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LDHL_r16_i8' : ( address, nextAddress, parameters, h ) => `
-
-        var hlBefore = ${h.readR16(parameters[0])};
-        ${h.writeR16('hl', h.add16('hlBefore', parameters[1]))};
-        var hlAfter = ${h.readR16('hl')};
-
-        ${h.bcd(false)};
-        ${h.zero(false)};
-        ${h.half('hlAfter', '<', 'hlBefore')};
-        ${h.carry('hlAfter', '<', 'hlBefore')};
-
-        ${h.applyClockCycles(3)};
-
-    `,
-
-    'LDI_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
-
-        var position = ${h.readR16(parameters[0])};
-        ${h.writeMem8('position', h.readR8(parameters[1]))};
-
-        ${h.writeR16(parameters[0], h.add16('position', 1))}
-
-        ${h.applyClockCycles(2)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LDI_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
-
-        var position = ${h.readR16(parameters[1])};
-        ${h.writeR8(parameters[0], h.readMem8('position'))};
-
-        ${h.writeR16(parameters[1], h.add16('position', 1))};
-
-        ${h.applyClockCycles(2)};
-
-    `,
-
-    'LDD_(r16)_r8' : ( address, nextAddress, parameters, h ) => `
-
-        var position = ${h.readR16(parameters[0])};
-        ${h.writeMem8('position', h.readR8(parameters[1]))};
-
-        ${h.writeR16(parameters[0], h.sub16('position', 1))}
-
-        ${h.applyClockCycles(2)};
-
-        ${h.checkForInvalidation(nextAddress)};
-
-    `,
-
-    'LDD_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
-
-        var position = ${h.readR16(parameters[1])};
-        ${h.writeR8(parameters[0], h.readMem8('position'))};
-
-        ${h.writeR16(parameters[1], h.sub16('position', 1))};
-
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(16)};
 
     `,
 
     'SWAP_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[0])};
+        var rBefore = ${h.readR8(parameters[1])};
 
         var rAfter = ((rBefore << 4) | (rBefore >>> 4)) & 0xFF;
-        ${h.writeR8(parameters[0], 'rAfter')};
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(2)};
+        ${h.applyClockCycles(8)};
 
     `,
 
     'SWAP_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var address = ${h.readR16(parameters[0])};
+        var target = ${h.readR16(parameters[1])};
 
-        var mBefore = ${h.readMem8('address')};
+        var mBefore = ${h.readMem8('target')};
 
         var mAfter = ((mBefore << 4) | (mBefore >>> 4)) & 0xFF;
-        ${h.writeMem8('address', 'mAfter')};
+        ${h.writeMem8('target', 'mAfter')};
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(16)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1665,21 +1675,17 @@ export var templates = {
 
     'STOP_u8' : ( address, nextAddress, parameters, h ) => `
 
-        // env.exit(jit);
+        ${h.applyClockCycles(4)};
 
-        ${h.applyClockCycles(1)};
-
-        return ${nextAddress};
+        ${h.jumpTo(nextAddress)};
 
     `,
 
     'HALT' : ( address, nextAddress, parameters, h ) => `
 
-        // env.exit(jit);
+        ${h.applyClockCycles(4)};
 
-        ${h.applyClockCycles(1)};
-
-        return ${nextAddress};
+        ${h.jumpTo(nextAddress)};
 
     `
 

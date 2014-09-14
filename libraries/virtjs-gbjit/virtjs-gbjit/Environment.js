@@ -1,5 +1,5 @@
 import { TestEnvironment as TestEnvironmentBase } from 'virtjs/core/tests/TestEnvironment';
-import { CYCLES_PER_OAM }                         from 'virtjs-gbjit/GPU';
+import { CYCLES_PER_OAM }                         from 'virtjs-gbjit/components/GPU';
 
 export class Environment {
 
@@ -58,6 +58,15 @@ export class Environment {
         this.gpuWinPosition = [ 0, 0 ];
         this.gpuCoincidence = false;
         this.gpuPalettes = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ];
+
+        this.timerDivider = 0;
+        this.timerDividerBuffer = 0;
+        this.timerCounter = 0;
+        this.timerCounterBuffer = 0;
+        this.timerCounterFrequency = 0;
+        this.timerCounterFeature = false;
+        this.timerCounterModulo = 0;
+        this.timerCounterControl = 0;
 
     }
 

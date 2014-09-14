@@ -107,6 +107,10 @@ export class Compiler {
 
             code += javascriptTemplates[ type ]( begin, end, parameters, this._helpers );
 
+            if ( emitEvents ) { code += `
+                env.triggerPostInstructionEvent(${begin}, ${opcode});
+            `; }
+
             if ( typeof flags.interrupts !== 'undefined' )
                 checkInterrupts = flags.interrupts;
 

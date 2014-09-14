@@ -1,5 +1,19 @@
 import { formatAddress, formatHexadecimal, formatRelativeAddress } from 'virtjs/utils/FormatUtils';
 
+var label = address => { switch ( address ) {
+    case 0xFF40 : return ' ; lcd control';
+    case 0xFF41 : return ' ; lcd stat';
+    case 0xFF42 : return ' ; scroll y';
+    case 0xFF43 : return ' ; scroll x';
+    case 0xFF45 : return ' ; lyc';
+    case 0xFF47 : return ' ; background palette';
+    case 0xFF48 : return ' ; obj palette 0';
+    case 0xFF49 : return ' ; obj palette 1';
+    case 0xFF41 : return ' ; window y'
+    case 0xFFFF : return ' ; interrupt enable';
+    default     : return '';
+} };
+
 export var templates = {
 
     'NOP'          : ( address, nextAddress, parameters ) => `nop`,
@@ -33,18 +47,18 @@ export var templates = {
     'JR_C_i8'      : ( address, nextAddress, parameters ) => `jr c ${formatAddress(nextAddress + parameters[0], 16)}`,
     'JR_i8'        : ( address, nextAddress, parameters ) => `jr ${formatAddress(nextAddress + parameters[0], 16)}`,
 
-    'JP_NZ_u16'    : ( address, nextAddress, parameters ) => `jp nz ${formatAddress(parameters[0], 16)}`,
-    'JP_Z_u16'     : ( address, nextAddress, parameters ) => `jp z ${formatAddress(parameters[0], 16)}`,
-    'JP_NC_u16'    : ( address, nextAddress, parameters ) => `jp nc ${formatAddress(parameters[0], 16)}`,
-    'JP_C_u16'     : ( address, nextAddress, parameters ) => `jp c ${formatAddress(parameters[0], 16)}`,
-    'JP_u16'       : ( address, nextAddress, parameters ) => `jp ${formatAddress(parameters[0], 16)}`,
+    'JP_NZ_u16'    : ( address, nextAddress, parameters ) => `jp nz ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'JP_Z_u16'     : ( address, nextAddress, parameters ) => `jp z ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'JP_NC_u16'    : ( address, nextAddress, parameters ) => `jp nc ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'JP_C_u16'     : ( address, nextAddress, parameters ) => `jp c ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'JP_u16'       : ( address, nextAddress, parameters ) => `jp ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
     'JP_r16'       : ( address, nextAddress, parameters ) => `jp ${parameters[0]}`,
 
-    'CALL_NZ_u16'  : ( address, nextAddress, parameters ) => `call nz ${formatAddress(parameters[0], 16)}`,
-    'CALL_Z_u16'   : ( address, nextAddress, parameters ) => `call z ${formatAddress(parameters[0], 16)}`,
-    'CALL_NC_u16'  : ( address, nextAddress, parameters ) => `call nc ${formatAddress(parameters[0], 16)}`,
-    'CALL_C_u16'   : ( address, nextAddress, parameters ) => `call c ${formatAddress(parameters[0], 16)}`,
-    'CALL_u16'     : ( address, nextAddress, parameters ) => `call ${formatAddress(parameters[0], 16)}`,
+    'CALL_NZ_u16'  : ( address, nextAddress, parameters ) => `call nz ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'CALL_Z_u16'   : ( address, nextAddress, parameters ) => `call z ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'CALL_NC_u16'  : ( address, nextAddress, parameters ) => `call nc ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'CALL_C_u16'   : ( address, nextAddress, parameters ) => `call c ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
+    'CALL_u16'     : ( address, nextAddress, parameters ) => `call ${formatAddress(parameters[0], 16)}${label(parameters[0])}`,
 
     'RET_NZ'       : ( address, nextAddress, parameters ) => `ret nz`,
     'RET_Z'        : ( address, nextAddress, parameters ) => `ret z`,
@@ -134,17 +148,17 @@ export var templates = {
     'LD_r16_u16'   : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, ${formatHexadecimal(parameters[1], 16)}`,
     'LD_r8_r8'     : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, ${parameters[1]}`,
     'LD_r8_u8'     : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, ${formatHexadecimal(parameters[1], 8)}`,
-    'LD_(u16)_r8'  : ( address, nextAddress, parameters ) => `ld [${formatAddress(parameters[0], 16)}], ${parameters[1]}`,
-    'LD_(u16)_r16' : ( address, nextAddress, parameters ) => `ld [${formatAddress(parameters[0], 16)}], ${parameters[1]}`,
+    'LD_(u16)_r8'  : ( address, nextAddress, parameters ) => `ld [${formatAddress(parameters[0], 16)}], ${parameters[1]}${label(parameters[0])}`,
+    'LD_(u16)_r16' : ( address, nextAddress, parameters ) => `ld [${formatAddress(parameters[0], 16)}], ${parameters[1]}${label(parameters[0])}`,
     'LD_(r16)_u8'  : ( address, nextAddress, parameters ) => `ld [${parameters[0]}], ${formatHexadecimal(parameters[1], 8)}`,
     'LD_(r16)_r8'  : ( address, nextAddress, parameters ) => `ld [${parameters[0]}], ${parameters[1]}`,
-    'LD_r8_(u16)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${formatAddress(parameters[1], 16)}]`,
+    'LD_r8_(u16)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${formatAddress(parameters[1], 16)}]${label(parameters[1])}`,
     'LD_r8_(r16)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${parameters[1]}]`,
     'LD_r8_(r8)'   : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${parameters[1]}]`,
     'LD_(r8)_r8'   : ( address, nextAddress, parameters ) => `ld [${parameters[0]}], ${parameters[1]}`,
 
-    'LDH_r8_(u8)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${formatRelativeAddress(0xFF00, parameters[1], 16, 8)}]`,
-    'LDH_(u8)_r8'  : ( address, nextAddress, parameters ) => `ld [${formatRelativeAddress(0xFF00, parameters[0], 16, 8)}], ${parameters[1]}`,
+    'LDH_r8_(u8)'  : ( address, nextAddress, parameters ) => `ld ${parameters[0]}, [${formatRelativeAddress(0xFF00, parameters[1], 16, 8)}]${label(0xFF00 + parameters[1])}`,
+    'LDH_(u8)_r8'  : ( address, nextAddress, parameters ) => `ld [${formatRelativeAddress(0xFF00, parameters[0], 16, 8)}], ${parameters[1]}${label(0xFF00 + parameters[0])}`,
 
     'LDHL_r16_i8'  : ( address, nextAddress, parameters ) => `ld hl, [${formatAddress(parameters[0], parameters[1], null, 8)}]`,
 

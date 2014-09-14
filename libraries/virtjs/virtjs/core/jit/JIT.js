@@ -6,7 +6,7 @@ export class JIT {
         this._environment = null;
 
         this._addressSize = 16;
-        this._pageIndexBits = 4;
+        this._pageIndexBits = 12;
         this._pagePointerBits = this._addressSize - this._pageIndexBits;
 
         this._addressMask = ~ ( ( ~ 0 ) >>> this._addressSize << this._addressSize >>> 0 ); // 0xffff

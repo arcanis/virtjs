@@ -13,9 +13,7 @@ export class MBC1 {
 
     }
 
-    link( { jit } ) {
-
-        this._jit = jit;
+    link( { } ) {
 
     }
 
@@ -113,12 +111,10 @@ export class MBC1 {
 
         if ( this._romBankNN !== this._romBanks[ romBank ] ) {
             this._romBankNN = this._romBanks[ romBank ];
-            this._jit.switchPageSetTarget( 'romNN', romBank );
         }
 
         if ( this._ramBankNN !== this._ramBanks[ ramBank ] ) {
             this._ramBankNN = this._ramBanks[ ramBank ];
-            this._jit.switchPageSetTarget( 'ramNN', ramBank );
         }
 
     }

@@ -8,93 +8,70 @@ export class Helpers {
 
     }
 
-    applyClockCycles( countExpression ) { return `{
-
-        if ((env.gpuClock -= (${countExpression})) <= 0) {
-            if (env.triggerGpuCycle()) {
-                jit.stop();
-            }
-        }
-
-    }`; }
-
-    checkForInvalidation( nextAddress ) { return `{
-
-        if ( ! jit.stillValid( ) ) {
-            return ${nextAddress};
-        }
-
-    }`; }
-
     jumpTo( addressExpression ) {
 
-        if ( this.baseAddress === addressExpression ) { return `
-            continue ;
-        `; } else { return `{
-            return ${addressExpression};
-        }`; }
+        throw new Error( 'Unimplemented' );
+
+    }
+
+    endFrame( ) {
+
+        throw new Error( 'Unimplemented' );
 
     }
 
     readR8( register ) {
 
-        return `(env.${register} >>> 0)`;
+        return `(environment.${register} >>> 0)`;
 
     }
 
     readR16( register ) {
 
         if ( full16BitRegisters.indexOf( register ) === -1 ) {
-            return `((${this.readR8(register[0])} << 8) | ${this.readR8(register[1])})`;
+            return `(${this.readR8(register[1])} | (${this.readR8(register[0])} << 8))`;
         } else {
-            return `(env.${register} >>> 0)`;
+            return `(environment.${register} >>> 0)`;
         }
-
-    }
-
-    readMem8( addressExpression ) {
-
-        return `env.readUint8(${addressExpression})`;
 
     }
 
     readMem16( addressExpression ) {
 
-        return `((${this.readMem8(addressExpression)} << 8) | ${this.readMem8(this.add16(addressExpression, 1))})`;
+        return `(${this.readMem8(addressExpression)} | (${this.readMem8(this.add16(addressExpression, 1))} << 8))`;
 
     }
 
     writeR8( register, valueExpression ) { return `{
 
-        env.${register} = (${valueExpression});
+        environment.${register} = (${valueExpression});
 
     }`; }
 
     writeR16( register, valueExpression ) {
 
         if ( full16BitRegisters.indexOf( register ) !== -1 ) { return `{
-            env.${register} = (${valueExpression});
+
+            environment.${register} = (${valueExpression});
+
         }`; } else { return `{
+
             var writeR16_value = (${valueExpression});
-            ${this.writeR8(register[0], 'writeR16_value >>> 8')};
+
             ${this.writeR8(register[1], 'writeR16_value & 0xFF')};
+            ${this.writeR8(register[0], 'writeR16_value >>> 8')};
+
         }`; }
 
     }
-
-    writeMem8( addressExpression, valueExpression ) { return `{
-
-            env.writeUint8((${addressExpression}), (${valueExpression}));
-
-    }`; }
 
     writeMem16( addressExpression, valueExpression ) { return `{
 
         var writeMem16_address = (${addressExpression});
         var writeMem16_value = (${valueExpression});
 
-        ${this.writeMem8(this.add16('writeMem16_address', 0), 'writeMem16_value >>> 8')};
-        ${this.writeMem8(this.add16('writeMem16_address', 1), 'writeMem16_value & 0xFF')}
+        ${this.writeMem8(this.add16('writeMem16_address', 0), 'writeMem16_value & 0xFF')};
+        ${this.writeMem8(this.add16('writeMem16_address', 1), 'writeMem16_value >>> 8')}
 
     }`; }
 
@@ -138,7 +115,7 @@ export class Helpers {
 
     getFlag( flag ) {
 
-        return `(((env.f & (${flag})) === (${flag})) | 0)`;
+        return `(((environment.f & (${flag})) === (${flag})) | 0)`;
 
     }
 
@@ -147,17 +124,17 @@ export class Helpers {
         if ( typeof expression === 'boolean' ) {
 
             if ( expression ) { return `{
-                env.f |= ${flag};
+                environment.f |= ${flag};
             }`; } else { return `{
-                env.f &= ~${flag};
+                environment.f &= ~${flag};
             }`; }
 
         } else { return `{
 
             if (${expression}) {
-                env.f |= ${flag};
+                environment.f |= ${flag};
             } else {
-                env.f &= ~${flag};
+                environment.f &= ~${flag};
             }
 
         }`; }

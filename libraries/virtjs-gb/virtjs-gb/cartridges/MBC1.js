@@ -99,12 +99,10 @@ export class MBC1 {
 
         if ( this._romBankNN !== this._romBanks[ romBank ] ) {
             this._romBankNN = this._romBanks[ romBank ];
-            this._jit.invalidateRange( 0x4000, 0x8000 );
         }
 
         if ( this._ramBankNN !== this._ramBanks[ ramBank ] ) {
             this._ramBankNN = this._ramBanks[ ramBank ];
-            this._jit.invalidateRange( 0xA000, 0xBFFF );
         }
 
     }
