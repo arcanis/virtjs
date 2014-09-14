@@ -10,9 +10,9 @@ var MBC5 = function ( ) {};
 var timerFrequencies = {
 
      0 : 1024,
-     1 : 16,
-     2 : 64,
-     3 : 256
+     1 :   16,
+     2 :   64,
+     3 :  256
 
 };
 
@@ -266,9 +266,9 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF07:
-                this._environment.timerCounterFeature = value & 1;
-                this._environment.timerCounterFrequency = timerFrequencies[ ( value >>> 1 ) & 0x02 ];
-                this._environment.timerCounterControl = value;
+                this._environment.timerCounterFeature = ( value & 0b100 ) >>> 2;
+                this._environment.timerCounterFrequency = timerFrequencies[ ( value & 0b011 ) >>> 0 ];
+                this._environment.timerCounterControl = ( value & 0b111 ) >>> 0;
             break ;
 
             case 0xFF0F:

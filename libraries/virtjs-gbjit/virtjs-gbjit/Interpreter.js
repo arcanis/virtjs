@@ -139,34 +139,40 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         for ( this._running = true; this._running; ) {
 
-            var address = environment.pc;
-            var opcode = this._mmu.readUint8( address );
+            if ( environment.cpuHalt ) {
 
-            if ( opcode === 0xCB )
-                opcode = 0xCB00 | this._mmu.readUint8( address + 1 );
+                this._applyClockCycles( 1 );
 
-            if ( this._instructionEvent ) {
+                this._triggerInterrupts( );
 
-                this._triggerInstructionEvent( address, opcode );
+            } else {
 
-                if ( this._instructionEvent.breakRequested ) {
-                    this._engine.stop( );
-                    continue ;
+                var address = environment.pc;
+                var opcode = this._mmu.readUint8( address );
+
+                if ( opcode === 0xCB )
+                    opcode = 0xCB00 | this._mmu.readUint8( address + 1 );
+
+                if ( this._instructionEvent ) {
+
+                    this._triggerInstructionEvent( address, opcode );
+
+                    if ( this._instructionEvent.breakRequested ) {
+                        this._engine.stop( );
+                        continue ;
+                    }
+
                 }
 
-            }
+                var functor = this._instructions[ opcode ];
+                environment.pc = functor( this, environment, address );
 
-            var functor = this._instructions[ opcode ];
-            functor( this, environment, address );
+                this._triggerInterrupts( );
 
-            if ( environment.cpuInterruptFeature ) {
-                if ( environment.pendingInterrupts & environment.enabledInterrupts ) {
-                    this._triggerInterrupts( );
+                if ( this._postInstructionEvent ) {
+                    this._triggerPostInstructionEvent( address, opcode );
                 }
-            }
 
-            if ( this._postInstructionEvent ) {
-                this._triggerPostInstructionEvent( address, opcode );
             }
 
         }
@@ -274,13 +280,27 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
         var pendingInterrupts = environment.pendingInterrupts;
         var firedInterrupts = pendingInterrupts & enabledInterrupts;
 
+        // Avoid unecessary checks later
+
+        if ( ! firedInterrupts )
+            return ;
+
+        // An enabled interrupt will wake the main loop
+
+        environment.cpuStop = environment.cpuHalt = false;
+
+        // However, if the master interrupt flag is off, the interrupt won't be consumed
+
+        if ( ! environment.cpuInterruptFeature )
+            return ;
+
         // Triggering an interrupt silences the IME flag
 
         environment.cpuInterruptFeature = false;
 
         // If multiple interrupts should trigger at the same time (multiple bits set), only the first one is executed
 
-        var interrupt = firedInterrupts & (~firedInterrupts + 1);
+        var interrupt = firedInterrupts & ( ~firedInterrupts + 1 ); // reset everything but the lowest significant bit
 
         // We reset the interrupt flag so it won't be called again (until the next triggering)
 
@@ -290,8 +310,8 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         environment.sp = ( environment.sp - 2 ) & 0xFFFF;
 
-        this._mmu.writeUint8( environment.sp + 0, environment.pc & 0xFF );
-        this._mmu.writeUint8( environment.sp + 1, environment.pc >>> 8 );
+        this._mmu.writeUint8( environment.sp + 0, ( environment.pc & 0x00FF ) >>> 0 );
+        this._mmu.writeUint8( environment.sp + 1, ( environment.pc & 0xFF00 ) >>> 8 );
 
         environment.pc = interruptLocations[ interrupt ];
 
@@ -307,51 +327,45 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         // GPU
 
-        var gpuClock = environment.gpuClock - count;
-        environment.gpuClock = gpuClock;
+        environment.gpuClock = environment.gpuClock - count;
 
-        if ( gpuClock <= 0 && this._gpu.nextMode( ) )
+        if ( environment.gpuClock <= 0 && this._gpu.nextMode( ) )
             this._running = false;
 
-        // Timer Divider
+        // Timer Divider ; WHY x4 ?
 
-        var timerDividerBuffer = environment.timerDividerBuffer + count;
+        if ( /* the timer divider always run */ true ) {
 
-        if ( timerDividerBuffer >= 256 ) {
+            environment.timerDividerBuffer += count * 4;
 
-            var dividerCycleCount = ( timerDividerBuffer / 256 ) | 0;
-            timerDividerBuffer -= dividerCycleCount * 256;
-            var timerDivider = environment.timerDivider + dividerCycleCount;
+            while ( engine.timerDividerBuffer >= 256 ) {
 
-            environment.timerDivider = timerDivider & 0xFF;
-
-        }
-
-        // Timer counter
-
-        environment.timerDividerBuffer = timerDividerBuffer;
-
-        if ( environment.timerCounterFeature ) {
-
-            var timerCounterBuffer = environment.timerCounterBuffer + count;
-            var timerCounterFrequency = environment.timerCounterFrequency;
-
-            if ( timerCounterBuffer >= timerCounterFrequency ) {
-
-                var counterCycleCount = ( timerCounterBuffer / timerCounterFrequency ) | 0;
-                timerCounterBuffer -= counterCycleCount * timerCounterFrequency;
-                var timerCounter = environment.timerCounter + counterCycleCount;
-
-                if (timerCounter > 256) {
-                    timerCounter = environment.timerCounterModulo;
-                    environment.pendingInterrupts |= 0x04;
-                }
-
-                environment.timerCounter = timerCounter;
+                engine.timerDividerBuffer -= 256;
+                engine.timerDivider = ( ( engine.timerDivider + 1 ) & 0xFF ) >>> 0;
 
             }
 
-            environment.timerCounterBuffer = timerCounterBuffer;
+        }
+
+        // Timer counter ; WHY x4 ?
+
+        if ( environment.timerCounterFeature ) {
+
+            environment.timerCounterBuffer += count * 4;
+
+            while ( environment.timerCounterBuffer >= environment.timerCounterFrequency ) {
+
+                environment.timerCounterBuffer -= environment.timerCounterFrequency;
+                environment.timerCounter = ( ( environment.timerCounter + 1 ) & 0xFF ) >>> 0;
+
+                if ( environment.timerCounter === 0 ) {
+
+                    environment.timerCounter = environment.timerCounterModulo;
+                    environment.pendingInterrupts |= 0x04;
+
+                }
+
+            }
 
         }
 

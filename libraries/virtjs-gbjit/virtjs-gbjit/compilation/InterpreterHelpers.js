@@ -15,8 +15,6 @@ export class InterpreterHelpers extends Helpers {
 
     jumpTo( addressExpression ) { return `{
 
-        environment.pc = ${addressExpression};
-
         return ${addressExpression};
 
     }`; }

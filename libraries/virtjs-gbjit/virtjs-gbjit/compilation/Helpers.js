@@ -29,7 +29,7 @@ export class Helpers {
     readR16( register ) {
 
         if ( full16BitRegisters.indexOf( register ) === -1 ) {
-            return `(${this.readR8(register[1])} | (${this.readR8(register[0])} << 8))`;
+            return `(((${this.readR8(register[0])} << 8) | ${this.readR8(register[1])}) >>> 0)`;
         } else {
             return `(environment.${register} >>> 0)`;
         }
@@ -38,13 +38,13 @@ export class Helpers {
 
     readMem16( addressExpression ) {
 
-        return `(${this.readMem8(addressExpression)} | (${this.readMem8(this.add16(addressExpression, 1))} << 8))`;
+        return `(((${this.readMem8(this.add16(addressExpression, 1))} << 8) | ${this.readMem8(addressExpression)}) >>> 0)`;
 
     }
 
     writeR8( register, valueExpression ) { return `{
 
-        environment.${register} = (${valueExpression});
+        environment.${register} = (${valueExpression}) >>> 0;
 
     }`; }
 
@@ -52,14 +52,14 @@ export class Helpers {
 
         if ( full16BitRegisters.indexOf( register ) !== -1 ) { return `{
 
-            environment.${register} = (${valueExpression});
+            environment.${register} = (${valueExpression}) >>> 0;
 
         }`; } else { return `{
 
-            var writeR16_value = (${valueExpression});
+            var writeR16_value = (${valueExpression}) >>> 0;
 
-            ${this.writeR8(register[1], 'writeR16_value & 0xFF')};
-            ${this.writeR8(register[0], 'writeR16_value >>> 8')};
+            ${this.writeR8(register[1], '(writeR16_value & 0x00FF) >>> 0')};
+            ${this.writeR8(register[0], '(writeR16_value & 0xFF00) >>> 8')};
 
         }`; }
 
@@ -67,11 +67,11 @@ export class Helpers {
 
     writeMem16( addressExpression, valueExpression ) { return `{
 
-        var writeMem16_address = (${addressExpression});
-        var writeMem16_value = (${valueExpression});
+        var writeMem16_address = (${addressExpression}) >>> 0;
+        var writeMem16_value = (${valueExpression}) >>> 0;
 
-        ${this.writeMem8(this.add16('writeMem16_address', 0), 'writeMem16_value & 0xFF')};
-        ${this.writeMem8(this.add16('writeMem16_address', 1), 'writeMem16_value >>> 8')}
+        ${this.writeMem8(this.add16('writeMem16_address', 0), '(writeMem16_value & 0x00FF) >>> 0')};
+        ${this.writeMem8(this.add16('writeMem16_address', 1), '(writeMem16_value & 0xFF00) >>> 8')}
 
     }`; }
 

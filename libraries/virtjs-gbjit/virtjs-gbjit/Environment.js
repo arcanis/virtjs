@@ -39,6 +39,8 @@ export class Environment {
         this.mbcRtcIndex = 0;
 
         this.cpuInterruptFeature = false;
+        this.cpuStop = false;
+        this.cpuHalt = false;
 
         this.ioKeyColumn = 0x00;
 

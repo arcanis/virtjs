@@ -2,7 +2,7 @@ export var templates = {
 
     'NOP' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -10,7 +10,7 @@ export var templates = {
 
         environment.cpuInterruptFeature = false;
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -18,7 +18,7 @@ export var templates = {
 
         environment.cpuInterruptFeature = true;
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -26,7 +26,7 @@ export var templates = {
 
         ${h.pushStack(h.readR16(parameters[0]))};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -36,7 +36,7 @@ export var templates = {
         ${h.popStack('value')};
         ${h.writeR16(parameters[0], 'value')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -46,7 +46,7 @@ export var templates = {
         ${h.popStack('value')};
         ${h.writeR16('af', 'value & 0xFFF0')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -54,7 +54,7 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.readR16(parameters[1]))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -62,7 +62,7 @@ export var templates = {
 
         ${h.writeR16(parameters[0], parameters[1])};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -70,7 +70,7 @@ export var templates = {
 
         ${h.writeR8(parameters[0], h.readR8(parameters[1]))};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -78,7 +78,7 @@ export var templates = {
 
         ${h.writeR8(parameters[0], parameters[1])};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -86,7 +86,7 @@ export var templates = {
 
         ${h.writeR8(parameters[0], h.readMem8(parameters[1]))};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -94,7 +94,7 @@ export var templates = {
 
         ${h.writeMem8(parameters[0], h.readR8(parameters[1]))};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -104,7 +104,7 @@ export var templates = {
 
         ${h.writeMem16(h.readR16(parameters[0]), h.readR16(parameters[1]))};
 
-        ${h.applyClockCycles(20)};
+        ${h.applyClockCycles(5)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -114,7 +114,7 @@ export var templates = {
 
         ${h.writeMem8(h.readR16(parameters[0]), parameters[1])};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -124,7 +124,7 @@ export var templates = {
 
         ${h.writeMem8(h.readR16(parameters[0]), h.readR8(parameters[1]))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -134,7 +134,7 @@ export var templates = {
 
         ${h.writeR8(parameters[0], h.readMem8(h.readR16(parameters[1])))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -142,7 +142,7 @@ export var templates = {
 
         ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, h.readR8(parameters[1]))))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -150,7 +150,7 @@ export var templates = {
 
         ${h.writeMem8(h.add16(0xFF00, h.readR8(parameters[0])), h.readR8(parameters[1]))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -160,7 +160,7 @@ export var templates = {
 
         ${h.writeR8(parameters[0], h.readMem8(h.add16(0xFF00, parameters[1])))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -168,7 +168,7 @@ export var templates = {
 
         ${h.writeMem8(h.add16(0xFF00, parameters[0]), h.readR8(parameters[1]))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -185,7 +185,7 @@ export var templates = {
         ${h.half('hlAfter', '<', 'hlBefore')};
         ${h.carry('hlAfter', '<', 'hlBefore')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -196,7 +196,7 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.add16('position', 1))}
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -209,7 +209,7 @@ export var templates = {
 
         ${h.writeR16(parameters[1], h.add16('position', 1))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -220,7 +220,7 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.sub16('position', 1))}
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -233,7 +233,7 @@ export var templates = {
 
         ${h.writeR16(parameters[1], h.sub16('position', 1))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -248,7 +248,7 @@ export var templates = {
             ${h.carry(true)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -258,7 +258,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(true)};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -296,7 +296,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -310,7 +310,7 @@ export var templates = {
         ${h.zero('rAfter')};
         ${h.half('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -318,7 +318,7 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.add16(h.readR16(parameters[0]), 1))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -334,7 +334,7 @@ export var templates = {
         ${h.zero('mAfter')};
         ${h.half('mAfter', '<', 'mBefore')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -350,7 +350,7 @@ export var templates = {
         ${h.zero('rAfter')};
         ${h.half('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -358,7 +358,7 @@ export var templates = {
 
         ${h.writeR16(parameters[0], h.sub16(h.readR16(parameters[0]), 1))};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -374,7 +374,7 @@ export var templates = {
         ${h.zero('mAfter')};
         ${h.half('mAfter', '>', 'mBefore')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -384,12 +384,12 @@ export var templates = {
 
         if (${h.zero()} === 0) {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -399,12 +399,12 @@ export var templates = {
 
         if (${h.zero()} === 1) {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -414,12 +414,12 @@ export var templates = {
 
         if (${h.carry()} === 0) {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -429,12 +429,12 @@ export var templates = {
 
         if (${h.carry()} === 1) {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
             ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -442,7 +442,7 @@ export var templates = {
 
     'JR_i8' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
         ${h.jumpTo(h.add16(nextAddress, parameters[0]))};
 
     `,
@@ -451,12 +451,12 @@ export var templates = {
 
         if (${h.zero()} === 0) {
 
-            ${h.applyClockCycles(16)};
+            ${h.applyClockCycles(4)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -466,12 +466,12 @@ export var templates = {
 
         if (${h.zero()} === 1) {
 
-            ${h.applyClockCycles(16)};
+            ${h.applyClockCycles(4)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -481,12 +481,12 @@ export var templates = {
 
         if (${h.carry()} === 0) {
 
-            ${h.applyClockCycles(16)};
+            ${h.applyClockCycles(4)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -496,12 +496,12 @@ export var templates = {
 
         if (${h.carry()} === 1) {
 
-            ${h.applyClockCycles(16)};
+            ${h.applyClockCycles(4)};
             ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -509,14 +509,14 @@ export var templates = {
 
     'JP_u16' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
         ${h.jumpTo(parameters[0])};
 
     `,
 
     'JP_r16' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
         ${h.jumpTo(h.readR16(parameters[0]))};
 
     `,
@@ -526,13 +526,13 @@ export var templates = {
         if (${h.zero()} === 0) {
 
             ${h.pushStack(nextAddress)};
-            ${h.jumpTo(parameters[0])};
 
-            ${h.applyClockCycles(24)};
+            ${h.applyClockCycles(6)};
+            ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -543,13 +543,13 @@ export var templates = {
         if (${h.zero()} === 1) {
 
             ${h.pushStack(nextAddress)};
-            ${h.jumpTo(parameters[0])};
 
-            ${h.applyClockCycles(24)};
+            ${h.applyClockCycles(6)};
+            ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -560,13 +560,13 @@ export var templates = {
         if (${h.carry()} === 0) {
 
             ${h.pushStack(nextAddress)};
-            ${h.jumpTo(parameters[0])};
 
-            ${h.applyClockCycles(24)};
+            ${h.applyClockCycles(6)};
+            ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -577,13 +577,13 @@ export var templates = {
         if (${h.carry()} === 1) {
 
             ${h.pushStack(nextAddress)};
-            ${h.jumpTo(parameters[0])};
 
-            ${h.applyClockCycles(24)};
+            ${h.applyClockCycles(6)};
+            ${h.jumpTo(parameters[0])};
 
         } else {
 
-            ${h.applyClockCycles(12)};
+            ${h.applyClockCycles(3)};
 
         }
 
@@ -592,9 +592,9 @@ export var templates = {
     'CALL_u16' : ( address, nextAddress, parameters, h ) => `
 
         ${h.pushStack(nextAddress)};
-        ${h.jumpTo(parameters[0])};
 
-        ${h.applyClockCycles(24)};
+        ${h.applyClockCycles(6)};
+        ${h.jumpTo(parameters[0])};
 
     `,
 
@@ -603,15 +603,14 @@ export var templates = {
         if (${h.zero()} === 0) {
 
             var retTarget;
-
             ${h.popStack('retTarget')};
-            ${h.jumpTo('retTarget')};
 
-            ${h.applyClockCycles(20)};
+            ${h.applyClockCycles(5)};
+            ${h.jumpTo('retTarget')};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -622,15 +621,14 @@ export var templates = {
         if (${h.zero()} === 1) {
 
             var retTarget;
-
             ${h.popStack('retTarget')};
-            ${h.jumpTo('retTarget')};
 
-            ${h.applyClockCycles(20)};
+            ${h.applyClockCycles(5)};
+            ${h.jumpTo('retTarget')};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -641,15 +639,14 @@ export var templates = {
         if (${h.carry()} === 0) {
 
             var retTarget;
-
             ${h.popStack('retTarget')};
-            ${h.jumpTo('retTarget')};
 
-            ${h.applyClockCycles(20)};
+            ${h.applyClockCycles(5)};
+            ${h.jumpTo('retTarget')};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -660,15 +657,14 @@ export var templates = {
         if (${h.carry()} === 1) {
 
             var retTarget;
-
             ${h.popStack('retTarget')};
-            ${h.jumpTo('retTarget')};
 
-            ${h.applyClockCycles(20)};
+            ${h.applyClockCycles(5)};
+            ${h.jumpTo('retTarget')};
 
         } else {
 
-            ${h.applyClockCycles(8)};
+            ${h.applyClockCycles(2)};
 
         }
 
@@ -677,11 +673,10 @@ export var templates = {
     'RET' : ( address, nextAddress, parameters, h ) => `
 
         var retTarget;
-
         ${h.popStack('retTarget')};
-        ${h.jumpTo('retTarget')};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
+        ${h.jumpTo('retTarget')};
 
     `,
 
@@ -690,20 +685,19 @@ export var templates = {
         environment.cpuInterruptFeature = true;
 
         var retTarget;
-
         ${h.popStack('retTarget')};
-        ${h.jumpTo('retTarget')};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
+        ${h.jumpTo('retTarget')};
 
     `,
 
     'RST_u8' : ( address, nextAddress, parameters, h ) => `
 
         ${h.pushStack(nextAddress)};
-        ${h.jumpTo(parameters[0])};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
+        ${h.jumpTo(parameters[0])};
 
     `,
 
@@ -727,7 +721,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '<', 'rAfter')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -751,7 +745,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '<', 'rAfter')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -775,7 +769,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '<', 'rAfter')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -790,7 +784,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore')};
         ${h.carry('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -805,7 +799,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore')};
         ${h.carry('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -819,7 +813,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore', 0x0FFF)};
         ${h.carry('rAfter', '<', 'rBefore', 0xFFFF)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -834,7 +828,7 @@ export var templates = {
         ${h.half('rAfter', '<', 'rBefore')};
         ${h.carry('rAfter', '<', 'rBefore')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -849,7 +843,7 @@ export var templates = {
         ${h.half('rrAfter', '<', 'rrBefore')};
         ${h.half('rrAfter', '<', 'rrBefore')};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -873,7 +867,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '>', 'rAfter')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -897,7 +891,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '>', 'rAfter')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -921,7 +915,7 @@ export var templates = {
         if (${h.carry()} === 0)
             ${h.carry('rAfterCarry', '>', 'rAfter')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -935,7 +929,7 @@ export var templates = {
         ${h.half('cmp', '>', 'tmp')};
         ${h.carry('cmp', '>', 'tmp')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -949,7 +943,7 @@ export var templates = {
         ${h.half('cmp', '>', 'tmp')};
         ${h.carry('cmp', '>', 'tmp')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -963,7 +957,7 @@ export var templates = {
         ${h.half('cmp', '>', 'tmp')};
         ${h.carry('cmp', '>', 'tmp')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -978,7 +972,7 @@ export var templates = {
         ${h.half('rAfter', '>', 'rBefore')};
         ${h.carry('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -993,7 +987,7 @@ export var templates = {
         ${h.half('rAfter', '>', 'rBefore')};
         ${h.carry('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1008,7 +1002,7 @@ export var templates = {
         ${h.half('rAfter', '>', 'rBefore')};
         ${h.carry('rAfter', '>', 'rBefore')};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1022,7 +1016,7 @@ export var templates = {
         ${h.half(true)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1036,7 +1030,7 @@ export var templates = {
         ${h.half(true)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1050,7 +1044,7 @@ export var templates = {
         ${h.half(true)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1064,7 +1058,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1078,7 +1072,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1092,7 +1086,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1106,7 +1100,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1120,7 +1114,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1134,7 +1128,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1165,7 +1159,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1189,7 +1183,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1213,7 +1207,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1237,7 +1231,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1261,7 +1255,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1283,7 +1277,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1305,7 +1299,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1329,7 +1323,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1353,7 +1347,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1377,7 +1371,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1401,7 +1395,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1423,7 +1417,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(4)};
+        ${h.applyClockCycles(1)};
 
     `,
 
@@ -1445,7 +1439,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1469,7 +1463,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1494,7 +1488,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1519,7 +1513,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1543,7 +1537,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1567,7 +1561,7 @@ export var templates = {
             ${h.carry(false)};
         }
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1581,7 +1575,7 @@ export var templates = {
         ${h.zero('bit')};
         ${h.half(true)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1593,7 +1587,7 @@ export var templates = {
         ${h.zero('bit')};
         ${h.half(true)};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -1602,7 +1596,7 @@ export var templates = {
         var rAfter = ${h.readR8(parameters[2])} & ~(1 << ${parameters[1]});
         ${h.writeR8(parameters[2], 'rAfter')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -1613,7 +1607,7 @@ export var templates = {
         var rAfter = ${h.readMem8('target')} & ~(1 << ${parameters[1]});
         ${h.writeMem8('target', 'rAfter')};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -1622,7 +1616,7 @@ export var templates = {
         var rAfter = ${h.readR8(parameters[2])} | (1 << ${parameters[1]});
         ${h.writeR8(parameters[2], 'rAfter')};
 
-        ${h.applyClockCycles(12)};
+        ${h.applyClockCycles(3)};
 
     `,
 
@@ -1633,7 +1627,7 @@ export var templates = {
         var rAfter = ${h.readMem8('target')} | (1 << ${parameters[1]});
         ${h.writeMem8('target', 'rAfter')};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
     `,
 
@@ -1649,7 +1643,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(8)};
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1667,7 +1661,7 @@ export var templates = {
         ${h.half(false)};
         ${h.carry(false)};
 
-        ${h.applyClockCycles(16)};
+        ${h.applyClockCycles(4)};
 
         ${h.checkForInvalidation(nextAddress)};
 
@@ -1675,7 +1669,9 @@ export var templates = {
 
     'STOP_u8' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(4)};
+        environment.cpuStop = true;
+
+        ${h.applyClockCycles(1)};
 
         ${h.jumpTo(nextAddress)};
 
@@ -1683,7 +1679,9 @@ export var templates = {
 
     'HALT' : ( address, nextAddress, parameters, h ) => `
 
-        ${h.applyClockCycles(4)};
+        environment.cpuHalt = true;
+
+        ${h.applyClockCycles(1)};
 
         ${h.jumpTo(nextAddress)};
 
