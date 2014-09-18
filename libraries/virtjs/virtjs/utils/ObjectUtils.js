@@ -1,3 +1,51 @@
+export function createDefensiveProxy( object ) {
+
+    if ( typeof Proxy === 'undefined' ) {
+
+        console.warn( 'Proxies are not available in your browser, and have been turned off.' );
+
+        return object;
+
+    } else {
+
+        console.warn( 'Proxies are slows, and should not be enabled in production.' );
+
+        return new Proxy( object, {
+
+            get : ( target, property ) => {
+
+                if ( property in target ) {
+
+                    return target[ property ];
+
+                } else {
+
+                    throw new Error( 'Undefined property cannot be get: ' + property );
+
+                }
+
+            },
+
+            set : ( target, property, value ) => {
+
+                if ( property in target ) {
+
+                    target[ property ] = value;
+
+                } else {
+
+                    throw new Error( 'Undefined property cannot be set: ' + property );
+
+                }
+
+            }
+
+        } );
+
+    }
+
+}
+
 export function mixin( Base, ... mixins ) {
 
     if ( ! Base )

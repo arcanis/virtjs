@@ -1,9 +1,10 @@
-import { EmitterMixin } from 'virtjs/mixins/EmitterMixin';
-import { mixin }        from 'virtjs/utils/ObjectUtils';
+import { EmitterMixin }      from 'virtjs/mixins/EmitterMixin';
+import { formatHexadecimal } from 'virtjs/utils/FormatUtils';
+import { mixin }             from 'virtjs/utils/ObjectUtils';
 
-import { MBC1 }         from 'virtjs-gbjit/mbcs/MBC1';
-import { MBC3 }         from 'virtjs-gbjit/mbcs/MBC3';
-import { NoMBC }        from 'virtjs-gbjit/mbcs/NoMBC';
+import { MBC1 }              from 'virtjs-gbjit/mbcs/MBC1';
+import { MBC3 }              from 'virtjs-gbjit/mbcs/MBC3';
+import { NoMBC }             from 'virtjs-gbjit/mbcs/NoMBC';
 
 var MBC5 = function ( ) {};
 
@@ -80,8 +81,11 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
         var type = new Uint8Array( environment.romBuffer )[ 0x0147 ];
 
+        if ( ! cartridgeTypes[ type ] )
+            throw new Error( `Invalid cartridge type ${formatHexadecimal(type, 8)}` );
+
         this._mbc = new ( cartridgeTypes[ type ] )( );
-        this._mbc.link( { jit : this._jit } );
+        this._mbc.link( { } );
         this._mbc.setup( environment );
 
     }
@@ -252,12 +256,10 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF04:
-                this._environment.timerDividerBuffer = 0;
                 this._environment.timerDivider = 0;
             break ;
 
             case 0xFF05:
-                this._environment.timerCounterBuffer = 0;
                 this._environment.timerCounter = value;
             break ;
 
@@ -287,7 +289,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF41:
-                this._environment.gpuInterrupts = ( value & 0x78 ) >>> 3;
+                this._environment.gpuInterrupts = value & 0x78;
             break ;
 
             case 0xFF42:

@@ -1,16 +1,16 @@
-import { PageSet }              from 'virtjs/core/jit/PageSet';
-import { ReadOnlyPage }         from 'virtjs/core/jit/ReadOnlyPage';
-import { VersionedPage }        from 'virtjs/core/jit/VersionedPage';
-import { Engine as BaseEngine } from 'virtjs/core/Engine';
-import { EmitterMixin }         from 'virtjs/mixins/EmitterMixin';
-import { mixin }                from 'virtjs/utils/ObjectUtils';
+import { PageSet }                     from 'virtjs/core/jit/PageSet';
+import { ReadOnlyPage }                from 'virtjs/core/jit/ReadOnlyPage';
+import { VersionedPage }               from 'virtjs/core/jit/VersionedPage';
+import { Engine as BaseEngine }        from 'virtjs/core/Engine';
+import { EmitterMixin }                from 'virtjs/mixins/EmitterMixin';
+import { createDefensiveProxy, mixin } from 'virtjs/utils/ObjectUtils';
 
-import { GPU }                  from 'virtjs-gbjit/components/GPU';
-import { KeyIO }                from 'virtjs-gbjit/components/KeyIO';
-import { MMU }                  from 'virtjs-gbjit/components/MMU';
-import { Environment }          from 'virtjs-gbjit/Environment';
-import { Interpreter }          from 'virtjs-gbjit/Interpreter';
-import { fixRomSize }           from 'virtjs-gbjit/tools';
+import { GPU }                         from 'virtjs-gbjit/components/GPU';
+import { KeyIO }                       from 'virtjs-gbjit/components/KeyIO';
+import { MMU }                         from 'virtjs-gbjit/components/MMU';
+import { Environment }                 from 'virtjs-gbjit/Environment';
+import { Interpreter }                 from 'virtjs-gbjit/Interpreter';
+import { fixRomSize }                  from 'virtjs-gbjit/tools';
 
 export var inputs = {
 
@@ -36,6 +36,8 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
         this._startEvent = !!~events.indexOf( 'start' ) ? { } : null;
         this._stopEvent = !!~events.indexOf( 'start' ) ? { } : null;
         this._setupEvent = !!~events.indexOf( 'setup' ) ? { } : null;
+
+        this._debugMode = Boolean( advanced.debugMode );
 
         this.screen = devices.screen;
         this.timer = devices.timer;
@@ -93,9 +95,14 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
     loadArrayBuffer( arrayBuffer, { autostart = true } = { } ) {
 
-        this.setup( new Environment( {
+        var environment = new Environment( {
             romBuffer : fixRomSize( arrayBuffer )
-        } ) );
+        } );
+
+        if ( this._debugMode )
+            environment = createDefensiveProxy( environment );
+
+        this.setup( environment );
 
         if ( autostart ) {
             this.run( );

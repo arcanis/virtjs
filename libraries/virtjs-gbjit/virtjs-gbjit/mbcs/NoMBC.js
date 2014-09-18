@@ -4,6 +4,10 @@ export class NoMBC {
 
     }
 
+    link( { } ) {
+
+    }
+
     setup( environment ) {
 
         this._rom = new Uint8Array( environment.romBuffer );

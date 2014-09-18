@@ -52,10 +52,11 @@ export class Environment {
         this.gpuTilesetBase = 1;
         this.gpuBackgroundBase = 0;
         this.gpuWindowBase = 0;
+        this.gpuInterrupts = 0;
         this.gpuMode = 0x02;
+        this.gpuClock = CYCLES_PER_OAM;
         this.gpuLy = 0;
         this.gpuLyc = 0;
-        this.gpuClock = CYCLES_PER_OAM;
         this.gpuBgScroll = [ 0, 0 ];
         this.gpuWinPosition = [ 0, 0 ];
         this.gpuCoincidence = false;
@@ -69,6 +70,13 @@ export class Environment {
         this.timerCounterFeature = false;
         this.timerCounterModulo = 0;
         this.timerCounterControl = 0;
+
+        var merge = ( high, low ) => ( { get : ( ) => ( this[ high ] << 8 ) | ( this[ low ] ) } );
+
+        Object.defineProperty( this, 'af', merge( 'a', 'f' ) );
+        Object.defineProperty( this, 'bc', merge( 'b', 'c' ) );
+        Object.defineProperty( this, 'de', merge( 'd', 'e' ) );
+        Object.defineProperty( this, 'hl', merge( 'h', 'l' ) );
 
     }
 

@@ -1,8 +1,8 @@
-import { Engine as BaseEngine } from 'virtjs/core/Engine';
-import { EmitterMixin }         from 'virtjs/mixins/EmitterMixin';
-import { formatHexadecimal }    from 'virtjs/utils/FormatUtils';
-import { mixin }                from 'virtjs/utils/ObjectUtils';
-import { preprocessMethods }    from 'virtjs/utils/PreprocessUtils';
+import { Engine as BaseEngine }        from 'virtjs/core/Engine';
+import { EmitterMixin }                from 'virtjs/mixins/EmitterMixin';
+import { formatHexadecimal }           from 'virtjs/utils/FormatUtils';
+import { createDefensiveProxy, mixin } from 'virtjs/utils/ObjectUtils';
+import { preprocessMethods }           from 'virtjs/utils/PreprocessUtils';
 
 import { CPU }         from './components/CPU';
 import { GPU }         from './components/GPU';

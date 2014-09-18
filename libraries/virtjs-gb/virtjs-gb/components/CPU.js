@@ -166,8 +166,8 @@ export class CPU extends mixin( null, EmitterMixin ) {
         this._engine.environment.pendingInterrupts ^= 1 << bit;
         var interruptionTime = this._opcodeMaps.interruptions[ bit ].call( this );
 
-        this._engine.gpu.step( time );
-        this._engine.timer.step( time );
+        this._engine.gpu.step( interruptionTime );
+        this._engine.timer.step( interruptionTime );
 
     }
 

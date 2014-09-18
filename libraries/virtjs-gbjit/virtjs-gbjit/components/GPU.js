@@ -1,6 +1,11 @@
 var colors = { 0 : 255, 1 : 192, 2 : 96, 3 : 0 };
 
-export var CYCLES_PER_HBLANK = 51;
+export var HBLANK_MODE = 0x00;
+export var VBLANK_MODE = 0x01;
+export var OAM_MODE = 0x02;
+export var VRAM_MODE = 0x03;
+
+export var CYCLES_PER_HBLANK_LINE = 51;
 export var CYCLES_PER_VBLANK_LINE = 114;
 export var CYCLES_PER_OAM = 20;
 export var CYCLES_PER_VRAM = 43;
@@ -150,7 +155,7 @@ export class GPU {
         switch ( this._environment.gpuMode ) {
 
             // HBlank
-            case 0x00 :
+            case HBLANK_MODE :
 
                 // End of line reached, step to the next one
 
@@ -159,7 +164,7 @@ export class GPU {
                 // Check if the new line matches the line in the LYC register
 
                 this._environment.gpuCoincidence =
-                    this._environment.gpuLy === this._environment.gpuLycRegister;
+                    this._environment.gpuLy === this._environment.gpuLyc;
 
                 // If the user program asked for being notified, trigger an interrupt
 
@@ -172,12 +177,12 @@ export class GPU {
                 if ( this._environment.gpuLy < HBLANK_LINE_COUNT ) {
 
                     this._environment.gpuClock = CYCLES_PER_OAM;
-                    this._setMode( 0x02 );
+                    this._setMode( OAM_MODE );
 
                 } else {
 
                     this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
-                    this._setMode( 0x01 );
+                    this._setMode( VBLANK_MODE );
 
                     // In this case, we want to tell the JIT that we're ready to exit the running loop
 
@@ -188,10 +193,10 @@ export class GPU {
             return false;
 
             // VBlank
-            case 0x01 :
+            case VBLANK_MODE :
 
                 // End of line reached, step to the next one
-                // Btw, you may wonder why we're talking about "step to the next one" since the VBlank occurs after all the line have been processed by the HBlank events; it's because the VBlank event has 10 'fake' lines, which will bring the line counter up to 154. Strange, uh?
+                // Btw, you may wonder why we're talking about "step to the next one" since the VBlank occurs after all the 144 screen lines have been processed by the HBlank events; it's because the VBlank event has 10 'fake' lines, which will bring the line counter up to 154. Strange, uh?
 
                 this._environment.gpuLy += 1;
 
@@ -203,7 +208,7 @@ export class GPU {
                 // ... then we set the coincidence check ...
 
                 this._environment.gpuCoincidence =
-                    this._environment.gpuLy === this._environment.gpuLycRegister;
+                    this._environment.gpuLy === this._environment.gpuLyc;
 
                 // ... then we trigger the interrupt if asked ...
 
@@ -216,23 +221,24 @@ export class GPU {
                 if ( this._environment.gpuLy === 0 ) {
 
                     this._environment.gpuClock = CYCLES_PER_OAM;
-                    this._setMode( 0x02 );
+                    this._setMode( OAM_MODE );
 
                 } else {
 
                     this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+                    //this._setMode( VBLANK_MODE );
 
                 }
 
             return false;
 
             // OAM
-            case 0x02 :
+            case OAM_MODE :
 
                 // Once the OAM mode is finished, goes to the VRAM mode
 
                 this._environment.gpuClock = CYCLES_PER_VRAM;
-                this._setMode( 0x03 );
+                this._setMode( VRAM_MODE );
 
             return false;
 
@@ -241,8 +247,8 @@ export class GPU {
 
                 // And once the VRAM mode is finished, goes to the HBlank again!
 
-                this._environment.gpuClock = CYCLES_PER_HBLANK;
-                this._setMode( 0x00 );
+                this._environment.gpuClock = CYCLES_PER_HBLANK_LINE;
+                this._setMode( HBLANK_MODE );
 
             return false ;
 
@@ -258,15 +264,15 @@ export class GPU {
 
         // Trigger the HBlank / VBlank events
 
-        /****/ if ( mode === 0x00 ) {
+        /****/ if ( mode === HBLANK_MODE ) {
             this._triggerHblank( this._environment.gpuLy );
-        } else if ( mode === 0x01 ) {
+        } else if ( mode === VBLANK_MODE ) {
             this._triggerVblank( );
         }
 
         // Trigger interrupts if requested (the VRAM mode (0x03) never trigger interrupts)
 
-        if ( mode !== 0x03 && this._environment.gpuInterrupts & ( 1 << ( 3 + mode ) ) ) {
+        if ( mode !== VRAM_MODE && this._environment.gpuInterrupts & ( 1 << ( 3 + mode ) ) ) {
             this._environment.pendingInterrupts |= 0x02;
         }
 
@@ -330,7 +336,7 @@ export class GPU {
     _drawBackgroundScanline( line ) {
 
         // Select the right background base address (there is two of them, 0;255 and -127;128)
-        var backgroundMapBaseAddress = this._environment.gpuBackgroundMap ? 0x1C00 : 0x1800;
+        var backgroundMapBaseAddress = this._environment.gpuBackgroundBase ? 0x1C00 : 0x1800;
 
         var scrollX = this._environment.gpuBgScroll[ 0 ];
         var scrollY = this._environment.gpuBgScroll[ 1 ];

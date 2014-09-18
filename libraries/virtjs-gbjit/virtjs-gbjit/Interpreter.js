@@ -325,12 +325,13 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         var environment = this._environment;
 
-        // GPU
+        // GPU ; WHY x4 ?
 
-        environment.gpuClock = environment.gpuClock - count;
+        environment.gpuClock -= count;
 
-        if ( environment.gpuClock <= 0 && this._gpu.nextMode( ) )
-            this._running = false;
+        if ( environment.gpuClock <= 0 )
+            if ( this._gpu.nextMode( ) )
+                this._running = false;
 
         // Timer Divider ; WHY x4 ?
 
@@ -338,10 +339,10 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
             environment.timerDividerBuffer += count * 4;
 
-            while ( engine.timerDividerBuffer >= 256 ) {
+            while ( environment.timerDividerBuffer >= 256 ) {
 
-                engine.timerDividerBuffer -= 256;
-                engine.timerDivider = ( ( engine.timerDivider + 1 ) & 0xFF ) >>> 0;
+                environment.timerDividerBuffer -= 256;
+                environment.timerDivider = ( ( environment.timerDivider + 1 ) & 0xFF ) >>> 0;
 
             }
 

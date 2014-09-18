@@ -59,6 +59,9 @@ var fragmentShaderCode = `
 
     void main() {
 
+        gl_FragColor = texture2D(uScreenTexture, texCoord[0].xy);
+        return ;
+
         vec2 fp = fract(texCoord[0].xy * uInputResolution);
 
         vec3 A1 = texture2D(uScreenTexture, texCoord[1].xw).rgb;

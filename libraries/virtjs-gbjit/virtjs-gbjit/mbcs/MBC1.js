@@ -109,13 +109,8 @@ export class MBC1 {
         if ( ( romBank & 0x1F ) === 0 )
             romBank += 1;
 
-        if ( this._romBankNN !== this._romBanks[ romBank ] ) {
-            this._romBankNN = this._romBanks[ romBank ];
-        }
-
-        if ( this._ramBankNN !== this._ramBanks[ ramBank ] ) {
-            this._ramBankNN = this._ramBanks[ ramBank ];
-        }
+        this._romBankNN = this._romBanks[ romBank ];
+        this._ramBankNN = this._ramBanks[ ramBank ];
 
     }
 
