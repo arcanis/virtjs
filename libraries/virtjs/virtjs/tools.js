@@ -66,7 +66,7 @@ export function fetch( path ) {
         } else if ( isWeb ) {
 
             var protocol = path.substr( 0, path.indexOf( ':' ) );
-            var web = require( protocol /* http or https */ );
+            var web = module.require( protocol /* http or https */ );
 
             var buffers = [ ];
 
@@ -88,7 +88,7 @@ export function fetch( path ) {
 
         } else {
 
-            var fs = require( 'fs' );
+            var fs = module.require( 'fs' );
 
             fs.readFile( path, ( err, buffer ) => {
 

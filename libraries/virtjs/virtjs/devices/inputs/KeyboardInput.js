@@ -22,13 +22,19 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
 
         super( );
 
-        this._map = map || this._createAutomap( inputs );
+        this._map = map || inputs && this._createAutomap( inputs );
         this._element = element;
 
         this._onKeyDown_ = this._onKeyDown.bind( this );
         this._onKeyUp_ = this._onKeyUp.bind( this );
 
         this._attach( );
+
+    }
+
+    loadInputs( inputs ) {
+
+        this._map = this._createAutomap( inputs );
 
     }
 
