@@ -229,6 +229,7 @@ export class WebGLScreen {
             this._context.viewport( 0, 0, this._canvas.width, this._canvas.height );
 
         this._updateViewport( );
+        this._draw( );
 
     }
 
