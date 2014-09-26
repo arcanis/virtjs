@@ -204,6 +204,9 @@ export class WebGLScreen {
 
         this._setupContext( );
 
+        this.setInputSize( 256, 256 );
+        this.setOutputSize( 256, 256 );
+
         // Expose the canvas
         this.canvas = this._canvas;
 

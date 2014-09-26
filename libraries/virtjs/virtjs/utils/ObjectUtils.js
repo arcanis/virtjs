@@ -83,10 +83,12 @@ export function serialize( data ) {
 
     var getFormat = data => Object.keys( data ).reduce( ( format, key ) => {
 
-        if ( data[ key ] instanceof Buffer ) {
+        var value = data[ key ];
+
+        if ( value instanceof ArrayBuffer ) {
             format[ key ] = 'arraybuffer';
-        } else if ( data && data.constructor === Object ) {
-            format[ key ] = getFormat( data[ key ] );
+        } else if ( value && value.constructor === Object ) {
+            format[ key ] = getFormat( value );
         } else {
             format[ key ] = null;
         }
@@ -97,12 +99,14 @@ export function serialize( data ) {
 
     var simplify = data => Object.keys( data ).reduce( ( simplified, key ) => {
 
-        if ( data[ key ] instanceof Buffer ) {
-            simplified[ key ] = String.fromCharCode.apply( null, new Uint8Array( data[ key ] ) );
-        } else if ( data && data.constructor === Object ) {
-            simplified[ key ] = simplify( data[ key ] );
+        var value = data[ key ];
+
+        if ( value instanceof ArrayBuffer ) {
+            simplified[ key ] = String.fromCharCode.apply( null, new Uint8Array( value ) );
+        } else if ( value && value.constructor === Object ) {
+            simplified[ key ] = simplify( value );
         } else {
-            simplified[ key ] = data[ key ];
+            simplified[ key ] = value;
         }
 
         return simplified;
@@ -118,28 +122,31 @@ export function serialize( data ) {
 
 }
 
+export function unserializeArrayBuffer( serialization ) {
+
+    var buffer = new ArrayBuffer( serialization.length );
+
+    var bufferView = new Uint8Array( buffer );
+    for ( var t = 0, T = bufferView.length; t < T; ++ t )
+        bufferView[ t ] = serialization.charCodeAt( t );
+
+    return bufferView.buffer;
+
+}
+
 export function unserialize( serialization ) {
-
-    var unserializeArrayBuffer = serialization => {
-
-        var buffer = new ArrayBuffer( serialization.length );
-
-        var bufferView = new Uint8Array( buffer );
-        for ( var t = 0, T = bufferView.length; t < T; ++ t )
-            bufferView[ t ] = serialization.charCodeAt( t );
-
-        return bufferView;
-
-    };
 
     var complexify = ( format, tree ) => Object.keys( format ).reduce( ( complexified, key ) => {
 
-        if ( format[ key ] === 'arraybuffer' ) {
-            complexified[ key ] = unserializeArrayBuffer( tree[ key ] );
-        } else if ( format && format.constructor === Object ) {
-            complexified[ key ] = complexify( format[ key ], tree[ key ] );
+        var type = format[ key ];
+        var node = tree[ key ];
+
+        if ( type === 'arraybuffer' ) {
+            complexified[ key ] = unserializeArrayBuffer( node );
+        } else if ( type && type.constructor === Object ) {
+            complexified[ key ] = complexify( type, node );
         } else {
-            complexified[ key ] = tree[ key ];
+            complexified[ key ] = node;
         }
 
         return complexified;

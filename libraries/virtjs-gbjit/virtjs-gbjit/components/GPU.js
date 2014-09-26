@@ -22,6 +22,12 @@ export class GPU {
         this._screen = screen;
         this._scanline = new Uint8Array( 160 );
 
+        this._oam = null;
+        this._vram = null;
+
+        this._sprites = null;
+        this._tilesets = null;
+
         this._screen.setInputSize( 160, 144 );
 
     }
@@ -35,8 +41,6 @@ export class GPU {
     setup( environment ) {
 
         this._environment = environment;
-
-        this._palettes = environment.gpuPalettes;
 
         this._oam = new Uint8Array( environment.oamBuffer );
         this._vram = new Uint8Array( environment.vramBuffer );
@@ -68,8 +72,8 @@ export class GPU {
 
         // Same as for the sprites, we may be in an unserialized environment. So let's populate it !
 
-        for ( var t = 0; t < 384; ++ t ) {
-            this.updateTile( t * 16 );
+        for ( var t = 0; t < 384 * 16; ++ t ) {
+            this.updateTile( t );
         }
 
     }
@@ -79,7 +83,7 @@ export class GPU {
         var start = value << 8;
 
         for ( var offset = 0; offset < 160; ++ offset ) {
-            this._oam[ offset ]= this._mmu.readUint8( start + offset );
+            this._oam[ offset ] = this._mmu.readUint8( start + offset );
             this.updateSprite( offset );
         }
 
@@ -87,7 +91,7 @@ export class GPU {
 
     setPalette( index, value ) {
 
-        var palette = this._palettes[ index ];
+        var palette = this._environment.gpuPalettes[ index ];
 
         palette[ 0 ] = ( value >> 0 ) & 0x3;
         palette[ 1 ] = ( value >> 2 ) & 0x3;
@@ -98,7 +102,7 @@ export class GPU {
 
     getPalette( index ) {
 
-        var palette = this._palettes[ index ];
+        var palette = this._environment.gpuPalettes[ index ];
 
         return (
             ( palette[ 0 ] << 0 ) |
@@ -382,7 +386,7 @@ export class GPU {
         var tileY = actualY & 0x7;
 
         // The background palette is the first palette
-        var palette = this._palettes[ 0 ];
+        var palette = this._environment.gpuPalettes[ 0 ];
 
         for ( var x = 0; x < 160; ++ x ) {
 

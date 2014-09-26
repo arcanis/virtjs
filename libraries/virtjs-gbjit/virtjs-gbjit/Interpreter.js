@@ -34,7 +34,7 @@ function getInstructionStaticArguments( parameters, address, mmu ) {
         var offset = parameterOffset;
         parameterOffset += 1;
         return offset;
-    }
+    };
 
     return parameters.map( parameter => { switch ( parameter ) {
         case i8_t  : return mmu.readInt8( address + getParameterOffset( 1 ) );

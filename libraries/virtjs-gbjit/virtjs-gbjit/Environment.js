@@ -3,7 +3,7 @@ import { CYCLES_PER_OAM }                         from 'virtjs-gbjit/components/
 
 export class Environment {
 
-    constructor( { romBuffer } = { } ) {
+    constructor( { romBuffer, initialState } = { } ) {
 
         this.pc = 0x0100;
         this.sp = 0xFFFE;
@@ -77,6 +77,32 @@ export class Environment {
         Object.defineProperty( this, 'bc', merge( 'b', 'c' ) );
         Object.defineProperty( this, 'de', merge( 'd', 'e' ) );
         Object.defineProperty( this, 'hl', merge( 'h', 'l' ) );
+
+        if ( typeof initialState !== 'undefined' ) {
+            this.loadState( initialState );
+        }
+
+    }
+
+    saveState( ) {
+
+        var dataStore = { };
+
+        var ignoredProperties = [ 'romBuffer' ];
+
+        for ( var key of Object.keys( this ) )
+            if ( ignoredProperties.indexOf( key ) === -1 )
+                dataStore[ key ] = this[ key ];
+
+        return dataStore;
+
+    }
+
+    loadState( state ) {
+
+        for ( var key of Object.keys( state ) ) {
+            this[ key ] = state[ key ];
+        }
 
     }
 

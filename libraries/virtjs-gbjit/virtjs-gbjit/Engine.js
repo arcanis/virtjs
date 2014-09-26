@@ -2,6 +2,9 @@ import { PageSet }                     from 'virtjs/core/jit/PageSet';
 import { ReadOnlyPage }                from 'virtjs/core/jit/ReadOnlyPage';
 import { VersionedPage }               from 'virtjs/core/jit/VersionedPage';
 import { Engine as BaseEngine }        from 'virtjs/core/Engine';
+import { NullInput }                   from 'virtjs/devices/inputs/NullInput';
+import { NullScreen }                  from 'virtjs/devices/screens/NullScreen';
+import { SerialTimer }                 from 'virtjs/devices/timers/SerialTimer';
 import { EmitterMixin }                from 'virtjs/mixins/EmitterMixin';
 import { createDefensiveProxy, mixin } from 'virtjs/utils/ObjectUtils';
 
@@ -12,24 +15,9 @@ import { Environment }                 from 'virtjs-gbjit/Environment';
 import { Interpreter }                 from 'virtjs-gbjit/Interpreter';
 import { fixRomSize }                  from 'virtjs-gbjit/tools';
 
-export var inputs = {
-
-    RIGHT  :  0x21,
-    LEFT   :  0x22,
-    UP     :  0x24,
-    DOWN   :  0x28,
-
-    A      :  0x11,
-    B      :  0x12,
-
-    SELECT :  0x14,
-    START  :  0x18
-
-};
-
 export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
-    constructor( { devices, advanced = { }, events = [ ] } = { } ) {
+    constructor( { devices = { }, advanced = { }, events = [ ] } = { } ) {
 
         super( );
 
@@ -39,16 +27,16 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
         this._debugMode = Boolean( advanced.debugMode );
 
-        this.screen = devices.screen;
-        this.timer = devices.timer;
-        this.input = devices.input;
+        this.screen = devices.screen || new NullScreen( );
+        this.timer = devices.timer || new SerialTimer( );
+        this.input = devices.input || new NullInput( );
 
         this._gpu = new GPU( {
-            screen : devices.screen
+            screen : this.screen
         } );
 
         this._keyio = new KeyIO( {
-            input : devices.input
+            input : this.input
         } );
 
         this._mmu = new MMU( {
@@ -93,10 +81,11 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
     }
 
-    loadArrayBuffer( arrayBuffer, { autostart = true } = { } ) {
+    loadArrayBuffer( arrayBuffer, { initialState, autoStart = true } = { } ) {
 
         var environment = new Environment( {
-            romBuffer : fixRomSize( arrayBuffer )
+            romBuffer : fixRomSize( arrayBuffer ),
+            initialState : initialState
         } );
 
         if ( this._debugMode )
@@ -104,7 +93,7 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
         this.setup( environment );
 
-        if ( autostart ) {
+        if ( autoStart ) {
             this.run( );
         }
 
@@ -154,7 +143,7 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
         if ( this._startEvent )
             this.emit( 'start', this._startEvent );
 
-        run( );
+        this._runTimer = this.timer.nextTick( run );
 
     }
 
