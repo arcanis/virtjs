@@ -53,7 +53,7 @@ function getInstructionDynamicArguments( parameters, address ) {
         var offset = parameterOffset;
         parameterOffset += 1;
         return offset;
-    }
+    };
 
     return parameters.map( parameter => { switch ( parameter ) {
         case i8_t  : return `interpreter._mmu.readInt8(address + ${getParameterOffset(1)})`;
