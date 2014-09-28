@@ -6,7 +6,7 @@ import { MBC1 }              from 'virtjs-gbjit/mbcs/MBC1';
 import { MBC3 }              from 'virtjs-gbjit/mbcs/MBC3';
 import { NoMBC }             from 'virtjs-gbjit/mbcs/NoMBC';
 
-var MBC5 = function ( ) {};
+var MBC5 = function ( ) { throw new Error( 'MC5 is not yet supported :(' ); };
 
 var timerFrequencies = {
 

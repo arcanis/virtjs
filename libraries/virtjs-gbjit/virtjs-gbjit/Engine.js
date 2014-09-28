@@ -68,12 +68,22 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
     setup( environment ) {
 
-        this.environment = environment;
+        try {
 
-        this._interpreter.setup( this.environment );
-        this._gpu.setup( this.environment );
-        this._keyio.setup( this.environment );
-        this._mmu.setup( this.environment );
+            this.environment = environment;
+
+            this._interpreter.setup( this.environment );
+            this._gpu.setup( this.environment );
+            this._keyio.setup( this.environment );
+            this._mmu.setup( this.environment );
+
+        } catch ( err ) {
+
+            this.environment = null;
+
+            throw err;
+
+        }
 
         if ( this._setupEvent ) {
             this.emit( 'setup', this._setupEvent );
@@ -130,6 +140,9 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
     run( ) {
 
         if ( this._runTimer )
+            return ;
+
+        if ( ! this.environment )
             return ;
 
         var run = ( ) => {

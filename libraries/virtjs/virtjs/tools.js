@@ -17,6 +17,19 @@ export function nodeToUint8( ... buffers ) {
 
 }
 
+export function binaryStringToUint8( ... strings ) {
+
+    var totalByteLength = strings.reduce( ( sum, string ) => sum + string.length, 0 );
+    var array = new Uint8Array( totalByteLength ), offset = 0;
+
+    strings.forEach( string => {
+        for ( var t = 0, T = string.length; t < T; ++ t )
+            array[ offset ++ ] = string.charCodeAt( t ); } );
+
+    return array;
+
+}
+
 export var toSigned8 = ( function ( ) {
 
     var tmp = new Int8Array( 1 );
@@ -44,17 +57,28 @@ export function hashString( str ) {
 
 }
 
+var base64DataUrl = /^data:[^;]*;base64,([a-zA-Z0-9+/]+={0,2})$/;
+
 export function fetch( path ) {
 
     return new Promise( ( resolve, reject ) => {
 
+        var isDataURI = path.match( base64DataUrl );
         var isBrowser = typeof window !== 'undefined';
         var isWeb = isBrowser || /^https?:\/\//.test( path );
 
         if ( ! isWeb && path.indexOf( ':' ) !== -1 )
             throw new Error( 'Invalid protocol' );
 
-        if ( isBrowser ) {
+        if ( isDataURI ) {
+
+            if ( isBrowser ) {
+                resolve( binaryStringToUint8( atob( isDataURI[ 1 ] ) ).buffer );
+            } else {
+                resolve( nodeToUint8( new Buffer( isDataURI[ 1 ], 'base64' ) ).buffer );
+            }
+
+        } else if ( isBrowser ) {
 
             var xhr = new XMLHttpRequest( );
             xhr.open( 'GET', path, true );
