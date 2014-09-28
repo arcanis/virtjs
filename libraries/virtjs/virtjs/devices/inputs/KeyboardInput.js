@@ -82,6 +82,9 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
         if ( e.keyCode === 8 /* backspace */ )
             e.preventDefault( );
 
+        if ( e.metaKey || e.ctrlKey || e.shiftKey || e.altKey )
+            return ;
+
         if ( typeof this._map[ e.keyCode ] === 'undefined' )
             return ;
 
