@@ -480,7 +480,7 @@ export class GPU {
 
                 // The pixel is out of screen, next
                 if ( x < 0 || x >= 160 )
-                    return ;
+                    continue ;
 
                 // Just like before, don't forget to flip the tile position if we're flip the model horizontally !
                 // However, since we're iterating on 'tileX', we have to use another variable.
