@@ -4,39 +4,44 @@ import { mixin }             from 'virtjs/utils/ObjectUtils';
 
 import { MBC1 }              from 'virtjs-gbjit/mbcs/MBC1';
 import { MBC3 }              from 'virtjs-gbjit/mbcs/MBC3';
+import { MBC5 }              from 'virtjs-gbjit/mbcs/MBC5';
 import { NoMBC }             from 'virtjs-gbjit/mbcs/NoMBC';
 
-var MBC5 = function ( ) { throw new Error( 'MC5 is not yet supported :(' ); };
+var MBC4 = function ( ) { throw new Error( 'MBC4 is not yet supported :(' ); };
 
 var timerFrequencies = {
 
-     0 : 1024,
-     1 :   16,
-     2 :   64,
-     3 :  256
+     0b00 : 1024,
+     0b01 :   16,
+     0b10 :   64,
+     0b11 :  256
 
 };
 
 var cartridgeTypes = {
 
-     0 : NoMBC,
+    0x00 : NoMBC,
 
-     1 : MBC1.bind( null, { } ),
-     2 : MBC1.bind( null, { ram : true } ),
-     3 : MBC1.bind( null, { ram : true, battery : true } ),
+    0x01 : MBC1.bind( null, { } ),
+    0x02 : MBC1.bind( null, { ram : true } ),
+    0x03 : MBC1.bind( null, { ram : true, battery : true } ),
 
-    15 : MBC3.bind( null, { } ),
-    16 : MBC3.bind( null, { timer : true } ),
-    17 : MBC3.bind( null, { timer : true, battery : true } ),
-    18 : MBC3.bind( null, { ram : true } ),
-    19 : MBC3.bind( null, { ram : true, battery : true } ),
+    0x0F : MBC3.bind( null, { timer : true, battery : true } ),
+    0x10 : MBC3.bind( null, { ram : true, timer : true, battery : true } ),
+    0x11 : MBC3.bind( null, { } ),
+    0x12 : MBC3.bind( null, { ram : true } ),
+    0x13 : MBC3.bind( null, { ram : true, battery : true } ),
 
-    25 : MBC5.bind( null, { } ),
-    26 : MBC5.bind( null, { ram : true } ),
-    27 : MBC5.bind( null, { ram : true, battery : true } ),
-    28 : MBC5.bind( null, { rumble : true } ),
-    29 : MBC5.bind( null, { rumble : true, ram : true } ),
-    30 : MBC5.bind( null, { rumble : true, ram : true, battery : true } )
+    0x15 : MBC4.bind( null, { } ),
+    0x16 : MBC4.bind( null, { ram : true } ),
+    0x17 : MBC4.bind( null, { ram : true, battery : true } ),
+
+    0x19 : MBC5.bind( null, { } ),
+    0x1A : MBC5.bind( null, { ram : true } ),
+    0x1B : MBC5.bind( null, { ram : true, battery : true } ),
+    0x1C : MBC5.bind( null, { rumble : true } ),
+    0x1D : MBC5.bind( null, { rumble : true, ram : true } ),
+    0x1E : MBC5.bind( null, { rumble : true, ram : true, battery : true } )
 
 };
 
@@ -221,18 +226,6 @@ export class MMU extends mixin( null, EmitterMixin ) {
         if ( address >= 0x0000 && address < 0x8000 )
             this._mbc.writeRomUint8( address, value );
 
-        else if ( address >= 0xA000 && address < 0xC000 )
-            this._mbc.writeRamUint8( address, value );
-
-        else if ( address >= 0xC000 && address < 0xE000 )
-            this._wram[ address & 0x1FFF ] = value;
-
-        else if ( address >= 0xE000 && address < 0xFE00 )
-            this._wram[ address & 0x1FFF ] = value;
-
-        else if ( address >= 0xFF80 && address < 0xFFFF )
-            this._hram[ address - 0xFF80 ] = value;
-
         else if ( address >= 0x8000 && address < 0xA000 ) {
             if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode !== 0x03 ) {
                 this._vram[ address & 0x1FFF ] = value;
@@ -242,12 +235,24 @@ export class MMU extends mixin( null, EmitterMixin ) {
             }
         }
 
+        else if ( address >= 0xA000 && address < 0xC000 )
+            this._mbc.writeRamUint8( address, value );
+
+        else if ( address >= 0xC000 && address < 0xE000 )
+            this._wram[ address & 0x1FFF ] = value;
+
+        else if ( address >= 0xE000 && address < 0xFE00 )
+            this._wram[ address & 0x1FFF ] = value;
+
         else if ( address >= 0xFE00 && address < 0xFEA0 ) {
             if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode <= 0x01 ) {
                 this._oam[ address - 0xFE00 ] = value;
                 this._gpu.updateSprite( address - 0xFE00 );
             }
         }
+
+        else if ( address >= 0xFF80 && address < 0xFFFF )
+            this._hram[ address - 0xFF80 ] = value;
 
         else switch ( address ) {
 

@@ -33,7 +33,7 @@ export class MBC3 {
 
         var bank = address < 0x4000 ?
             this._romBank00 :
-            this._romBankNN;
+            this._romBankNN ;
 
         return bank[ address ] | 0;
 
