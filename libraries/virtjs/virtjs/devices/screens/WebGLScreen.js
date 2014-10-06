@@ -1,152 +1,19 @@
-var fragmentShaderCode = `
-    precision mediump float;
+import { DataScreen } from 'virtjs/devices/screens/DataScreen';
 
-    uniform sampler2D uScreenTexture;
-    uniform vec2      uInputResolution;
+var v = value => {
 
-    varying vec4 texCoord[8];
+    if ( typeof value === 'undefined' )
+        value = 0;
 
-    const float coef      =  2.0;
-    const float threshold = 15.0;
+    if ( value % 1 === 0 )
+        return value + '.0';
 
-    const float y_weight  = 48.0;
-    const float u_weight  =  7.0;
-    const float v_weight  =  6.0;
+    return value.toString( );
 
-    const mat3 yuv = mat3(0.299, -0.169, 0.499, 0.587, -0.331, -0.418, 0.114, 0.499, -0.0813);
-    const mat3 yuv_weighted = yuv; // Is it useful ?
+};
 
-    vec4 RGBtoYUV(vec3 v0, vec3 v1, vec3 v2, vec3 v3) {
+var vertexShaderBuilder = ( { } = { } ) => `
 
-        float a = yuv_weighted[0].x * v0.x + yuv_weighted[0].y * v0.y + yuv_weighted[0].z * v0.z;
-        float b = yuv_weighted[0].x * v1.x + yuv_weighted[0].y * v1.y + yuv_weighted[0].z * v1.z;
-        float c = yuv_weighted[0].x * v2.x + yuv_weighted[0].y * v2.y + yuv_weighted[0].z * v2.z;
-        float d = yuv_weighted[0].x * v3.x + yuv_weighted[0].y * v3.y + yuv_weighted[0].z * v3.z;
-
-        return vec4(a, b, c, d);
-
-    }
-
-    bvec4 _and_(bvec4 A, bvec4 B) {
-
-        return bvec4(A.x && B.x, A.y && B.y, A.z && B.z, A.w && B.w);
-
-    }
-
-    bvec4 _or_(bvec4 A, bvec4 B) {
-
-        return bvec4(A.x || B.x, A.y || B.y, A.z || B.z, A.w || B.w);
-
-    }
-
-    vec4 df(vec4 A, vec4 B) {
-
-        return vec4(abs(A - B));
-
-    }
-
-    bvec4 close(vec4 A, vec4 B) {
-
-        return lessThan(df(A, B), vec4(threshold));
-
-    }
-
-    vec4 weighted_distance(vec4 a, vec4 b, vec4 c, vec4 d, vec4 e, vec4 f, vec4 g, vec4 h) {
-
-        return df(a, b) + df(a, c) + df(d, e) + df(d, f) + 4.0 * df(g, h);
-
-    }
-
-    void main() {
-
-        gl_FragColor = texture2D(uScreenTexture, texCoord[0].xy);
-
-        vec2 fp = fract(texCoord[0].xy * uInputResolution);
-
-        vec3 A1 = texture2D(uScreenTexture, texCoord[1].xw).rgb;
-        vec3 B1 = texture2D(uScreenTexture, texCoord[1].yw).rgb;
-        vec3 C1 = texture2D(uScreenTexture, texCoord[1].zw).rgb;
-
-        vec3 A  = texture2D(uScreenTexture, texCoord[2].xw).rgb;
-        vec3 B  = texture2D(uScreenTexture, texCoord[2].yw).rgb;
-        vec3 C  = texture2D(uScreenTexture, texCoord[2].zw).rgb;
-
-        vec3 D  = texture2D(uScreenTexture, texCoord[3].xw).rgb;
-        vec3 E  = texture2D(uScreenTexture, texCoord[3].yw).rgb;
-        vec3 F  = texture2D(uScreenTexture, texCoord[3].zw).rgb;
-
-        vec3 G  = texture2D(uScreenTexture, texCoord[4].xw).rgb;
-        vec3 H  = texture2D(uScreenTexture, texCoord[4].yw).rgb;
-        vec3 I  = texture2D(uScreenTexture, texCoord[4].zw).rgb;
-
-        vec3 G5 = texture2D(uScreenTexture, texCoord[5].xw).rgb;
-        vec3 H5 = texture2D(uScreenTexture, texCoord[5].yw).rgb;
-        vec3 I5 = texture2D(uScreenTexture, texCoord[5].zw).rgb;
-
-        vec3 A0 = texture2D(uScreenTexture, texCoord[6].xy).rgb;
-        vec3 D0 = texture2D(uScreenTexture, texCoord[6].xz).rgb;
-        vec3 G0 = texture2D(uScreenTexture, texCoord[6].xw).rgb;
-
-        vec3 C4 = texture2D(uScreenTexture, texCoord[7].xy).rgb;
-        vec3 F4 = texture2D(uScreenTexture, texCoord[7].xz).rgb;
-        vec3 I4 = texture2D(uScreenTexture, texCoord[7].xw).rgb;
-
-        vec4 b = RGBtoYUV(B, D, H, F);
-        vec4 c = RGBtoYUV(C, A, G, I);
-        vec4 e = RGBtoYUV(E, E, E, E);
-        vec4 d = b.yzwx;
-        vec4 f = b.wxyz;
-        vec4 g = c.zwxy;
-        vec4 h = b.zwxy;
-        vec4 i = c.wxyz;
-
-        vec4 i4 = RGBtoYUV(I4, C1, A0, G5);
-        vec4 i5 = RGBtoYUV(I5, C4, A1, G0);
-        vec4 h5 = RGBtoYUV(H5, F4, B1, D0);
-        vec4 f4 = h5.yzwx;
-
-        vec4 Ao = vec4( 1.0, -1.0, -1.0,  1.0 );
-        vec4 Bo = vec4( 1.0,  1.0, -1.0, -1.0 );
-        vec4 Co = vec4( 1.5,  0.5, -0.5,  0.5 );
-        vec4 Ax = vec4( 1.0, -1.0, -1.0,  1.0 );
-        vec4 Bx = vec4( 0.5,  2.0, -0.5, -2.0 );
-        vec4 Cx = vec4( 1.0,  1.0, -0.5,  0.0 );
-        vec4 Ay = vec4( 1.0, -1.0, -1.0,  1.0 );
-        vec4 By = vec4( 2.0,  0.5, -2.0, -0.5 );
-        vec4 Cy = vec4( 2.0,  0.0, -1.0,  0.5 );
-
-        // These inequations define the line below which interpolation occurs
-        bvec4 fx      = greaterThan(Ao * fp.y + Bo * fp.x, Co);
-        bvec4 fx_left = greaterThan(Ax * fp.y + Bx * fp.x, Cx);
-        bvec4 fx_up   = greaterThan(Ay * fp.y + By * fp.x, Cy);
-
-        bvec4 t1 = _and_( notEqual(e, f), notEqual(e, h) );
-        bvec4 t2 = _and_( not(close(f, b)), not(close(h, d)) );
-        bvec4 t3 = _and_( _and_( close(e, i), not(close(f, i4)) ), not(close(h, i5)) );
-        bvec4 t4 = _or_( close(e, g), close(e, c) );
-        bvec4 interp_restriction_lv1 = _and_( t1, _or_( _or_(t2, t3), t4 ) );
-
-        bvec4 interp_restriction_lv2_left = _and_( notEqual(e, g), notEqual(d, g) );
-        bvec4 interp_restriction_lv2_up   = _and_( notEqual(e, c), notEqual(b, c) );
-
-        bvec4 edr      = _and_( lessThan(weighted_distance(e, c, g, i, h5, f4, h, f),
-                                         weighted_distance(h, d, i5, f, i4, b, e, i)), interp_restriction_lv1 );
-        bvec4 edr_left = _and_( lessThanEqual(coef * df(f, g), df(h, c)), interp_restriction_lv2_left );
-        bvec4 edr_up   = _and_( greaterThanEqual(df(f, g), coef * df(h, c)), interp_restriction_lv2_up );
-
-        bvec4 nc = _and_( edr, _or_( _or_( fx, _and_(edr_left, fx_left) ), _and_(edr_up, fx_up) ) );
-
-        bvec4 px = lessThanEqual(df(e, f), df(e, h));
-
-        vec3 res = nc.x ? px.x ? F : H : nc.y ? px.y ? B : F : nc.z ? px.z ? D : B : nc.w ? px.w ? H : D : E;
-
-        gl_FragColor.rgb = res;
-        gl_FragColor.a = 1.0;
-
-    }
-`;
-
-var vertexShaderCode = `
     precision mediump float;
 
     uniform mat4 uMatrix;
@@ -155,94 +22,293 @@ var vertexShaderCode = `
     attribute vec3 aVertexPosition;
     attribute vec2 aVertexTextureUv;
 
-    varying vec4 texCoord[8];
+    varying vec2 vTextureCoordinates;
 
-    void main(void) {
+    void main( void ) {
 
-        float dx = 1.0 / uInputResolution.x;
-        float dy = 1.0 / uInputResolution.y;
+        vTextureCoordinates = vec2( aVertexTextureUv.s, 1.0 - aVertexTextureUv.t );
 
-        //     A1 B1 C1
-        //  A0  A  B  C C4
-        //  D0  D  E  F F4
-        //  G0  G  H  I I4
-        //     G5 H5 I5
-
-        vec4 texCoordBase = vec4( aVertexTextureUv.s, 1.0 - aVertexTextureUv.t, 0.0, 0.0 );
-
-        texCoord[0] = texCoordBase;
-        texCoord[1] = texCoordBase.xxxy + vec4(    -dx,   0,  dx, -2.0*dy);  //  A1 B1 C1
-        texCoord[2] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,     -dy);  //   A  B  C
-        texCoord[3] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,       0);  //   D  E  F
-        texCoord[4] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,      dy);  //   G  H  I
-        texCoord[5] = texCoordBase.xxxy + vec4(    -dx,   0,  dx,  2.0*dy);  //  G5 H5 I5
-        texCoord[6] = texCoordBase.xyyy + vec4(-2.0*dx, -dy,   0,      dy);  //  A0 D0 G0
-        texCoord[7] = texCoordBase.xyyy + vec4( 2.0*dx, -dy,   0,      dy);  //  C4 F4 I4
-
-        gl_Position = uMatrix * vec4(aVertexPosition, 1);
+        gl_Position = uMatrix * vec4( aVertexPosition, 1.0 );
 
     }
+
 `;
 
-export class WebGLScreen {
+var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig, innerVig, bending } = { } ) => `
+
+    precision mediump float;
+
+    uniform sampler2D uScreenTexture;
+    uniform vec2 uInputResolution;
+    uniform vec2 uViewportResolution;
+
+    varying vec2 vTextureCoordinates;
+
+    // Scanline repetition :
+    // Bigger divider is bigger scanlines
+
+    vec2 scanlineResolution = uViewportResolution * 2.0;
+
+    // Hardness of scanline :
+    //  -8.0 = soft
+    // -16.0 = medium
+
+    float hardScan = ${v(hardScan)} * -12.0;
+
+    // Hardness of pixels in scanline :
+    // -2.0 = soft
+    // -4.0 = hard
+
+    float hardPix = ${v(hardPix)} * -3.0;
+
+    // Amount of shadow mask.
+
+    float maskDark = ${v(darkMask)};
+    float maskLight = ${v(lightMask)};
+
+    // Position for the outer vignette :
+
+    float outerVig = ${v(outerVig)};
+
+    // Position for the inner vignette :
+
+    float innerVig = ${v(innerVig)};
+
+    // Pixel bending :
+    float bending = ${v(bending)};
+
+    // sRGB to Linear :
+
+    float ToLinear1 ( float c ) { return(c<=0.04045)?c/12.92:pow((c+0.055)/1.055,2.4); }
+    vec3  ToLinear  ( vec3 c )  { return vec3(ToLinear1(c.r),ToLinear1(c.g),ToLinear1(c.b)); }
+
+    // Linear to sRGB :
+
+    float ToSrgb1 ( float c ) { return(c<0.0031308?c*12.92:1.055*pow(c,0.41666)-0.055); }
+    vec3  ToSrgb  ( vec3 c )  { return vec3(ToSrgb1(c.r),ToSrgb1(c.g),ToSrgb1(c.b)); }
+
+    // Nearest emulated sample given floating point position and texel offset :
+
+    vec3 Fetch( vec2 position, vec2 offset ) {
+
+        position = floor( position * scanlineResolution + offset ) / scanlineResolution;
+
+        return ToLinear( texture2D( uScreenTexture, position, -16.0 ).rgb );
+
+    }
+
+    // Distance in emulated pixels to nearest texel :
+
+    vec2 Dist( vec2 position ) {
+
+        position = position * scanlineResolution;
+
+        return -( ( position - floor( position ) ) - vec2( 0.5 ) );
+
+    }
+
+    // 1D Gaussian :
+
+    float Gaus( float position, float scale ) {
+
+        return exp2( scale * position * position );
+
+    }
+
+    // 3-tap Gaussian filter along horz line :
+
+    vec3 Horz3( vec2 position, float offset ) {
+
+        vec3 b = Fetch( position, vec2( -1.0, offset ) );
+        vec3 c = Fetch( position, vec2(  0.0, offset ) );
+        vec3 d = Fetch( position, vec2(  1.0, offset ) );
+
+        float distance = Dist( position ).x;
+
+        // Convert distance to weight
+        float scale = hardPix;
+        float wb = Gaus( distance - 1.0, scale );
+        float wc = Gaus( distance + 0.0, scale );
+        float wd = Gaus( distance + 1.0, scale );
+
+        // Return filtered sample
+        return ( b * wb + c * wc + d * wd ) / ( wb + wc + wd );
+
+    }
+
+    // 5-tap Gaussian filter along horz line :
+
+    vec3 Horz5( vec2 position, float offset ) {
+
+        vec3 a = Fetch( position, vec2( -2.0, offset ) );
+        vec3 b = Fetch( position, vec2( -1.0, offset ) );
+        vec3 c = Fetch( position, vec2(  0.0, offset ) );
+        vec3 d = Fetch( position, vec2(  1.0, offset ) );
+        vec3 e = Fetch( position, vec2(  2.0, offset ) );
+
+        float distance = Dist( position ).x;
+
+        // Convert distance to weight
+        float scale = hardPix;
+        float wa = Gaus( distance - 2.0, scale );
+        float wb = Gaus( distance - 1.0, scale );
+        float wc = Gaus( distance + 0.0, scale );
+        float wd = Gaus( distance + 1.0, scale );
+        float we = Gaus( distance + 2.0, scale );
+
+        // Return filtered sample
+        return ( a * wa + b * wb + c * wc + d * wd + e * we ) / ( wa + wb + wc + wd + we );
+
+    }
+
+    // Return scanline weight :
+
+    float Scan( vec2 position, float offset ) {
+
+        float distance = Dist( position ).y;
+
+        return Gaus( distance + offset, hardScan );
+
+    }
+
+    // Allow nearest three lines to effect pixel :
+
+    vec3 Tri( vec2 position ) {
+
+        vec3 a = Horz3( position, -1.0 );
+        vec3 b = Horz5( position,  0.0 );
+        vec3 c = Horz3( position,  1.0 );
+
+        float wa = Scan( position, -1.0 );
+        float wb = Scan( position,  0.0 );
+        float wc = Scan( position,  1.0 );
+
+        return a * wa + b * wb + c * wc;
+
+    }
+
+    // Shadow mask :
+
+    vec3 Mask( vec2 position ) {
+
+        float n = fract( ( position.x + position.y * 3.0 ) / 6.0 );
+
+        vec3 mask = vec3( maskDark, maskDark, maskDark );
+
+        if ( n < 0.333 ) {
+            mask.r = maskLight;
+        } else if ( n < 0.666 ) {
+            mask.g = maskLight;
+        } else {
+            mask.b = maskLight;
+        }
+
+        return mask;
+
+    }
+
+    // Vignette :
+
+    float Vignette( vec2 position ) {
+
+        float distX = abs( position.x - 0.5 ) * 2.0;
+        float distY = abs( position.y - 0.5 ) * 2.0;
+
+        float stepX = smoothstep( 1.0, .8, distX );
+        float stepY = smoothstep( 1.0, .8, distY );
+
+        return stepX * stepY;
+
+    }
+
+    // Bend screen :
+
+    vec2 Bend( vec2 coord ) {
+
+        float bend = 3.2;
+
+        // put in symmetrical coords
+        coord = (coord - 0.5) * 2.0;
+
+        coord *= 1.1;
+
+        // deform coords
+        coord.x *= 1.0 + pow((abs(coord.y) / bend), 2.0);
+        coord.y *= 1.0 + pow((abs(coord.x) / bend), 2.0);
+
+        // transform back to 0.0 - 1.0 space
+        coord = (coord / 2.0) + 0.5;
+
+        return coord;
+
+    }
+
+    void main( void ) {
+
+        vec2 position = vTextureCoordinates;
+
+#if ${(bending != null) | 0}
+        position = Bend( position );
+#endif
+
+#if ${(hardScan != null && hardPix != null) | 0}
+        gl_FragColor = vec4( Fetch( position, vec2( 0.0, 0.0 ) ), 1.0 );
+#else
+        gl_FragColor = vec4( Tri( position ), 1.0 );
+#endif
+
+#if ${(darkMask != true && lightMask != null) | 0}
+        gl_FragColor.rgb *= Mask( gl_FragCoord.xy );
+#endif
+
+        gl_FragColor.rgb = ToSrgb( gl_FragColor.rgb );
+
+#if ${(outerVig != null && innerVig != null) | 0}
+        gl_FragColor.rgb *= Vignette( position );
+#endif
+
+    }
+
+`;
+
+export class WebGLScreen extends DataScreen {
 
     constructor( options = { } ) {
 
-        this._canvas = options.element || document.createElement( 'canvas' );
+        super( options );
 
-        this._canvas.addEventListener( 'webglcontextlost', () => {
-            this._context = null;
-        } );
+        this._canvas = options.canvas || document.createElement( 'canvas' );
 
-        this._canvas.addEventListener( 'webglcontextrestored', () => {
-            this._setupContext( );
-            this.setOutputSize( this._canvas.width, this._canvas.height );
-        } );
+        this._outputWidth = 0;
+        this._outputHeight = 0;
 
+        this._filterOptions = options.filterOptions;
         this._textureIndex = 0;
-
         this._setupContext( );
 
         this.setInputSize( 256, 256 );
         this.setOutputSize( 256, 256 );
 
-        // Expose the canvas
-        this.canvas = this._canvas;
-
     }
 
     setInputSize( width, height ) {
 
-        this._width = width;
-        this._height = height;
-
-        this._data = new Uint8Array( this._width * this._height * 3 );
-
-        this._updateViewport( );
-
-    }
-
-    setOutputSize( width, height ) {
-
-        this._canvas.width = width;
-        this._canvas.height = height;
-
-        if ( this._context ) // No error when context lost
-            this._context.viewport( 0, 0, this._canvas.width, this._canvas.height );
+        super( width, height );
 
         this._updateViewport( );
         this._draw( );
 
     }
 
-    setPixel( x, y, r, g, b ) {
+    setOutputSize( width, height ) {
 
-        var target = this._data;
-        var index = ( y * this._width + x ) * 3;
+        this._outputWidth = this._canvas.width = width;
+        this._outputHeight = this._canvas.height = height;
 
-        target[ index + 0 ] = r;
-        target[ index + 1 ] = g;
-        target[ index + 2 ] = b;
+        this._context.viewport( 0, 0, this._canvas.width, this._canvas.height );
+
+        this._updateViewport( );
+        this._draw( );
 
     }
 
@@ -299,7 +365,8 @@ export class WebGLScreen {
 
     _setupContext( ) {
 
-        var options = { antialias : true };
+        var options = { };
+
         this._context = this._canvas.getContext( 'webgl', options ) || this._canvas.getContext( 'experimental-webgl', options );
 
         this._context.clearColor( 0.0, 0.0, 0.0, 0.0);
@@ -308,8 +375,8 @@ export class WebGLScreen {
 
         this._textures = [ this._createTexture( ), this._createTexture( ) ];
 
-        this._fragmentShader = this._createShader( this._context.FRAGMENT_SHADER, fragmentShaderCode );
-        this._vertexShader = this._createShader( this._context.VERTEX_SHADER, vertexShaderCode );
+        this._fragmentShader = this._createShader( this._context.FRAGMENT_SHADER, fragmentShaderBuilder( this._filterOptions ) );
+        this._vertexShader = this._createShader( this._context.VERTEX_SHADER, vertexShaderBuilder( this._filterOptions ) );
 
         this._vertexPositionBuffer = this._createBuffer( this._context.ARRAY_BUFFER, 4, new Float32Array( [ -1, -1, 0, /**/ 1, -1, 0, /**/ 1, 1, 0, /**/ -1, 1, 0 ] ) );
         this._vertexTextureUvBuffer = this._createBuffer( this._context.ARRAY_BUFFER, 4, new Float32Array( [ 0, 0, /**/ 1, 0, /**/ 1, 1, /**/ 0, 1 ] ) );
@@ -351,14 +418,11 @@ export class WebGLScreen {
 
     _updateViewport( ) {
 
-        if ( ! this._context )
-            return ; // No error in context lost
+        var inputWidth = this._inputWidth;
+        var inputHeight = this._inputHeight;
 
-        var inputWidth = this._width;
-        var inputHeight = this._height;
-
-        var outputWidth = this._canvas.width;
-        var outputHeight = this._canvas.height;
+        var outputWidth = this._outputWidth;
+        var outputHeight = this._outputHeight;
 
         var widthRatio = outputWidth / inputWidth;
         var heightRatio = outputHeight / inputHeight;
@@ -372,7 +436,7 @@ export class WebGLScreen {
         this._context.uniformMatrix4fv( this._matrixLocation, false, matrix );
         this._context.uniform2f( this._inputResolutionLocation, inputWidth, inputHeight );
         this._context.uniform2f( this._outputResolutionLocation, outputWidth, outputHeight );
-        this._context.uniform2f( this._viewportResolutionLocation, viewportWidth, viewportHeight );
+        this._context.uniform2f( this._viewportResolutionLocation, viewportWidth * inputWidth, viewportHeight * inputHeight );
 
     }
 
@@ -398,14 +462,11 @@ export class WebGLScreen {
 
     _draw( ) {
 
-        if ( ! this._context )
-            return ; // No error in context lost
-
         this._context.clear( this._context.COLOR_BUFFER_BIT | this._context.DEPTH_BUFFER_BIT );
 
         var textureIndex = ( this._textureIndex ++ ) % 2;
         this._context.bindTexture( this._context.TEXTURE_2D, this._textures[ textureIndex ] );
-        this._context.texImage2D( this._context.TEXTURE_2D, 0, this._context.RGB, this._width, this._height, 0, this._context.RGB, this._context.UNSIGNED_BYTE, this._data );
+        this._context.texImage2D( this._context.TEXTURE_2D, 0, this._context.RGB, this._inputWidth, this._inputHeight, 0, this._context.RGB, this._context.UNSIGNED_BYTE, this._data );
 
         this._context.bindBuffer( this._vertexIndexBuffer.bufferTarget, this._vertexIndexBuffer );
         this._context.drawElements( this._context.TRIANGLE_STRIP, this._vertexIndexBuffer.itemCount, this._context.UNSIGNED_SHORT, 0 );
