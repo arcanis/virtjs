@@ -6,7 +6,7 @@
 
 **Warning :** This library is still in a very early development phase. API are subject to many changes, and nothing is guaranteed. Take a look in the [example](https://github.com/arcanis/Virt.js/tree/master/examples) directory to check how to use the current revision.
 
-> Virt.js is a library designed to easily emulate various architectures using a common Javascript API. These emulators can be plugged to multiple input and output devices.
+> Virt.js is an ES6 library designed to easily emulate various architectures using a common Javascript API. These emulators can be plugged to multiple input and output devices.
 
 ## Why another emulation library ?
 
@@ -26,55 +26,50 @@ A stretch goal is to achieve acceptable performances on mobile (at least Android
 
 - More to come after completing the listed goals
 
-## Build
-
-    > sudo npm install -g requirejs
-    > make
-
-Generated libraries will be located into the [builds](https://github.com/arcanis/virt.js/tree/master/builds) directory.
-
 ## Usage
 
+```
+$> git clone git@github.com:arcanis/virt.js virtjs
+$> ( cd virtjs && git checkout next )
+```
+
 ```html
-<script src="Virtjs-latest.min.js"></script>
-<script src="Virtjs.GameBoy-latest.min.js"></script>
+<script src="https://jspm.io/system@0.6.js"></script>
 
 <script>
 
-    var startEmulator = function ( rom ) {
+    // Due to some pesky CORS reasons, this path cannot be on a domain which hasn't
+    // set its Access-Control-Allow-Origin to allow direct connection.
+    var virtjsPath = './libraries/virtjs/';
 
-        var engine = Virtjs.create( Virtjs.engine.GameBoy, {
+    System.paths[ 'virtjs' ] = virtjsPath + '/libraries/virtjs/';
+    System.paths[ 'virtjs-gbjit' ] = virtjsPath + '/libraries/virtjs-gbjit/';
 
-            devices : {
-                screen : new Virtjs.screen.WebGL( ),
-                input : new Virtjs.input.Keyboard( { map : map } ),
-                timer : new Virtjs.timer.RAFrame( ),
-                data : new Virtjs.data.LocalStorage( )
-            },
+    Promise.all( [
 
-            skipBios : true
+        System.import( 'virtjs/devices/inputs/KeyboardInput' ),
+        System.import( 'virtjs/devices/screens/WebGLScreen' ),
+        System.import( 'virtjs/devices/timers/AnimationFrameTimer' ),
 
-        } ).load( rom );
+        System.import( 'virtjs-gbjit/Engine' )
 
-        document.body.appendChild( engine.devices.screen.canvas );
+    ] ).then( function ( results ) {
 
-    };
+        var input = new results[ 0 ].KeyboardInput( );
+        var screen = new results[ 1 ].WebGLScreen( );
+        var timer = new results[ 2 ].AnimationFrame( );
 
-    ( function ( ) {
+        var engine = new results[ 3 ].Engine( { devices : {
+            input : input,
+            screen : screen,
+            timer : timer
+        } } );
 
-        var xhr = new XMLHttpRequest( );
-
-        xhr.open( 'GET', 'http://example.org', true );
-
-        xhr.responseType = 'arraybuffer';
-
-        xhr.addEventListener( 'load', function ( ) {
-            startEmulator( xhr.response );
+        fetch( 'http://example.org/rom.gb' ).then( function ( rom ) {
+            engine.loadArrayBuffer( rom );
         } );
 
-        xhr.send( null );
-
-    } )( );
+    } );
 
 </script>
 ```
