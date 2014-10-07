@@ -1,221 +1,162 @@
+import { PageSet }                     from 'virtjs/core/jit/PageSet';
+import { ReadOnlyPage }                from 'virtjs/core/jit/ReadOnlyPage';
+import { VersionedPage }               from 'virtjs/core/jit/VersionedPage';
 import { Engine as BaseEngine }        from 'virtjs/core/Engine';
+import { NullInput }                   from 'virtjs/devices/inputs/NullInput';
+import { NullScreen }                  from 'virtjs/devices/screens/NullScreen';
+import { SerialTimer }                 from 'virtjs/devices/timers/SerialTimer';
 import { EmitterMixin }                from 'virtjs/mixins/EmitterMixin';
-import { formatHexadecimal }           from 'virtjs/utils/FormatUtils';
 import { createDefensiveProxy, mixin } from 'virtjs/utils/ObjectUtils';
-import { preprocessMethods }           from 'virtjs/utils/PreprocessUtils';
 
-import { CPU }         from './components/CPU';
-import { GPU }         from './components/GPU';
-import { IO }          from './components/IO';
-import { MMU }         from './components/MMU';
-import { Timer }       from './components/Timer';
-import { mbcTypes }    from './tables/mbcTypes';
-import { Environment } from './Environment';
+import { GPU }                         from 'virtjs-gb/components/GPU';
+import { KeyIO }                       from 'virtjs-gb/components/KeyIO';
+import { MMU }                         from 'virtjs-gb/components/MMU';
+import { Environment }                 from 'virtjs-gb/Environment';
+import { Interpreter }                 from 'virtjs-gb/Interpreter';
+import { fixRomSize }                  from 'virtjs-gb/tools';
 
 export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
-    constructor( options = { } ) {
+    constructor( { devices = { }, advanced = { }, events = [ ] } = { } ) {
 
-        super( options );
+        super( );
 
-        // TODO remove it
+        this._startEvent = !!~events.indexOf( 'start' ) ? { } : null;
+        this._stopEvent = !!~events.indexOf( 'start' ) ? { } : null;
+        this._setupEvent = !!~events.indexOf( 'setup' ) ? { } : null;
 
-        this._options = options;
+        this._debugMode = Boolean( advanced.debugMode );
 
-        // No environment at the beginning - we need to load() one later on
+        this.screen = devices.screen || new NullScreen( );
+        this.timer = devices.timer || new SerialTimer( );
+        this.input = devices.input || new NullInput( );
 
-        this.environment = null;
+        this.gpu = new GPU( {
+            screen : this.screen
+        } );
 
-        // Set screen size
+        this.keyio = new KeyIO( {
+            input : this.input
+        } );
 
-        this.devices.screen.setInputSize( 160, 144 );
+        this.mmu = new MMU( {
+            events : events
+        } );
 
-        // Instanciate engine components
+        this.interpreter = new Interpreter( {
+            engine : this,
+            events : events
+        } );
 
-        this.cpu   = new CPU   ( this );
-        this.gpu   = new GPU   ( this );
-        this.io    = new IO    ( this );
-        this.mmu   = new MMU   ( this );
-        this.timer = new Timer ( this );
+        this.mmu.link( {
+            keyio : this.keyio,
+            gpu : this.gpu
+        } );
 
-        // These functions will be reinstrumented /and will lose their scopes/
+        this.gpu.link( {
+            mmu : this.mmu
+        } );
 
-        preprocessMethods( this, [
-            'setIterationCountPerFrame',
-            'setMaxSubIterations',
-            'step',
-            '_load',
-            '_setupEnvironment'
-        ], this._options );
+        this.interpreter.link( {
+            mmu : this.mmu,
+            gpu : this.gpu
+        } );
+
+        this._runTimer = null;
 
     }
 
-    _load( romBuffer, options ) {
+    setup( environment ) {
 
-        options = options || { };
+        try {
 
-        this.environment = this._createEnvironment( romBuffer, options );
-        this.cartridge = this._createRomMBC( this.environment );
+            this.environment = environment;
 
-        this.cpu.setup( );
-        this.gpu.setup( );
-        this.io.setup( );
-        this.timer.setup( );
-        this.cartridge.setup( );
-        this.mmu.setup( );
+            this.interpreter.setup( this.environment );
+            this.gpu.setup( this.environment );
+            this.keyio.setup( this.environment );
+            this.mmu.setup( this.environment );
 
-        if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'load' ) !== - 1 ) {
-            this.emit( 'load' );
+        } catch ( err ) {
+
+            this.environment = null;
+
+            throw err;
+
+        }
+
+        if ( this._setupEvent ) {
+            this.emit( 'setup', this._setupEvent );
         }
 
     }
 
-    step( ) {
+    loadArrayBuffer( arrayBuffer, { initialState, autoStart = true } = { } ) {
 
-        // If the user has specified a `maxSubIterations` option, we prevent the CPU from running more than this number in a single pass.
+        var environment = new Environment( {
+            romBuffer : fixRomSize( arrayBuffer ),
+            initialState : initialState
+        } );
 
-        if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations !== 'undefined' ) {
+        if ( this._debugMode )
+            environment = createDefensiveProxy( environment );
 
-            this._continue = true;
+        this.setup( environment );
 
-            for ( var t = 0; this._status === 'running' && this._continue && t < this._options.maxSubIterations; ++ t ) {
-                this.cpu.step( );
-            }
-
-        // If the user has specified a `iterationCountPerFrame` option, we execute this number of iterations at each frame (ie. will run until <N> vblank)
-
-        } else if ( typeof preprocess !== 'undefined' && typeof preprocess.iterationCountPerFrame !== 'undefined' ) {
-
-            this._disableFlush = true;
-
-            for ( var t = 0, T = this._options.iterationCountPerFrame; t < T && this._status === 'running'; ++ t ) {
-
-                this._continue = true;
-
-                while ( this._status === 'running' && this._continue ) {
-                    this.cpu.step( );
-                }
-
-            }
-
-            this._options.devices.screen.flushScreen( );
-
-        // Finally, in a default case, the emulator will execute a single iteration (ie. will run until vblank)
-
-        } else {
-
-            this._continue = true;
-
-            while ( this._status === 'running' && this._continue ) {
-                //window.x && console.timeline( 'Frame Loop' );
-                this.cpu.step( );
-                //window.x && console.timelineEnd( 'Frame Loop' );
-            }
-
-            //window.x && ( window.x -= 1 );
-
+        if ( autoStart ) {
+            this.run( );
         }
 
     }
 
     disassembleAt( address ) {
 
-        try {
-            var opcode = this.mmu.readUint8( address );
-            var instruction = this.cpu._opcodeMaps.unprefixed[ opcode ];
-        } catch ( e ) {
-            var infos = { size : 1, label : '<corrupted : cannot fetch opcode>' };
-        }
-
-        if ( ! infos ) try { // In some cases, an instruction may be corrupted
-            var infos = instruction ? instruction.xDefinition.debug.call( this._cpu, address + 1 ) : { size : 1, label : '<corrupted : null instruction>' };
-        } catch ( e ) { // Since we're debugging, we shouldn't fail
-            var infos = { size : 1, label : '<corrupted : ' + e.message + '>' };
-        }
-
-        infos.address = address;
-        infos.opcode = [ ];
-
-        for ( var offset = 0; offset < infos.size; ++ offset )
-            infos.opcode.push( this.byteAt( address + offset ) );
-
-        return infos;
+        return this.interpreter.disassembleAt( address );
 
     }
 
-    byteAt( address ) {
+    isRunning( ) {
 
-        try {
-            return this.mmu.readUint8( address );
-        } catch ( e ) {
-            return NaN;
+        return this._runTimer !== null;
+
+    }
+
+    stop( ) {
+
+        if ( ! this._runTimer )
+            return ;
+
+        this.interpreter.endFrame( );
+
+        this.timer.cancelTick( this._runTimer );
+        this.runTimer = null;
+
+        if ( this._stopEvent ) {
+            this.emit( 'stop', this._stopEvent );
         }
 
     }
 
-    setMaxSubIterations( maxSubIterations ) {
+    run( ) {
 
-        if ( typeof preprocess !== 'undefined' && typeof preprocess.maxSubIterations === 'undefined' )
-            throw new Error( 'Cannot change the sub iteration limit of this engine - please set maxSubIterations to non-nil at creation' );
+        if ( this._runTimer )
+            return ;
 
-        this._options.maxSubIterations = maxSubIterations;
+        if ( ! this.environment )
+            return ;
 
-    }
+        var run = ( ) => {
 
-    setIterationCountPerFrame( iterationCountPerFrame ) {
+            this._runTimer = this.timer.nextTick( run );
 
-        if ( typeof preprocess !== 'undefined' && typeof preprocess.iterationCountPerFrame === 'undefined' )
-            throw new Error( 'Cannot change the iteration count per frame of this engine - please set iterationCountPerFrame to non-nil at creation' );
+            this.interpreter.runFrame( );
 
-        this._options.iterationCountPerFrame = iterationCountPerFrame;
+        };
 
-    }
+        if ( this._startEvent )
+            this.emit( 'start', this._startEvent );
 
-    _createRomMBC( environment ) {
-
-        var mbcType = environment.rom[ 0x0147 ];
-
-        if ( ! mbcTypes[ mbcType ] )
-            throw new Error( 'Unexpected MBC type (' + formatHexadecimal( mbcType, 8 ) + ')' );
-
-        return new ( mbcTypes[ mbcType ] )( this );
-
-    }
-
-    _createEnvironment( romBuffer, options ) {
-
-        if ( options && options.environment )
-            return options.environment;
-
-        return this._setupEnvironment( new Environment( romBuffer, options || { } ) );
-
-    }
-
-    _setupEnvironment( environment ) {
-
-        if ( typeof preprocess === 'undefined' || ! preprocess.skipBios )
-            return environment;
-
-        // A register -> 0x01 : DMG  |  0x11 : CGB  |  0xFF : MGB
-
-        environment.a[ 0 ] = 0x01;
-        environment.f[ 0 ] = 0xb0;
-
-        environment.b[ 0 ] = 0x00;
-        environment.c[ 0 ] = 0x13;
-
-        environment.d[ 0 ] = 0x00;
-        environment.e[ 0 ] = 0xD8;
-
-        environment.h[ 0 ] = 0x01;
-        environment.l[ 0 ] = 0x4d;
-
-        environment.pc[ 0 ] = 0x0100;
-        environment.sp[ 0 ] = 0xfffe;
-
-        environment.mmuBiosLocked = true;
-
-        return environment;
+        this._runTimer = this.timer.nextTick( run );
 
     }
 

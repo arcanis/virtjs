@@ -1,278 +1,116 @@
-import { createAccessor, createImmutable, createUnaddressable } from 'virtjs/utils/MemoryUtils';
-
-import { StateMachine } from './gpu/StateMachine';
-
 var colors = { 0 : 255, 1 : 192, 2 : 96, 3 : 0 };
+
+export var HBLANK_MODE = 0x00;
+export var VBLANK_MODE = 0x01;
+export var OAM_MODE = 0x02;
+export var VRAM_MODE = 0x03;
+
+export var CYCLES_PER_HBLANK_LINE = 51;
+export var CYCLES_PER_VBLANK_LINE = 114;
+export var CYCLES_PER_OAM = 20;
+export var CYCLES_PER_VRAM = 43;
+
+export var HBLANK_LINE_COUNT = 144;
+export var MAX_VIRTUAL_LINE_COUNT = 154;
 
 export class GPU {
 
-    constructor( engine ) {
+    constructor( { screen } ) {
 
-        this._engine = engine;
+        this._screen = screen;
+        this._screen.setInputSize( 160, 144 );
 
-        // The GPU states are managed by a separate class - I find it much more readable
+        this._scanline = new Uint8Array( 160 );
 
-        this._states = new StateMachine( engine );
+        // Initialized at link time
 
-        // Creates a temporary scanline buffer (which does not hold a significant state, and is only used internally)
+        this._mmu = null;
 
-        this._scanline = new Uint16Array( 160 );
+        // Initialized at setup time
+
+        this._environment = null;
+
+        this._oam = null;
+        this._vram = null;
+
+        this._sprites = null;
+        this._tilesets = null;
+
+
 
     }
 
-    setup( ) {
+    link( { mmu } ) {
 
-        // GPU sprites (40)
-        // These sprites are only the internal representation of the oam (4 bytes per sprite)
+        this._mmu = mmu;
+
+    }
+
+    setup( environment ) {
+
+        this._environment = environment;
+
+        this._oam = new Uint8Array( environment.oamBuffer );
+        this._vram = new Uint8Array( environment.vramBuffer );
+
+        // There is 40 GPU sprites
+        // We store each of them in an internal array so we don't have to unserialize whenever we need them.
+        // That also means that we have to take care of updating these structures when the mapped memory area changes.
 
         this._sprites = [ ];
         for ( var t = 0; t < 40; ++ t )
-            this._sprites[ t ] = { };
+            this._sprites[ t ] = { x : 0, y : 0, tile : 0, palette : 0, xflip : 0, yflip : 0, priority : 0 };
 
-        for ( var t = 0; t < 160 ; ++ t )
-            this._updateSprite( t );
+        // Since we may be loading a serialized environment, we have to populate the sprite with the right data extracted from the RAM.
+        // So we iterate on each data cell as if it was dirty.
 
-        this._states.setup( );
+        for ( var t = 0; t < 160; ++ t )
+            this.updateSprite( t );
 
-    }
+        // There is 384 GPU tiles
+        // Each tile is encoded on two bytes (those tiles are 8x8 wide, and each pixel takes two bits)
 
-    step( time ) {
+        this._tilesets = [ ];
+        for ( var t = 0; t < 384; ++ t ) {
+            this._tilesets[ t ] = [ ];
+            for ( var y = 0; y < 8; ++ y ) {
+                this._tilesets[ t ][ y ] = new Uint8Array( 8 );
+            }
+        }
 
-        // We forward the cycle management to the GPU state machine
+        // Same as for the sprites, we may be in an unserialized environment. So let's populate it !
 
-        this._states.step( time );
-
-    }
-
-    reclock( time ) {
-
-        this._states.reclock( time );
-
-        this._states.step( 0 );
-
-    }
-
-    settingsMapping( address ) {
-
-        if ( address === 0x00 )
-            return createAccessor( this._settingsAccess, this );
-
-        if ( address === 0x01 )
-            return createAccessor( this._lcdStatusAccess, this );
-
-        if ( address === 0x02 )
-            return createAccessor( this._scrollAccess, this, 1 );
-
-        if ( address === 0x03 )
-            return createAccessor( this._scrollAccess, this, 0 );
-
-        if ( address === 0x04 )
-            return createAccessor( this._lineAccess, this );
-
-        if ( address === 0x05 )
-            return createAccessor( this._lycAccess, this );
-
-        if ( address === 0x06 )
-            return createAccessor( this._oamDmaAccess, this );
-
-        if ( address === 0x07 )
-            return createAccessor( this._paletteAccess, this, 0 );
-
-        if ( address === 0x08 )
-            return createAccessor( this._paletteAccess, this, 1 );
-
-        if ( address === 0x09 )
-            return createAccessor( this._paletteAccess, this, 2 );
-
-        if ( address === 0x0A )
-            return createAccessor( this._windowPositionAccess, this, 1 );
-
-        if ( address === 0x0B )
-            return createAccessor( this._windowPositionAccess, this, 0 );
-
-        if ( address === 0x0D )
-            return createImmutable( 0x00 );
-
-        if ( address === 0x0F )
-            return createImmutable( 0x00 );
-
-        if ( address >= 0x28 && address <= 0x2B )
-            return createImmutable( 0x00 );
-
-        return createUnaddressable( address, 16 );
-
-    }
-
-    oamMapping( address ) {
-
-        return createAccessor( this._oamAccess, this, address );
-
-    }
-
-    vramMapping( address ) {
-
-        return createAccessor( this._vramAccess, this, address );
-
-    }
-
-    _settingsAccess( value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return this._packSettings( );
-        } else {
-            this._unpackSettings( value );
+        for ( var t = 0; t < 384 * 16; ++ t ) {
+            this.updateTile( t );
         }
 
     }
 
-    _scrollAccess( index, value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return this._engine.environment.gpuScrolls[ index ];
-        } else {
-            this._engine.environment.gpuScrolls[ index ] = value;
-        }
-
-    }
-
-    _windowPositionAccess( index, value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return this._engine.environment.gpuWindowPosition[ index ];
-        } else {
-            this._engine.environment.gpuWindowPosition[ index ] = value;
-        }
-
-    }
-
-    _lcdStatusAccess( value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return this._packLcdStatus( );
-        } else {
-            this._engine.environment.gpuInterrupts = value & 0x78;
-        }
-
-    }
-
-    _lineAccess( value, user ) {
-
-        // READ ONLY
-
-        if ( typeof value !== 'undefined' )
-            throw new Error( 'Invalid write at ' + formatAddress( user, 16 ) );
-
-        return this._engine.environment.gpuLine;
-
-    }
-
-    _lycAccess( value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return this._engine.environment.gpuLyCompare;
-        } else {
-            this._engine.environment.gpuLyCompare = value;
-        }
-
-    }
-
-    _oamDmaAccess( value, user ) {
-
-        // WRITE ONLY
-
-        if ( typeof value === 'undefined' )
-            throw new Error( 'Invalid read at ' + formatAddress( user, 16 ) );
+    transferDma( value ) {
 
         var start = value << 8;
 
         for ( var offset = 0; offset < 160; ++ offset ) {
-            this._engine.environment.oam[ offset ] = this._engine.mmu.readUint8( start + offset );
-            this._updateSprite( offset );
+            this._oam[ offset ] = this._mmu.readUint8( start + offset );
+            this.updateSprite( offset );
         }
 
     }
 
-    _paletteAccess( index, value ) {
+    setPalette( index, value ) {
 
-        if ( typeof value === 'undefined' ) {
-            return this._packPalette( index );
-        } else {
-            this._unpackPalette( index, value );
-        }
+        var palette = this._environment.gpuPalettes[ index ];
 
-    }
-
-    _oamAccess( address, value, user ) {
-
-        if ( typeof value === 'undefined' ) {
-
-            return this._engine.environment.oam[ address ];
-
-        } else if ( ! this._engine.environment.gpuLCDFeature || this._engine.environment.gpuMode === 0x00 || this._engine.environment.gpuMode === 0x01 ) {
-
-            this._engine.environment.oam[ address ] = value;
-            this._updateSprite( address );
-
-        }
+        palette[ 0 ] = ( value >> 0 ) & 0x3;
+        palette[ 1 ] = ( value >> 2 ) & 0x3;
+        palette[ 2 ] = ( value >> 4 ) & 0x3;
+        palette[ 3 ] = ( value >> 6 ) & 0x3;
 
     }
 
-    _vramAccess( address, value ) {
+    getPalette( index ) {
 
-        if ( typeof value === 'undefined' ) {
-
-            return this._engine.environment.vram[ address ];
-
-        } else if ( ! this._engine.environment.gpuLCDFeature || this._engine.environment.gpuMode !== 0x03 ) {
-
-            this._engine.environment.vram[ address ] = value;
-            this._updateTile( address );
-
-        }
-
-    }
-
-    _packSettings( ) {
-
-        return (
-            ( this._engine.environment.gpuBackgroundFeature ? 1 << 0 : 0 ) |
-            ( this._engine.environment.gpuSpriteFeature     ? 1 << 1 : 0 ) |
-            ( this._engine.environment.gpuSpriteSize        ? 1 << 2 : 0 ) |
-            ( this._engine.environment.gpuBackgroundBase    ? 1 << 3 : 0 ) |
-            ( this._engine.environment.gpuTilesetBase       ? 1 << 4 : 0 ) |
-            ( this._engine.environment.gpuWindowFeature     ? 1 << 5 : 0 ) |
-            ( this._engine.environment.gpuWindowBase        ? 1 << 6 : 0 ) |
-            ( this._engine.environment.gpuLCDFeature        ? 1 << 7 : 0 )
-        );
-
-    }
-
-    _unpackSettings( value ) {
-
-        this._engine.environment.gpuBackgroundFeature = ( value & ( 1 << 0 ) ) !== 0;
-        this._engine.environment.gpuSpriteFeature     = ( value & ( 1 << 1 ) ) !== 0;
-        this._engine.environment.gpuSpriteSize        = ( value & ( 1 << 2 ) ) !== 0;
-        this._engine.environment.gpuBackgroundBase    = ( value & ( 1 << 3 ) ) !== 0;
-        this._engine.environment.gpuTilesetBase       = ( value & ( 1 << 4 ) ) !== 0;
-        this._engine.environment.gpuWindowFeature     = ( value & ( 1 << 5 ) ) !== 0;
-        this._engine.environment.gpuWindowBase        = ( value & ( 1 << 6 ) ) !== 0;
-        this._engine.environment.gpuLCDFeature        = ( value & ( 1 << 7 ) ) !== 0;
-
-    }
-
-    _packLcdStatus( ) {
-
-        return (
-            ( this._engine.environment.gpuMode        << 0 ) |
-            ( this._engine.environment.gpuCoincidence << 2 ) |
-            ( this._engine.environment.gpuInterrupts  << 3 )
-        );
-
-    }
-
-    _packPalette( index, value ) {
-
-        var palette = this._engine.environment.palettes[ index ];
+        var palette = this._environment.gpuPalettes[ index ];
 
         return (
             ( palette[ 0 ] << 0 ) |
@@ -283,241 +121,401 @@ export class GPU {
 
     }
 
-    _unpackPalette( index, value ) {
+    updateSprite( address ) {
 
-        var palette = this._engine.environment.palettes[ index ];
+        var sprite = this._sprites[ address >>> 2 ];
+        var value = this._oam[ address ];
 
-        palette[ 0 ] = ( value >> 0 ) & 0x3;
-        palette[ 1 ] = ( value >> 2 ) & 0x3;
-        palette[ 2 ] = ( value >> 4 ) & 0x3;
-        palette[ 3 ] = ( value >> 6 ) & 0x3;
+        switch ( address & 0x03 ) {
+
+            case 0: sprite.y = value - 16; break ;
+            case 1: sprite.x = value -  8; break ;
+            case 2: sprite.tile = value;   break ;
+
+            case 3: sprite.palette = value & 0x10 ? 1 : 0;
+            /*and*/ sprite.xflip = value & 0x20 ? 1 : 0;
+            /*and*/ sprite.yflip = value & 0x40 ? 1 : 0;
+            /*and*/ sprite.priority = value & 0x80 ? 1 : 0;
+
+        }
 
     }
 
-    _updateTile( address ) {
-
-        // The row address
+    updateTile( address ) {
 
         var rowAddress = address & 0xFFFE;
 
-        // Fetch the tile index inside the tile map ([0;384[)
-        //  - rowAddress >> 4 : "divide by 16 then floor", since there is 16 bytes per tile
+        var tileIndex = rowAddress >>> 4;
 
-        var tileIndex = rowAddress >> 4;
-
-        // Fetch the row index inside the tile ([0;8[)
-        //  - rowAdress >> 1 : we remove the last bit, and get the row index inside the _whole map_
-        //  - PREVIOUS & 0b111 (0x7) : "modulo 8" operation, since there is 8 rows per tile
-
-        var y = ( rowAddress >> 1 ) & 0x7;
+        var y = ( rowAddress >>> 1 ) & 0x7;
 
         for ( var x = 0; x < 8; ++ x ) {
 
             var mask = 1 << ( 7 - x );
 
-            this._engine.environment.tilesets[ tileIndex ][ y ][ x ] =
-                ( this._engine.environment.vram[ rowAddress + 0 ] & mask ? 0x1 : 0 ) |
-                ( this._engine.environment.vram[ rowAddress + 1 ] & mask ? 0x2 : 0 )
+            this._tilesets[ tileIndex ][ y ][ x ] =
+                ( this._vram[ rowAddress + 0 ] & mask ? 0x1 : 0x0 ) |
+                ( this._vram[ rowAddress + 1 ] & mask ? 0x2 : 0x0 )
             ;
 
         }
 
     }
 
-    _updateSprite( address ) {
+    nextMode( ) {
 
-        var sprite = this._sprites[ address >> 2 ];
-        var value = this._engine.environment.oam[ address ];
+        switch ( this._environment.gpuMode ) {
 
-        switch ( address & 0x3 ) {
+            // HBlank
+            case HBLANK_MODE :
 
-        case 0 : sprite.y = value - 16; break ;
-        case 1 : sprite.x = value - 8;  break ;
-        case 2 : sprite.tile = value;   break ;
+                // End of line reached, step to the next one
 
-        case 3 : sprite.palette = value & 0x10 ? 1 : 0;
-        /*and*/  sprite.xflip = value & 0x20 ? true : false;
-        /*and*/  sprite.yflip = value & 0x40 ? true : false;
-        /*and*/  sprite.priority = value & 0x80 ? 1 : 0;
+                this._environment.gpuLy += 1;
+
+                // Check if the new line matches the line in the LYC register
+
+                this._environment.gpuCoincidence =
+                    this._environment.gpuLy === this._environment.gpuLyc;
+
+                // If the user program asked for being notified, trigger an interrupt
+
+                if ( this._environment.gpuCoincidence )
+                    if ( this._environment.gpuInterrupts & ( 1 << 6 ) )
+                        this._environment.pendingInterrupts |= 0x02;
+
+                // Finally, set the new mode (depending on the current new line, it will be OAM or VBlank)
+
+                if ( this._environment.gpuLy < HBLANK_LINE_COUNT ) {
+
+                    this._environment.gpuClock = CYCLES_PER_OAM;
+                    this._setMode( OAM_MODE );
+
+                } else {
+
+                    this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+                    this._setMode( VBLANK_MODE );
+
+                    // In this case, we want to tell the JIT that we're ready to exit the running loop
+
+                    return true;
+
+                }
+
+            return false;
+
+            // VBlank
+            case VBLANK_MODE :
+
+                // End of line reached, step to the next one
+                // Btw, you may wonder why we're talking about "step to the next one" since the VBlank occurs after all the 144 screen lines have been processed by the HBlank events; it's because the VBlank event has 10 'fake' lines, which will bring the line counter up to 154. Strange, uh?
+
+                this._environment.gpuLy += 1;
+
+                // When we reach the 154th line, we go back to the first one ...
+
+                if ( this._environment.gpuLy === MAX_VIRTUAL_LINE_COUNT )
+                    this._environment.gpuLy = 0;
+
+                // ... then we set the coincidence check ...
+
+                this._environment.gpuCoincidence =
+                    this._environment.gpuLy === this._environment.gpuLyc;
+
+                // ... then we trigger the interrupt if asked ...
+
+                if ( this._environment.gpuCoincidence )
+                    if ( this._environment.gpuInterrupts & ( 1 << 6 ) )
+                        this._environment.pendingInterrupts |= 0x02;
+
+                // ... then we go to OAM mode!
+
+                if ( this._environment.gpuLy === 0 ) {
+
+                    this._environment.gpuClock = CYCLES_PER_OAM;
+                    this._setMode( OAM_MODE );
+
+                } else {
+
+                    this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+                    //this._setMode( VBLANK_MODE );
+
+                }
+
+            return false;
+
+            // OAM
+            case OAM_MODE :
+
+                // Once the OAM mode is finished, goes to the VRAM mode
+
+                this._environment.gpuClock = CYCLES_PER_VRAM;
+                this._setMode( VRAM_MODE );
+
+            return false;
+
+            // VRAM
+            case 0x03 :
+
+                // And once the VRAM mode is finished, goes to the HBlank again!
+
+                this._environment.gpuClock = CYCLES_PER_HBLANK_LINE;
+                this._setMode( HBLANK_MODE );
+
+            return false ;
 
         }
 
     }
 
-    _hblank( line ) {
+    _setMode( mode ) {
 
-        for ( var x = 0, X = this._scanline.length; x < X; ++ x )
-            this._scanline[ x ] = 0x00FF;
+        // Update the mode
 
-        if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuBackgroundFeature )
-            this._backgroundScanline( this._scanline, line );
+        this._environment.gpuMode = mode;
 
-        if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuWindowFeature )
-            this._windowScanline( this._scanline, line );
+        // Trigger the HBlank / VBlank events
 
-        if ( this._engine.environment.gpuLCDFeature && this._engine.environment.gpuSpriteFeature )
-            this._spritesScanline( this._scanline, line );
+        /****/ if ( mode === HBLANK_MODE ) {
+            this._triggerHblank( this._environment.gpuLy );
+        } else if ( mode === VBLANK_MODE ) {
+            this._triggerVblank( );
+        }
 
-        for ( var x = 0, y = line, X = this._scanline.length; x < X; ++ x ) {
+        // Trigger interrupts if requested (the VRAM mode (0x03) never trigger interrupts)
 
-            var trueColor = this._scanline[ x ] & 0xFF;
+        if ( mode !== VRAM_MODE && this._environment.gpuInterrupts & ( 1 << ( 3 + mode ) ) ) {
+            this._environment.pendingInterrupts |= 0x02;
+        }
 
-            this._engine.devices.screen.setPixel( x, y, trueColor, trueColor, trueColor );
+    }
+
+    _triggerHblank( line ) {
+
+        // HBlank is when the physical LCD laser is moving from the end of an LCD line to the start of the next line.
+        // The Gameboy screen contains 160 lines, and so there is 159 HBlank per frame (the last one being the VBlank, see below).
+
+        // Note that we have to respect the HBlank, and bufferize line during the HBlank (rather than doing all of them at once during the VBlank), because the VRAM is still available at this time, and so the user program will be able to modify the content of the lines below the one being drawn during the line rendering.
+
+        // First, we have to reset the line if there is no LCD display, or no background
+
+        if ( ! this._environment.gpuLcdFeature || ! this._environment.gpuBackgroundFeature )
+            for ( var x = 0, X = this._scanline.length; x < X; ++ x )
+                this._scanline[ x ] = 0x00FF;
+
+        // Then if there is no LCD display, we quit instantly
+
+        if ( ! this._environment.gpuLcdFeature )
+            return ;
+
+        // We can now display the various features if they are enabled
+
+        if ( this._environment.gpuBackgroundFeature )
+            this._drawBackgroundScanline( line );
+
+        if ( this._environment.gpuWindowFeature )
+            this._drawWindowScanline( line );
+
+        if ( this._environment.gpuSpriteFeature )
+            this._drawSpriteScanline( line );
+
+        // Finally, we send the rendered line to the output device
+
+        for ( var x = 0, X = this._scanline.length; x < X; ++ x ) {
+
+            // Remove the internal transparency byte from the color
+            var color = this._scanline[ x ] & 0xFF;
+
+            this._screen.setPixel( x, line, color, color, color );
 
         }
 
     }
 
-    _vblank( ) {
+    _triggerVblank( ) {
 
-        this._engine.environment.pendingInterrupts |= 0x01;
+        // VBlank is when the physical LCD laser is moving from the end of the last LCD line of the screen to the beginning of the first one.
+        // For our purposes, we flush the screen only during VBlank, and avoid a lot of expensive data transfers.
 
-        if ( ! this._engine._disableFlush )
-            this._engine.devices.screen.flushScreen( );
+        // The VBlank triggers an interrupt
+        this._environment.pendingInterrupts |= 0x01;
 
-        this._engine._continue = false;
-
-    }
-
-    _backgroundScanline( scanline, line ) {
-
-        var mapBase = this._engine.environment.gpuBackgroundBase ? 0x1C00 : 0x1800;
-
-        var scrollX = this._engine.environment.gpuScrolls[ 0 ];
-        var scrollY = this._engine.environment.gpuScrolls[ 1 ];
-
-        this._backgroundScanliner( scanline, mapBase, 0, line, scrollX, scrollY );
+        // Flushes the screen device display
+        this._screen.flushScreen( );
 
     }
 
-    _spritesScanline( scanline, line ) {
+    _drawBackgroundScanline( line ) {
 
-        var size = this._engine.environment.gpuSpriteSize ? 16 : 8;
+        // Select the right background base address (there is two of them, 0;255 and -127;128)
+        var backgroundMapBaseAddress = this._environment.gpuBackgroundBase ? 0x1C00 : 0x1800;
 
-        // Iterates on each sprite (40 of them)
+        var scrollX = this._environment.gpuBgScroll[ 0 ];
+        var scrollY = this._environment.gpuBgScroll[ 1 ];
+
+        this._drawMixedScanline( backgroundMapBaseAddress, 0, line, scrollX, scrollY );
+
+    }
+
+    _drawWindowScanline( line ) {
+
+        // Select the right background base address (there is two of them, 0;255 and -127;128)
+        var backgroundMapBaseAddress = this._environment.gpuWindowBase ? 0x1C00 : 0x1800;
+
+        var positionX = this._environment.gpuWinPosition[ 0 ] - 7;
+        var positionY = this._environment.gpuWinPosition[ 1 ];
+
+        if ( positionY > line || positionY + 144 <= line )
+            return ;
+
+        this._drawMixedScanline( backgroundMapBaseAddress, positionX, line - positionY, 0, 0 );
+
+    }
+
+    _drawMixedScanline( baseAddress, offsetX, line, scrollX, scrollY ) {
+
+        // The background and the window use approximately the same rendering process, the main difference being the place from where the data are read.
+        // In order to achieve maximal readability, this function factorizes this rendering process.
+
+        // Just like there is two background base address, there is also two tileset base address, switched depending on a GPU flag
+        var tilesOffset = this._environment.gpuTilesetBase ? 0 : 256;
+
+        // Computes the actual position of the pixel in the world (i.e. taking the scroll into count)
+        var actualY = ( scrollY + line ) & 0xFF;
+
+        // Fetches the top-left mapping coordinates
+        // Note that these coordinates will be <= than the pixel
+        //  - actualY >> 3 : "divide by 8 then floor", since there is 8 lines/columns per tile
+        //  - PREVIOUS << 5 : "multiply per 32", since there is 32 mappings per line, and that a mapping is a single byte
+        var mapOffsetY = ( actualY >>> 3 ) << 5;
+
+        // Fetches the pixel coordinates relative to the top-left tile
+        //  - VALUE & 0b111 (0x7) : "modulo 8", since there is 8 lines/columns per tile
+        var tileY = actualY & 0x7;
+
+        // The background palette is the first palette
+        var palette = this._environment.gpuPalettes[ 0 ];
+
+        for ( var x = 0; x < 160; ++ x ) {
+
+            // Same computations than before, but for X coordinates
+            var actualX = ( scrollX + offsetX + x ) & 0xFF;
+            var mapOffsetX = ( actualX >>> 3 ) & 31;
+            var tileX = actualX & 0x7;
+
+            // Knowing the X and Y map offset, we can now fetch the tile index from the VRAM
+
+            var mapOffset = baseAddress + mapOffsetY + mapOffsetX;
+            var tileIndex = this._vram[ mapOffset ];
+
+            // When using the second tileset, the index is actually a signed number so that whatever the tileset, the same index greater than 0x7F (such as 0xFF) will always point toward the same tile (that's actually pretty clever!)
+
+            if ( ! this._environment.gpuTilesetBase )
+                if ( tileIndex > 0x7f )
+                    tileIndex -= 0x100;
+
+            // We just have to get the palette index color stored in the tileset cell, then the color from the palette
+
+            var paletteIndex = this._tilesets[ tilesOffset + tileIndex ][ tileY ][ tileX ];
+            var trueColor = colors[ palette[ paletteIndex ] ];
+
+            // We store the palette index inside the 'color' (internally only, it will disappear when sent to the screen device), because the sprite may be behind the background. In such case, we have to know if they are behind a transparent pixel or not.
+
+            this._scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
+
+        }
+
+    }
+
+    _drawSpriteScanline( line ) {
+
+        // Did you know that the Gameboy can have 16-lines-tall sprites ? Well, now you know. It is used in Zelda, so if you have an half Link, you know what to look for.
+        var size = this._environment.gpuSpriteSize ? 16 : 8;
+
+        // We have to iterate on each sprite to know if they are on the currently rendered line
 
         for ( var t = 0; t < 40; ++ t ) {
 
             var sprite = this._sprites[ t ];
 
+            // This sprite is not on the rendered line, next
             if ( sprite.y + size <= line || sprite.y > line )
                 continue ;
 
-            var palette = this._engine.environment.palettes[ 1 + sprite.palette ];
-
+            // Gets the sprite tile index from the inner structure
             var tileIndex = sprite.tile;
 
-            if ( this._engine.environment.gpuSpriteSize ) {
+            if ( this._environment.gpuSpriteSize ) {
+
+                // If the sprite is multi-tiles (16 lines tall), then we will need to get the first tile of the tile pair (ie. the upper tile will be 0x00 while the lower tile will be 0x01).
 
                 var isBottomTile = line - sprite.y >= 8;
+
+                // SURPRISE ! If your sprite is upside-down (yflip), don't forget to reverse the tiles to (so the upper tile becomes 0x01 and the lower tile becomes 0x00).
 
                 if ( sprite.yflip )
                     isBottomTile = ! isBottomTile;
 
-                tileIndex = isBottomTile
-                    ? tileIndex | 0x01
-                    : tileIndex & 0xFE
+                // And then we can finally apply the mask to have the behavior described in the two previous comments
+
+                tileIndex = isBottomTile ?
+                    tileIndex | 0x01 :
+                    tileIndex & 0xFE
                 ;
 
             }
 
+            // Gets the sprite palette, based in the inner structure data
+            var palette = this._environment.gpuPalettes[ 1 + sprite.palette ];
+
+            // That's a modulo 8 - we get the tile Y coordinate based on the current rendered line and the sprite Y position
             var tileY = ( line - sprite.y ) & 0x07;
 
-            var tileRow = sprite.yflip ?
-                this._engine.environment.tilesets[ tileIndex ][ 7 - tileY ] :
-                this._engine.environment.tilesets[ tileIndex ][ 0 + tileY ]
-            ;
+            // However, don't forget to flip it if we're flipping our sprite upside-down (yflip)
+
+            if ( sprite.yflip )
+                tileY = 7 - tileY;
+
+            // Good, fetch the tile pixel row
+
+            var tileRow = this._tilesets[ tileIndex ][ tileY ];
+
+            // Now we can iterate on this row and set every pixels which are in the rendered part of the screen
 
             for ( var tileX = 0; tileX < 8; ++ tileX ) {
 
                 var x = sprite.x + tileX;
 
+                // The pixel is out of screen, next
                 if ( x < 0 || x >= 160 )
                     continue ;
 
+                // Just like before, don't forget to flip the tile position if we're flip the model horizontally !
+                // However, since we're iterating on 'tileX', we have to use another variable.
+
                 var actualTileX = sprite.xflip ? 7 - tileX : tileX;
+
+                // Get the palette index from the tile pixel row
+
                 var paletteIndex = tileRow[ actualTileX ];
+
+                // Check if the sprite pixel is transparent (ie. palette index is 0) - if so, next
+
+                if ( paletteIndex === 0 )
+                    continue ;
+
+                // Check if the sprite is behind a non-transparent part of the background - if so, next
+
+                if ( sprite.priority && this._scanline[ x ] & 0xFF00 )
+                    continue ;
+
+                // Apply the color on the scanline
+
                 var trueColor = colors[ palette[ paletteIndex ] ];
 
-                if ( tileRow[ actualTileX ] === 0 )
-                    continue ;
-
-                if ( scanline[ x ] & 0xFF00 && sprite.priority )
-                    continue ;
-
-                scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
+                this._scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
 
             }
-
-        }
-
-    }
-
-    _windowScanline( scanline, line ) {
-
-        var mapBase = this._engine.environment.gpuWindowBase ? 0x1C00 : 0x1800;
-
-        var positionX = this._engine.environment.gpuWindowPosition[ 0 ] - 7;
-        var positionY = this._engine.environment.gpuWindowPosition[ 1 ];
-
-        if ( positionY > line || positionY + 144 <= line )
-            return ;
-
-        this._backgroundScanliner( scanline, mapBase, positionX, line - positionY, 0, 0 );
-
-    }
-
-    _backgroundScanliner( scanline, base, offsetX, line, scrollX, scrollY ) {
-
-        // Fetch the offset of the first tile, which depends on a CPU flag
-
-        var tilesOffset = this._engine.environment.gpuTilesetBase ? 0 : 256;
-
-        // Compute the actual position of the pixel in the world (i.e. taking the scroll into count)
-
-        var actualY = ( scrollY + line ) & 0xFF;
-
-        // Fetch the top-left mapping coordinates
-        // Note that these coordinates will be <= than the pixel
-        //  - actualY >> 3 : "divide by 8 then floor", since there is 8 lines/columns per tile
-        //  - PREVIOUS << 5 : "multiply per 32", since there is 32 mappings per line, and that a mapping is a single byte
-
-        var mapOffsetY = ( actualY >> 3 ) << 5;
-
-        // Fetch the pixel coordinates relative to the top-left tile
-        //  - VALUE & 0b111 (0x7) : "modulo 8", since there is 8 lines/columns per tile
-
-        var tileY = actualY & 0x7;
-
-        // The first palette is the background palette
-
-        var palette = this._engine.environment.palettes[ 0 ];
-
-        for ( var x = 0; x < 160; ++ x ) {
-
-            // Same computations than before, but for X coordinates
-
-            var actualX = ( scrollX + offsetX + x ) & 0xFF;
-            var mapOffsetX = ( actualX >> 3 ) & 31;
-            var tileX = actualX & 0x7;
-
-            // Knowing the map offset, we can fetch the tile index
-
-            var mapOffset = base + mapOffsetY + mapOffsetX;
-            var tileIndex = this._engine.environment.vram[ mapOffset ];
-
-            // When using the second tileset, the index is actually a signed number so that whatever the tileset, the same index greater than 0x7F (such as 0xFF) will always point toward the same tile
-
-            if ( ! this._engine.environment.gpuTilesetBase )
-                if ( tileIndex > 0x7f )
-                    tileIndex -= 0x100;
-
-            // We just have to get the palette index color, then the color from the palette
-
-            var paletteIndex = this._engine.environment.tilesets[ tilesOffset + tileIndex ][ tileY ][ tileX ];
-            var trueColor = colors[ palette[ paletteIndex ] ];
-
-            scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
 
         }
 

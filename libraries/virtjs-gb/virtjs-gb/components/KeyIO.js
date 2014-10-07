@@ -2,7 +2,11 @@ export class KeyIO {
 
     constructor( { input } ) {
 
-        this._keys = { };
+        this._keys = { 0x10 : 0, 0x20 : 0 };
+
+        // Initialized at setup time
+
+        this._environment = null;
 
         // When a key is pressed, its associed bit is set to 0
 

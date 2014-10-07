@@ -2,17 +2,17 @@
 
 ![](http://arcanis.github.io/virt.js/documents/assets/github-banner.png)
 
-**Warning :** This library is still in a very early development phase. API are subject to many changes, and nothing is guaranteed. Take a look in the [example](https://github.com/arcanis/Virt.js/tree/master/examples) directory to check how to use the current revision.
+**Warning :** This library is still in a very early development phase. API are subject to many changes, and nothing is guaranteed. Take a look in the [example](https://github.com/arcanis/Virtjs/tree/master/examples) directory to check how to use the current revision.
 
 **Note :** Since the library is wrote entirely in ES6, it uses a module system. For the time being I would like to see if it would be possible to avoid compiling it into a single big file, so I suggest you use [JSPM](http://jspm.io/) to load it - even if it's totally possible to configure Webpack to bundle it into an application, which might suits your use case better.
 
-> Virt.js is an ES6 library designed to easily emulate various architectures using a common Javascript API. These emulators can be plugged to multiple input and output devices.
+> Virtjs is an ES6 library designed to easily emulate various architectures using a common Javascript API. These emulators can be plugged to multiple input and output devices.
 
 ## Why another emulation library ?
 
 Actually, there isn't any JS emulation library (yet). There is a lot of proof-of-concept emulators, originally developed as applications, and a few of them have been repackaged to be npm-compatible, but as far as I know, none of them has a strong focus on its public API.
 
-Virt.js wants to fill this space by providing a consistent and convenient API to the developers. This way, new kind of applications can be made, using emulators for various purposes, such as writing AIs, sharing homebrews, trying new gameplay concepts on old games, ...
+Virtjs wants to fill this space by providing a consistent and convenient API to the developers. This way, new kind of applications can be made, using emulators for various purposes, such as writing AIs, sharing homebrews, trying new gameplay concepts on old games, ...
 
 A stretch goal is to achieve acceptable performances on mobile (at least Android).
 
@@ -43,7 +43,7 @@ $> ( cd virtjs && git checkout next )
     var virtjsPath = './libraries/virtjs/';
 
     System.paths[ 'virtjs' ] = virtjsPath + '/libraries/virtjs/';
-    System.paths[ 'virtjs-gbjit' ] = virtjsPath + '/libraries/virtjs-gbjit/';
+    System.paths[ 'virtjs-gb' ] = virtjsPath + '/libraries/virtjs-gb/';
 
     Promise.all( [
 
@@ -51,7 +51,7 @@ $> ( cd virtjs && git checkout next )
         System.import( 'virtjs/devices/screens/WebGLScreen' ),
         System.import( 'virtjs/devices/timers/AnimationFrameTimer' ),
 
-        System.import( 'virtjs-gbjit/Engine' )
+        System.import( 'virtjs-gb/Engine' )
 
     ] ).then( function ( results ) {
 
@@ -76,4 +76,4 @@ $> ( cd virtjs && git checkout next )
 
 ## Maintainer
 
-Virt.js is maintained by Maël Nison ([@arcanis](https://twitter.com/arcanis) on Twitter).
+Virtjs is maintained by Maël Nison ([@arcanis](https://twitter.com/arcanis) on Twitter).

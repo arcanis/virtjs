@@ -1,75 +1,121 @@
-import { EmitterMixin }                                                             from 'virtjs/mixins/EmitterMixin';
-import { createAccessor, createPlainOldData, createImmutable, createUnaddressable } from 'virtjs/utils/MemoryUtils';
-import { mixin }                                                                    from 'virtjs/utils/ObjectUtils';
-import { preprocessMethods }                                                        from 'virtjs/utils/PreprocessUtils';
+import { EmitterMixin }      from 'virtjs/mixins/EmitterMixin';
+import { formatHexadecimal } from 'virtjs/utils/FormatUtils';
+import { mixin }             from 'virtjs/utils/ObjectUtils';
 
-import { bios } from '../bios';
+import { MBC1 }              from 'virtjs-gb/mbcs/MBC1';
+import { MBC3 }              from 'virtjs-gb/mbcs/MBC3';
+import { MBC5 }              from 'virtjs-gb/mbcs/MBC5';
+import { NoMBC }             from 'virtjs-gb/mbcs/NoMBC';
+
+var MBC4 = function ( ) { throw new Error( 'MBC4 is not yet supported :(' ); };
+
+var timerFrequencies = {
+
+     0b00 : 1024,
+     0b01 :   16,
+     0b10 :   64,
+     0b11 :  256
+
+};
+
+var cartridgeTypes = {
+
+    0x00 : NoMBC,
+
+    0x01 : MBC1.bind( null, { } ),
+    0x02 : MBC1.bind( null, { ram : true } ),
+    0x03 : MBC1.bind( null, { ram : true, battery : true } ),
+
+    0x0F : MBC3.bind( null, { timer : true, battery : true } ),
+    0x10 : MBC3.bind( null, { ram : true, timer : true, battery : true } ),
+    0x11 : MBC3.bind( null, { } ),
+    0x12 : MBC3.bind( null, { ram : true } ),
+    0x13 : MBC3.bind( null, { ram : true, battery : true } ),
+
+    0x15 : MBC4.bind( null, { } ),
+    0x16 : MBC4.bind( null, { ram : true } ),
+    0x17 : MBC4.bind( null, { ram : true, battery : true } ),
+
+    0x19 : MBC5.bind( null, { } ),
+    0x1A : MBC5.bind( null, { ram : true } ),
+    0x1B : MBC5.bind( null, { ram : true, battery : true } ),
+    0x1C : MBC5.bind( null, { rumble : true } ),
+    0x1D : MBC5.bind( null, { rumble : true, ram : true } ),
+    0x1E : MBC5.bind( null, { rumble : true, ram : true, battery : true } )
+
+};
+
+var unsignedToSignedConverter = new Int8Array( 1 );
 
 export class MMU extends mixin( null, EmitterMixin ) {
 
-    constructor( engine ) {
+    constructor( { events = [ ] } ) {
 
-        this._engine = engine;
+        super( );
 
-        preprocessMethods( this, [
-            'readUint8', 'writeUint8'
-        ], this._engine._options );
+        this._fastReadUint8Event = !!~events.indexOf( 'read' ) ? { } : null;
+        this._writeEvent = !!~events.indexOf( 'write' ) ? { } : null;
+        this._postWriteEvent = this._writeEvent ? { } : null;
 
-        // Memory mapping cache
+        if ( ! this._readEvent )
+            this.readUint8 = this._fastReadUint8;
 
-        this._getters = [ ];
-        this._setters = [ ];
+        if ( ! this._writeEvent && ! this._postWriteEvent )
+            this.writeUint8 = this._fastWriteUint8;
 
-    }
+        // Initialized at link time
 
-    setup( ) {
+        this._gpu = null;
+        this._keyio = null;
 
-        // Cache all of the mappers
+        // Initialized at setup time
 
-        for ( var t = 0; t <= 0xFFFF; ++ t ) {
+        this._environment = null;
 
-            var mapping = this.mapAddress( t );
+        this._hram = null;
+        this._wram = null;
+        this._vram = null;
+        this._oam = null;
 
-            ( function ( mapping ) {
-
-                if ( Array.isArray( mapping ) ) {
-                    var array = mapping[ 0 ], index = mapping[ 1 ];
-                    this._getters[ t ] = function ( ) { return array[ index ]; };
-                    this._setters[ t ] = function ( value ) { array[ index ] = value; };
-                } else {
-                    this._getters[ t ] = mapping;
-                    this._setters[ t ] = mapping;
-                }
-
-            } ).call( this, mapping );
-
-        }
+        this.mbc = null;
 
     }
 
-    readInt8( address ) {
+    link( { gpu, keyio } ) {
 
-        var n = this.readUint8( address );
+        this._gpu = gpu;
+        this._keyio = keyio;
 
-        if ( n > 0x7f )
-            n -= 0x100;
+    }
 
-        return n;
+    setup( environment ) {
+
+        this._environment = environment;
+
+        this._hram = new Uint8Array( this._environment.hramBuffer );
+        this._wram = new Uint8Array( this._environment.wramBuffer );
+        this._vram = new Uint8Array( this._environment.vramBuffer );
+        this._oam = new Uint8Array( this._environment.oamBuffer );
+
+        var type = new Uint8Array( this._environment.romBuffer )[ 0x0147 ];
+
+        if ( ! cartridgeTypes[ type ] )
+            throw new Error( `Invalid cartridge type ${formatHexadecimal(type, 8)}` );
+
+        this.mbc = new ( cartridgeTypes[ type ] )( );
+        this.mbc.link( { } );
+        this.mbc.setup( this._environment );
 
     }
 
     readUint8( address ) {
 
-        var value = this._getters[ address ]( void 0, address );
+        var value = this._fastReadUint8( address );
 
-        if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'read' ) !== - 1 ) {
-
-            // This event can override the return value by calling e.override(<newValue>).
-
-            var overrideFn = function ( newValue ) { value = newValue; };
-            this.emit( 'read', { address : address, value : value, override : overrideFn } );
-
-        }
+        this._readEvent.address = address;
+        this._readEvent.value = value;
+        this.emit( 'read', this._readEvent );
+        value = this._readEvent.value & 0xFF;
 
         return value;
 
@@ -77,161 +123,261 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
     writeUint8( address, value ) {
 
-        if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'write' ) !== - 1 ) {
+        this._writeEvent.address = address;
+        this._writeEvent.value = value;
+        this.emit( 'write', this._writeEvent );
+        value = this._writeEvent.value & 0xFF;
 
-            // This event can override the new value by calling e.override(<newValue>)
+        this._fastWriteUint8( address, value );
 
-            var overrideFn = function ( newValue ) { value = newValue; };
-            this.emit( 'write', { address : address, value : value, override : overrideFn } );
+        this._postWriteEvent.address = address;
+        this._postWriteEvent.value = value;
+        this.emit( 'post-write', this._postWriteEvent );
 
-            if ( typeof value === 'undefined' ) {
+    }
 
-                // If the new value should be 'undefined', then we just ignore the write
+    _fastReadUint8( address ) {
 
-                return ;
+        if ( address >= 0x0000 && address < 0x8000 )
+            return this.mbc.readRomUint8( address );
 
-            }
+        else if ( address >= 0x8000 && address < 0xA000 )
+            return this._vram[ address & 0x1FFF ];
+
+        else if ( address >= 0xA000 && address < 0xC000 )
+            return this.mbc.readRamUint8( address );
+
+        else if ( address >= 0xC000 && address < 0xE000 )
+            return this._wram[ address & 0x1FFF ];
+
+        else if ( address >= 0xE000 && address < 0xFE00 )
+            return this._wram[ address & 0x1FFF ];
+
+        else if ( address >= 0xFE00 && address < 0xFEA0 )
+            return this._oam[ address - 0xFE00 ];
+
+        else if ( address >= 0xFF80 && address < 0xFFFF )
+            return this._hram[ address - 0xFF80 ];
+
+        else switch( address ) {
+
+            case 0xFF00:
+                return this._keyio.read( );
+
+            case 0xFF04:
+                return this._environment.timerDivider;
+
+            case 0xFF05:
+                return this._environment.timerCounter;
+
+            case 0xFF06:
+                return this._environment.timerCounterModulo;
+
+            case 0xFF07:
+                return this._environment.timerCounterControl;
+
+            case 0xFF0F:
+                return this._environment.pendingInterrupts;
+
+            case 0xFF40: return (
+                ( this._environment.gpuBackgroundFeature ? 1 << 0 : 0 ) |
+                ( this._environment.gpuSpriteFeature     ? 1 << 1 : 0 ) |
+                ( this._environment.gpuSpriteSize        ? 1 << 2 : 0 ) |
+                ( this._environment.gpuBackgroundBase    ? 1 << 3 : 0 ) |
+                ( this._environment.gpuTilesetBase       ? 1 << 4 : 0 ) |
+                ( this._environment.gpuWindowFeature     ? 1 << 5 : 0 ) |
+                ( this._environment.gpuWindowBase        ? 1 << 6 : 0 ) |
+                ( this._environment.gpuLcdFeature        ? 1 << 7 : 0 )
+            );
+
+            case 0xFF41: return (
+                ( this._environment.gpuMode        << 0 ) |
+                ( this._environment.gpuCoincidence << 2 ) |
+                ( this._environment.gpuInterrupts  << 0 )
+            );
+
+            case 0xFF42:
+                return this._environment.gpuBgScroll[ 1 ];
+
+            case 0xFF43:
+                return this._environment.gpuBgScroll[ 0 ];
+
+            case 0xFF44:
+                return this._environment.gpuLy;
+
+            case 0xFF45:
+                return this._environment.gpuLyc;
+
+            case 0xFF47:
+                return this._gpu.getPalette( 0 );
+
+            case 0xFF48:
+                return this._gpu.getPalette( 1 );
+
+            case 0xFF49:
+                return this._gpu.getPalette( 2 );
+
+            case 0xFF4A:
+                return this._environment.gpuWinPosition[ 1 ];
+
+            case 0xFF4B:
+                return this._environment.gpuWinPosition[ 0 ];
+
+            case 0xFFFF:
+                return this._environment.enabledInterrupts;
+
+            default:
+                //console.log('invalid read at ' + address);
+            return 0;
 
         }
 
-        this._setters[ address ]( value, address );
+    }
 
-        if ( typeof preprocess !== 'undefined' && ( preprocess.events || [ ] ).indexOf( 'post-write' ) !== - 1 ) {
-            this.emit( 'post-write', { address : address, value : value } );
+    _fastWriteUint8( address, value ) {
+
+        if ( address >= 0x0000 && address < 0x8000 )
+            this.mbc.writeRomUint8( address, value );
+
+        else if ( address >= 0x8000 && address < 0xA000 ) {
+            if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode !== 0x03 ) {
+                this._vram[ address & 0x1FFF ] = value;
+                if ( address < 0x9800 ) {
+                    this._gpu.updateTile( address & 0x1FFF );
+                }
+            }
+        }
+
+        else if ( address >= 0xA000 && address < 0xC000 )
+            this.mbc.writeRamUint8( address, value );
+
+        else if ( address >= 0xC000 && address < 0xE000 )
+            this._wram[ address & 0x1FFF ] = value;
+
+        else if ( address >= 0xE000 && address < 0xFE00 )
+            this._wram[ address & 0x1FFF ] = value;
+
+        else if ( address >= 0xFE00 && address < 0xFEA0 ) {
+            if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode <= 0x01 ) {
+                this._oam[ address - 0xFE00 ] = value;
+                this._gpu.updateSprite( address - 0xFE00 );
+            }
+        }
+
+        else if ( address >= 0xFF80 && address < 0xFFFF )
+            this._hram[ address - 0xFF80 ] = value;
+
+        else switch ( address ) {
+
+            case 0xFF00:
+                this._environment.ioKeyColumn = value & 0x30;
+            break ;
+
+            case 0xFF04:
+                this._environment.timerDivider = 0;
+            break ;
+
+            case 0xFF05:
+                this._environment.timerCounter = value;
+            break ;
+
+            case 0xFF06:
+                this._environment.timerCounterModulo = value;
+            break ;
+
+            case 0xFF07:
+                this._environment.timerCounterFeature = ( value & 0b100 ) >>> 2;
+                this._environment.timerCounterFrequency = timerFrequencies[ ( value & 0b011 ) >>> 0 ];
+                this._environment.timerCounterControl = ( value & 0b111 ) >>> 0;
+            break ;
+
+            case 0xFF0F:
+                this._environment.pendingInterrupts = value;
+            break ;
+
+            case 0xFF40:
+                this._environment.gpuBackgroundFeature = value & ( 1 << 0 ) ? true : false;
+                this._environment.gpuSpriteFeature     = value & ( 1 << 1 ) ? true : false;
+                this._environment.gpuSpriteSize        = value & ( 1 << 2 ) ? 1 : 0;
+                this._environment.gpuBackgroundBase    = value & ( 1 << 3 ) ? 1 : 0;
+                this._environment.gpuTilesetBase       = value & ( 1 << 4 ) ? 1 : 0;
+                this._environment.gpuWindowFeature     = value & ( 1 << 5 ) ? true : false;
+                this._environment.gpuWindowBase        = value & ( 1 << 6 ) ? 1 : 0;
+                this._environment.gpuLcdFeature        = value & ( 1 << 7 ) ? true : false;
+            break ;
+
+            case 0xFF41:
+                this._environment.gpuInterrupts = value & 0x78;
+            break ;
+
+            case 0xFF42:
+                this._environment.gpuBgScroll[ 1 ] = value;
+            break ;
+
+            case 0xFF43:
+                this._environment.gpuBgScroll[ 0 ] = value;
+            break ;
+
+            case 0xFF44:
+                this._environment.gpuLy = 0;
+            break ;
+
+            case 0xFF45:
+                this._environment.gpuLyc = value;
+            break ;
+
+            case 0xFF46:
+                this._gpu.transferDma( value );
+            break ;
+
+            case 0xFF47:
+                this._gpu.setPalette( 0, value );
+            break ;
+
+            case 0xFF48:
+                this._gpu.setPalette( 1, value );
+            break ;
+
+            case 0xFF49:
+                this._gpu.setPalette( 2, value );
+            break ;
+
+            case 0xFF4A:
+                this._environment.gpuWinPosition[ 1 ] = value;
+            break ;
+
+            case 0xFF4B:
+                this._environment.gpuWinPosition[ 0 ] = value;
+            break ;
+
+            case 0xFFFF:
+                this._environment.enabledInterrupts = value;
+            break ;
+
+            default:
+                //console.log('invalid write at ' + address);
+            break ;
+
         }
 
     }
 
     readUint16( address ) {
 
-        var a = this.readUint8( address + 0 );
-        var b = this.readUint8( address + 1 );
+        var low = this.readUint8( address + 0 );
+        var high = this.readUint8( address + 1 );
 
-        return ( b << 8 ) | ( a << 0 );
-
-    }
-
-    writeUint16( address, value ) {
-
-        this.writeUint8( address + 0, ( value & 0x00FF ) >> 0 );
-        this.writeUint8( address + 1, ( value & 0xFF00 ) >> 8 );
+        return ( high << 8 ) | low;
 
     }
 
-    mapAddress( address ) {
+    readInt8( address ) {
 
-        // [CPU] Enabled interrupts [0xFFFF;0xFFFF]
+        var n = this.readUint8( address );
 
-        if ( address === 0xFFFF )
-            return createPlainOldData( this._engine.environment, 'enabledInterrupts' );
-
-        //       High RAM [0xFF80;0xFFFF[
-
-        if ( address >= 0xFF80 && address < 0xFFFF )
-            return createPlainOldData( this._engine.environment.hram, address - 0xFF80 );
-
-        // [MMU] BIOS flag [0xFF50]
-
-        if ( ! this._engine.environment.mmuBiosLocked && address === 0xFF50 )
-            return createAccessor( this._biosLockAccess, this );
-
-        // [IO]  Miscellaneous / Unused registers [0xFF70;0xFF80[
-
-        if ( address >= 0xFF70 && address < 0xFF80 )
-            return createImmutable( 0x00 );
-
-        // [GPU] GPU binding [0xFF40;0xFF70[
-
-        if ( address >= 0xFF40 && address < 0xFF70 )
-            return this._engine.gpu.settingsMapping( address - 0xFF40 );
-
-        // [SND] Sound binding [0xFF10;0xFF30[
-
-        if ( address >= 0xFF10 && address < 0xFF40 )
-            return createImmutable( 0x00 );
-
-        // [CPU] Requested interruptions [0xFF0F]
-
-        if ( address === 0xFF0F )
-            return createPlainOldData( this._engine.environment, 'pendingInterrupts' );
-
-        // [TIM] Timer binding [0xFF04;0xFF08[
-
-        if ( address >= 0xFF04 && address < 0xFF08 )
-            return this._engine.timer.timerMapping( address - 0xFF04 );
-
-        // [IO]  Serial transfer [0xFF01;0xFF02]
-
-        if ( address >= 0xFF01 && address <= 0xFF02 )
-            return createImmutable( 0x00 );
-
-        // [IO]  Input binding [0xFF00]
-
-        if ( address === 0xFF00 )
-            return this._engine.io.keyMapping( address - 0xFF00 );
-
-        //       Empty area
-
-        if ( address >= 0xFEA0 && address < 0xFF00 )
-            return createImmutable( 0x00 );
-
-        // [GPU] Object attributes memory [0xFE00;0xFF00[
-
-        if ( address >= 0xFE00 && address < 0xFEA0 )
-            return this._engine.gpu.oamMapping( address - 0xFE00 );
-
-        //       Working RAM shadow [0xE000;0xFE00[
-
-        if ( address >= 0xE000 && address < 0xFE00 )
-            return createPlainOldData( this._engine.environment.wram, address & 0x1FFF );
-
-        //       Working RAM [0xC000;0xE000[
-
-        if ( address >= 0xC000 && address < 0xE000 )
-            return createPlainOldData( this._engine.environment.wram, address & 0x1FFF );
-
-        //       External RAM [0xA000;0xC000[
-
-        if ( address >= 0xA000 && address < 0xC000 )
-            return this._engine.cartridge.ramMapping( address - 0xA000 );
-
-        // [GPU] Graphics VRAM [0x8000;0xA000[
-
-        if ( address >= 0x8000 && address < 0xA000 )
-            return this._engine.gpu.vramMapping( address & 0x1FFF );
-
-        //       BIOS [0x0000;0x0100[
-
-        if ( ! this._engine.environment.mmuBiosLocked && address < 0x0100 )
-            return createAccessor( this._biosAccess, this, address );
-
-        //       ROM [0x0000;0x8000[
-
-        if ( address < 0x8000 )
-            return this._engine.cartridge.romMapping( address );
-
-        return createUnaddressable( address, 16 );
+        unsignedToSignedConverter[ 0 ] = n;
+        return unsignedToSignedConverter[ 0 ];
 
     }
 
-    _biosLockAccess( value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return 0;
-        } else {
-            this._engine.environment.mmuBiosLocked = value !== 0;
-        }
-
-    }
-
-    _biosAccess( address, value ) {
-
-        if ( typeof value === 'undefined' ) {
-            return bios[ address ];
-        } else {
-            return void 0;
-        }
-
-    }
-
-};
+}
