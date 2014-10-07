@@ -252,9 +252,9 @@ var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig
 #endif
 
 #if ${(hardScan != null && hardPix != null) | 0}
-        gl_FragColor = vec4( Fetch( position, vec2( 0.0, 0.0 ) ), 1.0 );
-#else
         gl_FragColor = vec4( Tri( position ), 1.0 );
+#else
+        gl_FragColor = vec4( Fetch( position, vec2( 0.0, 0.0 ) ), 1.0 );
 #endif
 
 #if ${(darkMask != true && lightMask != null) | 0}
@@ -286,8 +286,11 @@ export class WebGLScreen extends DataScreen {
         this._textureIndex = 0;
         this._setupContext( );
 
-        this.setInputSize( 256, 256 );
-        this.setOutputSize( 256, 256 );
+        var boundingBox = this._canvas.getBoundingClientRect( );
+        var width = boundingBox.width, height = boundingBox.height;
+
+        this.setInputSize( width, height );
+        this.setOutputSize( width, height );
 
     }
 
