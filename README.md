@@ -1,3 +1,5 @@
+# This branch is out-dated. I keep it mainly for reference, and you should probably not use it.
+
 ![Virt.js](http://arcanis.github.io/virt.js/documents/assets/logo.png)
 
 ![](http://arcanis.github.io/virt.js/documents/assets/github-banner.png)
