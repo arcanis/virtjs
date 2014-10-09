@@ -129,7 +129,7 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
         this.interpreter.endFrame( );
 
         this.timer.cancelTick( this._runTimer );
-        this.runTimer = null;
+        this._runTimer = null;
 
         if ( this._stopEvent ) {
             this.emit( 'stop', this._stopEvent );
