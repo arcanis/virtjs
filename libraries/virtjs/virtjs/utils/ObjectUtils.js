@@ -79,6 +79,17 @@ export function mixin( Base, ... mixins ) {
 
 };
 
+export function serializeArrayBuffer( arrayBuffer ) {
+
+    var serialization = '';
+
+    for ( var array = new Uint8Array( arrayBuffer ), t = 0, T = array.length; t < T; ++ t )
+        serialization += String.fromCharCode( array[ t ] );
+
+    return serialization;
+
+}
+
 export function serialize( data ) {
 
     var getFormat = data => Object.keys( data ).reduce( ( format, key ) => {
@@ -102,7 +113,7 @@ export function serialize( data ) {
         var value = data[ key ];
 
         if ( value instanceof ArrayBuffer ) {
-            simplified[ key ] = String.fromCharCode.apply( null, new Uint8Array( value ) );
+            simplified[ key ] = serializeArrayBuffer( value );
         } else if ( value && value.constructor === Object ) {
             simplified[ key ] = simplify( value );
         } else {
