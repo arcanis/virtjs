@@ -63,14 +63,24 @@ export function fetch( path ) {
 
     return new Promise( ( resolve, reject ) => {
 
+        var isBlob = typeof Blob !== 'undefined' && path instanceof Blob;
         var isDataURI = path.match( base64DataUrl );
         var isBrowser = typeof window !== 'undefined';
-        var isWeb = isBrowser || /^https?:\/\//.test( path );
+        var isWeb = isBrowser || /^(?!https?:\/\/|blob:)/.test( path );
 
         if ( ! isWeb && path.indexOf( ':' ) !== -1 )
             throw new Error( 'Invalid protocol' );
 
-        if ( isDataURI ) {
+        if ( isBlob ) {
+
+            var fileReader = new FileReader( );
+
+            fileReader.addEventListener( 'load', e => { resolve( e.target.result ); } );
+            fileReader.addEventListener( 'error', e => { reject( ); } );
+
+            fileReader.readAsArrayBuffer( path );
+
+        } else if ( isDataURI ) {
 
             if ( isBrowser ) {
                 resolve( binaryStringToUint8( atob( isDataURI[ 1 ] ) ).buffer );
@@ -81,10 +91,13 @@ export function fetch( path ) {
         } else if ( isBrowser ) {
 
             var xhr = new XMLHttpRequest( );
+
             xhr.open( 'GET', path, true );
             xhr.responseType = 'arraybuffer';
+
             xhr.onload = ( ) => resolve( xhr.response );
             xhr.onerror = ( ) => reject( xhr.status );
+
             xhr.send( null );
 
         } else if ( isWeb ) {
