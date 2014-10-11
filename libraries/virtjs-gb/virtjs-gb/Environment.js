@@ -59,7 +59,7 @@ export class Environment {
         this.gpuLy = 0;
         this.gpuLyc = 0;
         this.gpuBgScroll = [ 0, 0 ];
-        this.gpuWinPosition = [ 0, 0 ];
+        this.gpuWindowPosition = [ 0, 0 ];
         this.gpuCoincidence = false;
         this.gpuPalettes = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ];
 

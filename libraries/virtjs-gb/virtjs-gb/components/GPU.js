@@ -20,7 +20,7 @@ export class GPU {
         this._screen = screen;
         this._screen.setInputSize( 160, 144 );
 
-        this._scanline = new Uint8Array( 160 );
+        this._scanline = new Uint16Array( 160 );
 
         // Initialized at link time
 
@@ -362,8 +362,8 @@ export class GPU {
         // Select the right background base address (there is two of them, 0;255 and -127;128)
         var backgroundMapBaseAddress = this._environment.gpuWindowBase ? 0x1C00 : 0x1800;
 
-        var positionX = this._environment.gpuWinPosition[ 0 ] - 7;
-        var positionY = this._environment.gpuWinPosition[ 1 ];
+        var positionX = this._environment.gpuWindowPosition[ 0 ] - 7;
+        var positionY = this._environment.gpuWindowPosition[ 1 ];
 
         if ( positionY > line || positionY + 144 <= line )
             return ;

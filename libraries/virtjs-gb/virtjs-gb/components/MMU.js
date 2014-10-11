@@ -197,7 +197,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             );
 
             case 0xFF42:
-                return this._environment.gpuBgScroll[ 1 ];
+            return this._environment.gpuBgScroll[ 1 ];
 
             case 0xFF43:
                 return this._environment.gpuBgScroll[ 0 ];
@@ -218,10 +218,10 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 return this._gpu.getPalette( 2 );
 
             case 0xFF4A:
-                return this._environment.gpuWinPosition[ 1 ];
+                return this._environment.gpuWindowPosition[ 1 ];
 
             case 0xFF4B:
-                return this._environment.gpuWinPosition[ 0 ];
+                return this._environment.gpuWindowPosition[ 0 ];
 
             case 0xFFFF:
                 return this._environment.enabledInterrupts;
@@ -343,11 +343,11 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF4A:
-                this._environment.gpuWinPosition[ 1 ] = value;
+                this._environment.gpuWindowPosition[ 1 ] = value;
             break ;
 
             case 0xFF4B:
-                this._environment.gpuWinPosition[ 0 ] = value;
+                this._environment.gpuWindowPosition[ 0 ] = value;
             break ;
 
             case 0xFFFF:
