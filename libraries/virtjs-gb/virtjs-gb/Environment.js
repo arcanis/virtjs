@@ -25,7 +25,7 @@ export class Environment {
         this.enabledInterrupts = 0;
 
         this.romBuffer = romBuffer;
-        this.ramBuffer = new ArrayBuffer( 8192 );
+        this.ramBuffer = new ArrayBuffer( 8192 * 16 );
 
         this.hramBuffer = new ArrayBuffer( 127 );
         this.wramBuffer = new ArrayBuffer( 8192 );
