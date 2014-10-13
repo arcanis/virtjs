@@ -66,7 +66,7 @@ export function fetch( path ) {
         var isBlob = typeof Blob !== 'undefined' && path instanceof Blob;
         var isDataURI = path.match( base64DataUrl );
         var isBrowser = typeof window !== 'undefined';
-        var isWeb = isBrowser || /^(?!https?:\/\/|blob:)/.test( path );
+        var isWeb = isBrowser || /^(https?:\/\/|blob:)/.test( path );
 
         if ( ! isWeb && path.indexOf( ':' ) !== -1 )
             throw new Error( 'Invalid protocol' );
