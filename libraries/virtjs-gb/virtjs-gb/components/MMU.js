@@ -145,7 +145,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             return this._vram[ address & 0x1FFF ];
 
         else if ( address >= 0xA000 && address < 0xC000 )
-            return this.mbc.readRamUint8( address );
+            return this.mbc.readRamUint8( address - 0xA000 );
 
         else if ( address >= 0xC000 && address < 0xE000 )
             return this._wram[ address & 0x1FFF ];
@@ -249,7 +249,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
         }
 
         else if ( address >= 0xA000 && address < 0xC000 )
-            this.mbc.writeRamUint8( address, value );
+            this.mbc.writeRamUint8( address - 0xA000, value );
 
         else if ( address >= 0xC000 && address < 0xE000 )
             this._wram[ address & 0x1FFF ] = value;
