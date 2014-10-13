@@ -24,6 +24,7 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
         this._startEvent = !!~events.indexOf( 'start' ) ? { } : null;
         this._stopEvent = !!~events.indexOf( 'start' ) ? { } : null;
         this._setupEvent = !!~events.indexOf( 'setup' ) ? { } : null;
+        this._errorEvent = !!~events.indexOf( 'error' ) ? { error : null } : null;
 
         this._debugMode = Boolean( advanced.debugMode );
 
@@ -80,6 +81,11 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
         } catch ( err ) {
 
             this.environment = null;
+
+            if ( this._errorEvent ) {
+                this._errorEvent.error = err;
+                this.emit( 'error', this._errorEvent );
+            }
 
             throw err;
 
@@ -147,16 +153,34 @@ export class Engine extends mixin( BaseEngine, EmitterMixin ) {
 
         var run = ( ) => {
 
-            this._runTimer = this.timer.nextTick( run );
+            this._runTimer = this.timer.nextTick( entry );
 
             this.interpreter.runFrame( );
+
+        };
+
+        var tryRun = ( ) => {
+
+            try {
+
+                run( );
+
+            } catch ( err ) {
+
+                this.stop( );
+
+                this._errorEvent.error = err;
+                this.emit( 'error', this._errorEvent );
+
+            }
 
         };
 
         if ( this._startEvent )
             this.emit( 'start', this._startEvent );
 
-        this._runTimer = this.timer.nextTick( run );
+        var entry = this._errorEvent ? tryRun : run;
+        this._runTimer = this.timer.nextTick( entry );
 
     }
 
