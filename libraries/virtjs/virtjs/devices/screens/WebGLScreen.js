@@ -93,7 +93,7 @@ var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig
 
         position = floor( position * scanlineResolution + offset ) / scanlineResolution;
 
-        return ToLinear( texture2D( uScreenTexture, position, -16.0 ).rgb );
+        return ToLinear( texture2D( uScreenTexture, position ).rgb );
 
     }
 
