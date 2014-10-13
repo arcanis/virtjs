@@ -267,9 +267,9 @@ var fragmentShaderBuilder = ( { hardScan, hardPix, rgbMask, darkMask, lightMask,
 
 #if ${(rgbMask != null) | 0}
         gl_FragColor.rgb *= vec3(
-            ${v(rgbMask[0])},
-            ${v(rgbMask[1])},
-            ${v(rgbMask[2])}
+            ${v(rgbMask && rgbMask[0])},
+            ${v(rgbMask && rgbMask[1])},
+            ${v(rgbMask && rgbMask[2])}
         );
 #endif
 
