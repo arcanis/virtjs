@@ -34,7 +34,7 @@ var vertexShaderBuilder = ( { } = { } ) => `
 
 `;
 
-var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig, innerVig, bending } = { } ) => `
+var fragmentShaderBuilder = ( { hardScan, hardPix, rgbMask, darkMask, lightMask, outerVig, innerVig, bending } = { } ) => `
 
     precision mediump float;
 
@@ -214,8 +214,8 @@ var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig
         float distX = abs( position.x - 0.5 ) * 2.0;
         float distY = abs( position.y - 0.5 ) * 2.0;
 
-        float stepX = smoothstep( 1.0, .8, distX );
-        float stepY = smoothstep( 1.0, .8, distY );
+        float stepX = smoothstep( outerVig, innerVig, distX );
+        float stepY = smoothstep( outerVig, innerVig, distY );
 
         return stepX * stepY;
 
@@ -225,19 +225,17 @@ var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig
 
     vec2 Bend( vec2 coord ) {
 
-        float bend = 3.2;
-
         // put in symmetrical coords
-        coord = (coord - 0.5) * 2.0;
+        coord = ( coord - 0.5 ) * 2.0;
 
         coord *= 1.1;
 
         // deform coords
-        coord.x *= 1.0 + pow((abs(coord.y) / bend), 2.0);
-        coord.y *= 1.0 + pow((abs(coord.x) / bend), 2.0);
+        coord.x *= 1.0 + pow( ( abs( coord.y ) / bending ), 2.0 );
+        coord.y *= 1.0 + pow( ( abs( coord.x ) / bending ), 2.0 );
 
         // transform back to 0.0 - 1.0 space
-        coord = (coord / 2.0) + 0.5;
+        coord = ( coord / 2.0 ) + 0.5;
 
         return coord;
 
@@ -265,6 +263,14 @@ var fragmentShaderBuilder = ( { hardScan, hardPix, darkMask, lightMask, outerVig
 
 #if ${(outerVig != null && innerVig != null) | 0}
         gl_FragColor.rgb *= Vignette( position );
+#endif
+
+#if ${(rgbMask != null) | 0}
+        gl_FragColor.rgb *= vec3(
+            ${v(rgbMask[0])},
+            ${v(rgbMask[1])},
+            ${v(rgbMask[2])}
+        );
 #endif
 
     }
