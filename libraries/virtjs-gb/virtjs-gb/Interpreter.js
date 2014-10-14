@@ -327,11 +327,17 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         // GPU ; WHY x4 ?
 
-        environment.gpuClock -= count;
+        if ( environment.gpuLcdFeature ) {
 
-        if ( environment.gpuClock <= 0 )
-            if ( this._gpu.nextMode( ) )
-                this._running = false;
+            environment.gpuClock -= count;
+
+            if ( environment.gpuClock <= 0 ) {
+                if ( this._gpu.nextMode( ) ) {
+                    this._running = false;
+                }
+            }
+
+        }
 
         // Timer Divider ; WHY x4 ?
 
