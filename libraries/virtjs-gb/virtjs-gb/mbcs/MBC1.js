@@ -45,10 +45,11 @@ export class MBC1 {
 
     readRamUint8( address ) {
 
-        if ( ! this._environment.mbcRamFeature )
+        if ( this._environment.mbcRamFeature ) {
+            return this._ramBankNN[ address ] | 0;
+        } else {
             return 0;
-
-        return this._ramBankNN[ address ] | 0;
+        }
 
     }
 
@@ -60,23 +61,23 @@ export class MBC1 {
 
         } else if ( address < 0x4000 ) {
 
-            this._environment.mbcRomBank &= 0x60;
-            this._environment.mbcRomBank |= ( value & 0x1F ) << 0;
+            this._environment.mbcRomBank &= 0b1100000;
+            this._environment.mbcRomBank |= value & 0b11111;
 
             this._rebank( );
 
         } else if ( address < 0x6000 ) {
 
-            this._environment.mbcRomBank &= 0x1F;
-            this._environment.mbcRomBank |= ( value & 0x03 ) << 5;
+            this._environment.mbcRomBank &= 0b0011111;
+            this._environment.mbcRomBank |= ( value & 0b11 ) << 5;
 
-            this._environment.mbcRamBank = value & 0x03;
+            this._environment.mbcRamBank = value & 0b11;
 
             this._rebank( );
 
         } else {
 
-            this._environment.mbcMode = value & 0x01;
+            this._environment.mbcMode = value & 0b1;
 
             this._rebank( );
 
@@ -86,10 +87,9 @@ export class MBC1 {
 
     writeRamUint8( address, value ) {
 
-        if ( ! this._environment.mbcRamFeature )
-            return ;
-
-        this._ramBankNN[ address ] = value;
+        if ( this._environment.mbcRamFeature ) {
+            this._ramBankNN[ address ] = value;
+        }
 
     }
 

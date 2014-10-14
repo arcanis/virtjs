@@ -14,7 +14,7 @@ export function formatDecimal( value, size ) {
     if ( isNaN( value ) )
         return 'NaN';
 
-    var str = str.toString( );
+    var str = Number( str ).toString( );
 
     if ( typeof size === 'undefined' )
         return str;
@@ -53,7 +53,7 @@ export function formatAddress( address, bits, withPrefix = true ) {
     if ( isNaN( address ) )
         return 'NaN';
 
-    var str = address.toString( 16 ).toLowerCase( );
+    var str = Number( address ).toString( 16 ).toLowerCase( );
 
     if ( typeof bits !== 'undefined' )
         while ( str.length < Math.ceil( bits / 4 ) )
@@ -71,7 +71,7 @@ export function formatHexadecimal( value, bits, withPrefix = true ) {
     if ( isNaN( value ) )
         return 'NaN';
 
-    var str = value.toString( 16 ).toLowerCase( );
+    var str = Number( value ).toString( 16 ).toLowerCase( );
 
     if ( typeof bits !== 'undefined' )
         while ( str.length < Math.ceil( bits / 4 ) )
@@ -89,7 +89,7 @@ export function formatBinary( value, bits ) {
     if ( isNaN( value ) )
         return 'NaN';
 
-    var str = value.toString( 2 );
+    var str = Number( value ).toString( 2 );
 
     if ( typeof bits !== 'undefined' )
         while ( str.length < bits )
