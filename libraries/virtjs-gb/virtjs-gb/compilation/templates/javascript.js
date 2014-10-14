@@ -34,6 +34,7 @@ export var templates = {
 
         var value;
         ${h.popStack('value')};
+
         ${h.writeR16(parameters[0], 'value')};
 
         ${h.applyClockCycles(3)};
@@ -44,6 +45,7 @@ export var templates = {
 
         var value;
         ${h.popStack('value')};
+
         ${h.writeR16('af', 'value & 0xFFF0')};
 
         ${h.applyClockCycles(3)};
@@ -175,8 +177,9 @@ export var templates = {
     'LDHL_r16_i8' : ( address, nextAddress, parameters, h ) => `
 
         var hlBefore = ${h.readR16(parameters[0])};
-        ${h.writeR16('hl', h.add16('hlBefore', parameters[1]))};
-        var hlAfter = ${h.readR16('hl')};
+        var hlAfter = ${h.add16('hlBefore', parameters[1])};
+
+        ${h.writeR16('hl', 'hlAfter')};
 
         ${h.bcd(false)};
         ${h.zero(false)};
@@ -217,8 +220,6 @@ export var templates = {
         ${h.writeR16(parameters[0], h.sub16('position', 1))}
 
         ${h.applyClockCycles(2)};
-
-        ${h.checkForInvalidation(nextAddress)};
 
     `,
 
@@ -299,8 +300,9 @@ export var templates = {
     'INC_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', 1))};
-        var rAfter = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', 1)};
+
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -322,32 +324,27 @@ export var templates = {
 
         var target = ${h.readR16(parameters[0])};
 
-    // read
-
         var mBefore = ${h.readMem8('target')};
         var mAfter = ${h.add8('mBefore', 1)};
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'mAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
         ${h.half('mAfter', '<', 'mBefore')};
+
+        ${h.applyClockCycles(2)};
 
     `,
 
     'DEC_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rBefore', 1))};
-        var rAfter = ${h.readR8(parameters[0])};
+        var rAfter = ${h.sub8('rBefore', 1)};
+
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(true)};
         ${h.zero('rAfter')};
@@ -376,11 +373,11 @@ export var templates = {
 
         ${h.writeMem8('target', 'mAfter')};
 
-        ${h.applyClockCycles(2)};
-
         ${h.bcd(true)};
         ${h.zero('mAfter')};
         ${h.half('mAfter', '>', 'mBefore')};
+
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -708,10 +705,10 @@ export var templates = {
     'ADC_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', h.readR8(parameters[1])))};
-        var rAfter = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rAfter', h.carry()))};
-        var rAfterCarry = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', h.readR8(parameters[1]))};
+        var rAfterCarry = ${h.add8('rAfter', h.carry())};
+
+        ${h.writeR8(parameters[0], 'rAfterCarry')};
 
         ${h.bcd(false)};
         ${h.zero('rAfterCarry')};
@@ -732,10 +729,10 @@ export var templates = {
     'ADC_r8_u8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', parameters[1]))};
-        var rAfter = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rAfter', h.carry()))};
-        var rAfterCarry = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', parameters[1])};
+        var rAfterCarry = ${h.add8('rAfter', h.carry())};
+
+        ${h.writeR8(parameters[0], 'rAfterCarry')};
 
         ${h.bcd(false)};
         ${h.zero('rAfterCarry')};
@@ -756,10 +753,10 @@ export var templates = {
     'ADC_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', h.readMem8(h.readR16(parameters[1]))))};
-        var rAfter = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rAfter', h.carry()))};
-        var rAfterCarry = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', h.readMem8(h.readR16(parameters[1])))};
+        var rAfterCarry = ${h.add8('rAfter', h.carry())};
+
+        ${h.writeR8(parameters[0], 'rAfterCarry')};
 
         ${h.bcd(false)};
         ${h.zero('rAfterCarry')};
@@ -780,8 +777,9 @@ export var templates = {
     'ADD_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', h.readR8(parameters[1])))};
-        var rAfter = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', h.readR8(parameters[1]))};
+
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -795,8 +793,9 @@ export var templates = {
     'ADD_r8_u8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', parameters[1]))};
-        var rAfter = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', parameters[1])};
+
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -810,8 +809,9 @@ export var templates = {
     'ADD_r16_r16' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR16(parameters[0])};
-        ${h.writeR16(parameters[0], h.add16('rBefore', h.readR16(parameters[1])))};
-        var rAfter = ${h.readR16(parameters[0])};
+        var rAfter = ${h.add16('rBefore', h.readR16(parameters[1]))};
+
+        ${h.writeR16(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.half('rAfter', '<', 'rBefore', 0x0FFF)};
@@ -824,8 +824,9 @@ export var templates = {
     'ADD_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.add8('rBefore', h.readMem8(h.readR16(parameters[1]))))};
-        var rAfter = ${h.readR8(parameters[0])};
+        var rAfter = ${h.add8('rBefore', h.readMem8(h.readR16(parameters[1])))};
+
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -855,10 +856,10 @@ export var templates = {
     'SBC_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rBefore', h.readR8(parameters[1])))};
-        var rAfter = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rAfter', h.carry()))};
-        var rAfterCarry = ${h.readR8(parameters[0])};
+        var rAfter = ${h.sub8('rBefore', h.readR8(parameters[1]))};
+        var rAfterCarry = ${h.sub8('rAfter', h.carry())};
+
+        ${h.writeR8(parameters[0], 'rAfterCarry')};
 
         ${h.bcd(true)};
         ${h.zero('rAfterCarry')};
@@ -879,10 +880,10 @@ export var templates = {
     'SBC_r8_u8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rBefore', parameters[1]))};
-        var rAfter = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rAfter', h.carry()))};
-        var rAfterCarry = ${h.readR8(parameters[0])};
+        var rAfter = ${h.sub8('rBefore', parameters[1])};
+        var rAfterCarry = ${h.sub8('rAfter', h.carry())};
+
+        ${h.writeR8(parameters[0], 'rAfterCarry')};
 
         ${h.bcd(true)};
         ${h.zero('rAfterCarry')};
@@ -903,10 +904,10 @@ export var templates = {
     'SBC_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rBefore', h.readMem8(h.readR16(parameters[1]))))};
-        var rAfter = ${h.readR8(parameters[0])};
-        ${h.writeR8(parameters[0], h.sub8('rAfter', h.carry()))};
-        var rAfterCarry = ${h.readR8(parameters[0])};
+        var rAfter = ${h.sub8('rBefore', h.readMem8(h.readR16(parameters[1])))};
+        var rAfterCarry = ${h.sub8('rAfter', h.carry())};
+
+        ${h.writeR8(parameters[0], 'rAfterCarry')};
 
         ${h.bcd(true)};
         ${h.zero('rAfterCarry')};
@@ -970,6 +971,7 @@ export var templates = {
 
         var rBefore = ${h.readR8(parameters[0])};
         var rAfter = ${h.sub8('rBefore', h.readR8(parameters[1]))};
+
         ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(true)};
@@ -985,6 +987,7 @@ export var templates = {
 
         var rBefore = ${h.readR8(parameters[0])};
         var rAfter = ${h.sub8('rBefore', parameters[1])};
+
         ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(true)};
@@ -1000,6 +1003,7 @@ export var templates = {
 
         var rBefore = ${h.readR8(parameters[0])};
         var rAfter = ${h.sub8('rBefore', h.readMem8(h.readR16(parameters[1])))};
+
         ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(true)};
@@ -1013,7 +1017,8 @@ export var templates = {
 
     'AND_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '&' + h.readR8(parameters[1])};
+        var value = ${h.readR8(parameters[0])} & ${h.readR8(parameters[1])};
+
         ${h.writeR8(parameters[0], 'value')};
 
         ${h.bcd(false)};
@@ -1027,7 +1032,8 @@ export var templates = {
 
     'AND_r8_u8' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '&' + parameters[1]};
+        var value = ${h.readR8(parameters[0])} & ${parameters[1]};
+
         ${h.writeR8(parameters[0], 'value')};
 
         ${h.bcd(false)};
@@ -1041,7 +1047,8 @@ export var templates = {
 
     'AND_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '&' + h.readMem8(h.readR16(parameters[1]))};
+        var value = ${h.readR8(parameters[0])} & ${h.readMem8(h.readR16(parameters[1]))};
+
         ${h.writeR8(parameters[0], 'value')};
 
         ${h.bcd(false)};
@@ -1055,7 +1062,8 @@ export var templates = {
 
     'OR_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '|' + h.readR8(parameters[1])};
+        var value = ${h.readR8(parameters[0])} | ${h.readR8(parameters[1])};
+
         ${h.writeR8(parameters[0], 'value')};
 
         ${h.bcd(false)};
@@ -1069,7 +1077,8 @@ export var templates = {
 
     'OR_r8_u8' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '|' + parameters[1]};
+        var value = ${h.readR8(parameters[0])} | ${parameters[1]};
+
         ${h.writeR8(parameters[0], 'value')};
 
         ${h.bcd(false)};
@@ -1083,7 +1092,8 @@ export var templates = {
 
     'OR_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '|' + h.readMem8(h.readR16(parameters[1]))};
+        var value = ${h.readR8(parameters[0])} | ${h.readMem8(h.readR16(parameters[1]))};
+
         ${h.writeR8(parameters[0], 'value')};
 
         ${h.bcd(false)};
@@ -1097,7 +1107,8 @@ export var templates = {
 
     'XOR_r8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '^' + h.readR8(parameters[1])};
+        var value = ${h.readR8(parameters[0])} ^ ${h.readR8(parameters[1])};
+
         ${h.writeR8('a', 'value')};
 
         ${h.bcd(false)};
@@ -1111,7 +1122,8 @@ export var templates = {
 
     'XOR_r8_u8' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '^' + parameters[1]};
+        var value = ${h.readR8(parameters[0])} ^ ${parameters[1]};
+
         ${h.writeR8('a', 'value')};
 
         ${h.bcd(false)};
@@ -1125,7 +1137,8 @@ export var templates = {
 
     'XOR_r8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var value = ${h.readR8(parameters[0]) + '^' + h.readMem8(h.readR16(parameters[1]))};
+        var value = ${h.readR8(parameters[0])} ^ ${h.readMem8(h.readR16(parameters[1]))};
+
         ${h.writeR8('a', 'value')};
 
         ${h.bcd(false)};
@@ -1177,8 +1190,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var mBefore = ${h.readMem8('target')};
@@ -1187,13 +1198,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'mAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1205,14 +1210,16 @@ export var templates = {
             ${h.carry(false)};
         }
 
+        ${h.applyClockCycles(2)};
+
     `,
 
     'RRC_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[1])};
         var rightMostBit = rBefore & 0x01;
-
         var rAfter = (rBefore >>> 1) | (rightMostBit << 7);
+
         ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
@@ -1233,8 +1240,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var mBefore = ${h.readMem8('target')};
@@ -1243,13 +1248,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'mAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1261,14 +1260,16 @@ export var templates = {
             ${h.carry(false)};
         }
 
+        ${h.applyClockCycles(2)};
+
     `,
 
     'RRA' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8('a')};
         var rightMostBit = rBefore & 0x01;
-
         var rAfter = (rBefore >>> 1) | (${h.carry()} << 7);
+
         ${h.writeR8('a', 'rAfter')};
 
         ${h.bcd(false)};
@@ -1289,8 +1290,8 @@ export var templates = {
 
         var rBefore = ${h.readR8('a')};
         var rightMostBit = rBefore & 0x01;
-
         var rAfter = (rBefore >>> 1) | (rightMostBit << 7);
+
         ${h.writeR8('a', 'rAfter')};
 
         ${h.bcd(false)};
@@ -1311,8 +1312,8 @@ export var templates = {
 
         var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
-
         var rAfter = ((rBefore << 1) | ${h.carry()}) & 0xFF;
+
         ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
@@ -1333,8 +1334,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var mBefore = ${h.readMem8('target')};
@@ -1343,13 +1342,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'mAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1361,14 +1354,16 @@ export var templates = {
             ${h.carry(false)};
         }
 
+        ${h.applyClockCycles(2)};
+
     `,
 
     'RLC_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
-
         var rAfter = ((rBefore << 1) | leftMostBit) & 0xFF;
+
         ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
@@ -1389,8 +1384,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var mBefore = ${h.readMem8('target')};
@@ -1399,13 +1392,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'mAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
@@ -1417,14 +1404,16 @@ export var templates = {
             ${h.carry(false)};
         }
 
+        ${h.applyClockCycles(2)};
+
     `,
 
     'RLA' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8('a')};
         var leftMostBit = rBefore >>> 7;
-
         var rAfter = ((rBefore << 1) | ${h.carry()}) & 0xFF;
+
         ${h.writeR8('a', 'rAfter')};
 
         ${h.bcd(false)};
@@ -1445,8 +1434,8 @@ export var templates = {
 
         var rBefore = ${h.readR8('a')};
         var leftMostBit = rBefore >>> 7;
-
         var rAfter = ((rBefore << 1) | leftMostBit) & 0xFF;
+
         ${h.writeR8('a', 'rAfter')};
 
         ${h.bcd(false)};
@@ -1467,8 +1456,8 @@ export var templates = {
 
         var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
-
         var rAfter = (rBefore << 1) & 0xFF;
+
         ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
@@ -1489,8 +1478,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var rBefore = ${h.readMem8('target')};
@@ -1499,13 +1486,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'rAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1517,6 +1498,8 @@ export var templates = {
             ${h.carry(false)};
         }
 
+        ${h.applyClockCycles(2)};
+
     `,
 
     'SRA_r8' : ( address, nextAddress, parameters, h ) => `
@@ -1524,8 +1507,8 @@ export var templates = {
         var rBefore = ${h.readR8(parameters[1])};
         var leftMostBit = rBefore >>> 7;
         var rightMostBit = rBefore & 0x01;
-
         var rAfter = (rBefore >>> 1) | (leftMostBit << 7);
+
         ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
@@ -1546,8 +1529,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var rBefore = ${h.readMem8('target')};
@@ -1557,13 +1538,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'rAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1575,14 +1550,16 @@ export var templates = {
             ${h.carry(false)};
         }
 
+        ${h.applyClockCycles(2)};
+
     `,
 
     'SRL_r8' : ( address, nextAddress, parameters, h ) => `
 
         var rBefore = ${h.readR8(parameters[1])};
         var rightMostBit = rBefore & 0x01;
-
         var rAfter = rBefore >>> 1;
+
         ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.bcd(false)};
@@ -1603,8 +1580,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var rBefore = ${h.readMem8('target')};
@@ -1613,13 +1588,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'rAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1630,6 +1599,8 @@ export var templates = {
         } else {
             ${h.carry(false)};
         }
+
+        ${h.applyClockCycles(2)};
 
     `,
 
@@ -1729,8 +1700,6 @@ export var templates = {
 
         var target = ${h.readR16(parameters[1])};
 
-    // read
-
         ${h.applyClockCycles(1)};
 
         var mBefore = ${h.readMem8('target')};
@@ -1738,18 +1707,14 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-    // write
-
         ${h.writeMem8('target', 'mAfter')};
-
-        ${h.applyClockCycles(2)};
-
-    // clean
 
         ${h.bcd(false)};
         ${h.zero('mAfter')};
         ${h.half(false)};
         ${h.carry(false)};
+
+        ${h.applyClockCycles(2)};
 
     `,
 
