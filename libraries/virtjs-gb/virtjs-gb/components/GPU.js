@@ -2,15 +2,15 @@ var colors = { 0 : 255, 1 : 192, 2 : 96, 3 : 0 };
 
 export var HBLANK_MODE = 0x00;
 export var VBLANK_MODE = 0x01;
-export var OAM_MODE = 0x02;
-export var VRAM_MODE = 0x03;
+export var OAM_MODE    = 0x02;
+export var VRAM_MODE   = 0x03;
 
-export var CYCLES_PER_HBLANK_LINE = 51;
-export var CYCLES_PER_VBLANK_LINE = 114;
-export var CYCLES_PER_OAM = 20;
-export var CYCLES_PER_VRAM = 43;
+export var CYCLES_PER_HBLANK_LINE =  51 * 4;
+export var CYCLES_PER_VBLANK_LINE = 114 * 4;
+export var CYCLES_PER_OAM         =  20 * 4;
+export var CYCLES_PER_VRAM        =  43 * 4;
 
-export var HBLANK_LINE_COUNT = 144;
+export var HBLANK_LINE_COUNT      = 144;
 export var MAX_VIRTUAL_LINE_COUNT = 154;
 
 export class GPU {
@@ -261,6 +261,26 @@ export class GPU {
 
                 this._environment.gpuClock = CYCLES_PER_HBLANK_LINE;
                 this._setMode( HBLANK_MODE );
+
+                // When we go to the HBLANK_MODE, we have to check if there is an H-Blank DMA going on
+
+                if ( this._environment.cgbUnlocked && this._environment.cgbVramDmaStatus === 0 ) {
+
+                    var source      = 0x0000 + ( this._environment.cgbVramDmaSource      & 0b1111111111110000 );
+                    var destination = 0x8000 + ( this._environment.cgbVramDmaDestination & 0b0001111111110000 );
+
+                    this._environment.cgbVramDmaSource += 0x10;
+                    this._environment.cgbVramDmaDestination += 0x10;
+
+                    this._mmu.triggerVramDmaTransferCycles( source, destination, 0x10 );
+
+                    if ( this._environment.cgbVramDmaLength > 0 ) {
+                        this._environment.cgbVramDmaLength -= 1;
+                    } else {
+                        this._environment.cgbVramDmaStatus = 1;
+                    }
+
+                }
 
             return false ;
 

@@ -9,7 +9,7 @@ export class InterpreterHelpers extends Helpers {
 
     applyClockCycles( countExpression ) { return `{
 
-        interpreter._applyClockCycles(${countExpression});
+        interpreter._applyClockCycles((${countExpression}) * 4);
 
     }`; }
 

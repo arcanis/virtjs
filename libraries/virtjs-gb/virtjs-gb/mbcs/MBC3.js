@@ -13,17 +13,23 @@ export class MBC3 {
 
     }
 
+    link( { } ) {
+
+    }
+
     setup( environment ) {
 
         this._environment = environment;
 
-        this._rtc = environment._mbcRtc;
+        this._rtc = environment.mbcRtc;
 
         for ( var romBank = 0; romBank * 0x4000 < this._environment.romBuffer.byteLength; ++ romBank )
             this._romBanks[ romBank ] = new Uint8Array( this._environment.romBuffer, romBank * 0x4000, 0x4000 );
 
-        for ( var ramBank = 0; ramBank * 0x2000 < this._environment.ramBuffer.byteLength; ++ ramBuffer )
+        for ( var ramBank = 0; ramBank * 0x2000 < this._environment.ramBuffer.byteLength; ++ ramBank )
             this._ramBanks[ ramBank ] = new Uint8Array( this._environment.ramBuffer, ramBank * 0x2000, 0x2000 );
+
+        this._romBank00 = this._romBanks[ 0x00 ];
 
         this._rebank( );
 
@@ -31,11 +37,11 @@ export class MBC3 {
 
     readRomUint8( address ) {
 
-        var bank = address < 0x4000 ?
-            this._romBank00 :
-            this._romBankNN ;
-
-        return bank[ address ] | 0;
+        if ( address < 0x4000 ) {
+            return this._romBank00[ address ] | 0;
+        } else {
+            return this._romBankNN[ address - 0x4000 ] | 0;
+        }
 
     }
 
@@ -44,7 +50,7 @@ export class MBC3 {
         if ( this._environment.mbcRamFeature ) {
             return this._ramBankNN[ address ] | 0;
         } else {
-            return this._rtc[ this._environment.mbcRtcIndex ];
+            return this._rtc[ this._environment.mbcRtcIndex ] | 0;
         }
 
     }
@@ -112,7 +118,7 @@ export class MBC3 {
         var ramBank = this._environment.mbcRamBank;
 
         this._romBankNN = this._romBanks[ romBank ];
-        this._romBankNN = this._ramBanks[ ramBank ];
+        this._ramBankNN = this._ramBanks[ ramBank ];
 
     }
 

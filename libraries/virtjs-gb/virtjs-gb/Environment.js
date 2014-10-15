@@ -9,7 +9,7 @@ export class Environment {
         this.pc = 0x0100;
         this.sp = 0xFFFE;
 
-        this.a = 0x01;
+        this.a = 0x11;
         this.f = 0xB0;
 
         this.b = 0x00;
@@ -28,9 +28,19 @@ export class Environment {
         this.ramBuffer = new ArrayBuffer( 8192 * 16 );
 
         this.hramBuffer = new ArrayBuffer( 127 );
-        this.wramBuffer = new ArrayBuffer( 8192 );
+        this.wramBuffer = new ArrayBuffer( 8192 * 8 );
         this.vramBuffer = new ArrayBuffer( 8192 );
         this.oamBuffer = new ArrayBuffer( 175 );
+
+        this.cgbUnlocked = false;
+        this.cgbCurrentSpeed = 0;
+        this.cgbPrepareSpeedSwitch = 0;
+        this.cgbVramDmaSource = 0x0000;
+        this.cgbVramDmaDestination = 0x0000;
+        this.cgbVramDmaLength = 0;
+        this.cgbVramDmaStatus = 1;
+
+        this.mmuWramBank = 1;
 
         this.mbcMode = 0;
         this.mbcRamFeature = false;

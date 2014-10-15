@@ -325,7 +325,10 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         var environment = this._environment;
 
-        // GPU ; WHY x4 ?
+        if ( environment.cgbUnlocked && environment.cgbCurrentSpeed )
+            count /= 2; // Double-speed mode
+
+        // GPU
 
         if ( environment.gpuLcdFeature ) {
 
@@ -339,11 +342,11 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         }
 
-        // Timer Divider ; WHY x4 ?
+        // Timer Divider
 
         if ( /* the timer divider always run */ true ) {
 
-            environment.timerDividerBuffer += count * 4;
+            environment.timerDividerBuffer += count;
 
             while ( environment.timerDividerBuffer >= 256 ) {
 
@@ -354,11 +357,11 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         }
 
-        // Timer counter ; WHY x4 ?
+        // Timer counter
 
         if ( environment.timerCounterFeature ) {
 
-            environment.timerCounterBuffer += count * 4;
+            environment.timerCounterBuffer += count;
 
             while ( environment.timerCounterBuffer >= environment.timerCounterFrequency ) {
 

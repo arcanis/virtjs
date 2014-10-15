@@ -73,9 +73,12 @@ export class MMU extends mixin( null, EmitterMixin ) {
         this._environment = null;
 
         this._hram = null;
-        this._wram = null;
         this._vram = null;
         this._oam = null;
+
+        this._wramBanks = null;
+        this._wramBank00 = null;
+        this._wramBankNN = null;
 
         this.mbc = null;
 
@@ -93,9 +96,16 @@ export class MMU extends mixin( null, EmitterMixin ) {
         this._environment = environment;
 
         this._hram = new Uint8Array( this._environment.hramBuffer );
-        this._wram = new Uint8Array( this._environment.wramBuffer );
         this._vram = new Uint8Array( this._environment.vramBuffer );
         this._oam = new Uint8Array( this._environment.oamBuffer );
+
+        this._wramBanks = [ ];
+
+        for ( var wramBank = 0; wramBank * 0x2000 < this._environment.wramBuffer.byteLength; ++ wramBank )
+            this._wramBanks[ wramBank ] = new Uint8Array( this._environment.wramBuffer, wramBank * 0x2000, 0x2000 );
+
+        this._wramBank00 = this._wramBanks[ 0x00 ];
+        this._wramBankNN = this._wramBanks[ this._environment.mmuWramBank ];
 
         var type = new Uint8Array( this._environment.romBuffer )[ 0x0147 ];
 
@@ -148,10 +158,10 @@ export class MMU extends mixin( null, EmitterMixin ) {
             return this.mbc.readRamUint8( address - 0xA000 );
 
         else if ( address >= 0xC000 && address < 0xE000 )
-            return this._wram[ address & 0x1FFF ];
+            return this._wramBank00[ address - 0xC000 ];
 
         else if ( address >= 0xE000 && address < 0xFE00 )
-            return this._wram[ address & 0x1FFF ];
+            return this._wramBankNN[ address - 0xE000 ];
 
         else if ( address >= 0xFE00 && address < 0xFEA0 )
             return this._oam[ address - 0xFE00 ];
@@ -223,12 +233,47 @@ export class MMU extends mixin( null, EmitterMixin ) {
             case 0xFF4B:
                 return this._environment.gpuWindowPosition[ 0 ];
 
+            case 0xFF4D: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbCurrentSpeed << 7 | this._environment.cgbPrepareSpeedSwitch;
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF51: if ( this._environment.cgbUnlocked ) {
+                return ( this._environment.cgbVramDmaSource & 0xFF00 ) >>> 8;
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF52: if ( this._environment.cgbUnlocked ) {
+                return ( this._environment.cgbVramDmaSource & 0x00FF ) >>> 0;
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF53: if ( this._environment.cgbUnlocked ) {
+                return ( this._environment.cgbVramDmaDestination & 0xFF00 ) >>> 8;
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF54: if ( this._environment.cgbUnlocked ) {
+                return ( this._environment.cgbVramDmaDestination & 0x00FF ) >>> 0;
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF55: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbVramDmaLength | ( this._environment.cgbVramDmaStatus << 7 );
+            } else {
+                return 0;
+            } break ;
+
             case 0xFFFF:
                 return this._environment.enabledInterrupts;
 
             default:
-                //console.log('invalid read at ' + address);
-            return 0;
+                return 0;
 
         }
 
@@ -236,7 +281,10 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
     _fastWriteUint8( address, value ) {
 
-        if ( address >= 0x0000 && address < 0x8000 )
+        if ( address === 0x0143 && value & 0x80 )
+            this._environment.cgbUnlocked = true;
+
+        else if ( address >= 0x0000 && address < 0x8000 )
             this.mbc.writeRomUint8( address, value );
 
         else if ( address >= 0x8000 && address < 0xA000 ) {
@@ -252,10 +300,10 @@ export class MMU extends mixin( null, EmitterMixin ) {
             this.mbc.writeRamUint8( address - 0xA000, value );
 
         else if ( address >= 0xC000 && address < 0xE000 )
-            this._wram[ address & 0x1FFF ] = value;
+            this._wramBank00[ address - 0xC000 ] = value;
 
         else if ( address >= 0xE000 && address < 0xFE00 )
-            this._wram[ address & 0x1FFF ] = value;
+            this._wramBankNN[ address - 0xE000 ] = value;
 
         else if ( address >= 0xFE00 && address < 0xFEA0 ) {
             if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode <= 0x01 ) {
@@ -350,12 +398,76 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 this._environment.gpuWindowPosition[ 0 ] = value;
             break ;
 
+            case 0xFF4D: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbPrepareSpeedSwitch = value & 0b1;
+
+            } break ;
+
+            case 0xFF51: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbVramDmaSource &= this._environment.cgbVramDmaSource & 0x00FF;
+                this._environment.cgbVramDmaSource |= value << 8;
+
+            } break ;
+
+            case 0xFF52: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbVramDmaSource &= this._environment.cgbVramDmaSource & 0xFF00;
+                this._environment.cgbVramDmaSource |= value << 0;
+
+            } break ;
+
+            case 0xFF53: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbVramDmaDestination &= this._environment.cgbVramDmaDestination & 0x00FF;
+                this._environment.cgbVramDmaDestination |= value << 8;
+
+            } break ;
+
+            case 0xFF54: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbVramDmaDestination &= this._environment.cgbVramDmaDestination & 0xFF00;
+                this._environment.cgbVramDmaDestination |= value << 0;
+
+            } break ;
+
+            case 0xFF55: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbVramDmaLength = value & ~( 1 << 7 );
+
+                if ( ( value >>> 7 ) === 0 ) {
+
+                    if ( this._environment.cgbVramStatus === 1 ) {
+
+                        var source      = 0x0000 + ( this._environment.cgbVramDmaSource      & 0b1111111111110000 );
+                        var destination = 0x8000 + ( this._environment.cgbVramDmaDestination & 0b0001111111110000 );
+
+                        this.triggerVramDmaTransferCycles( source, destination, ( this._environment.cgbVramDmaLength + 1 ) * 0x10 );
+
+                    } else {
+
+                        this._environment.cgbVramDmaStatus = 1;
+
+                    }
+
+                } else {
+
+                    this._environment.cgbVramDmaStatus = 0;
+
+                }
+
+            } break ;
+
+            case 0xFF70: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.mmuWramBank = value & 0b111;
+                this._wramBankNN = this._wramBanks[ Math.max( 1, this._environment.mmuWramBank ) ];
+
+            } break ;
+
             case 0xFFFF:
                 this._environment.enabledInterrupts = value;
-            break ;
-
-            default:
-                //console.log('invalid write at ' + address);
             break ;
 
         }
@@ -377,6 +489,14 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
         unsignedToSignedConverter[ 0 ] = n;
         return unsignedToSignedConverter[ 0 ];
+
+    }
+
+    triggerVramDmaTransferCycles( source, destination, length ) {
+
+        for ( var t = 0; t < length; ++ t ) {
+            this.writeUint8( destination + t, this.readUint8( source + t ) );
+        }
 
     }
 
