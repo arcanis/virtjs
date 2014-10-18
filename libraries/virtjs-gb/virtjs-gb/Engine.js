@@ -15,7 +15,7 @@ import { Environment }                 from 'virtjs-gb/Environment';
 import { Interpreter }                 from 'virtjs-gb/Interpreter';
 import { fixRomSize }                  from 'virtjs-gb/tools';
 
-export class Engine extends mixin( BaseEngine, EmitterMixin ) {
+export class Engine extends mixin( null, EmitterMixin ) {
 
     constructor( { devices = { }, advanced = { }, events = [ ] } = { } ) {
 
