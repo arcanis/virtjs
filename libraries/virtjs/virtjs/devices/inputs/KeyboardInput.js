@@ -18,29 +18,44 @@ var automapData = {
 
 export class KeyboardInput extends mixin( null, EmitterMixin ) {
 
-    constructor( { map, inputs, element = document.body } ) {
+    constructor( { map = null, element = document.body, inputs } = { } ) {
 
         super( );
 
-        this._map = map || inputs && this._createAutomap( inputs );
-        this._element = element;
+        this.element = null;
+        this.map = map;
 
-        this._onKeyDown_ = this._onKeyDown.bind( this );
-        this._onKeyUp_ = this._onKeyUp.bind( this );
+        this._onKeyDown_ = e => { this._onKeyDown( e ); };
+        this._onKeyUp_ = e => { this._onKeyUp( e ); };
 
-        this._attach( );
+        if ( element )
+            this.setElement( element );
+
+        if ( inputs ) {
+            this.setInputs( inputs );
+        }
 
     }
 
-    loadInputs( inputs ) {
+    setElement( element ) {
 
-        this._map = this._createAutomap( inputs );
+        if ( this.element )
+            this._detach( element );
+
+        this.element = element;
+        this._attach( element );
+
+    }
+
+    setInputs( inputs ) {
+
+        this.map = this._createAutomap( inputs );
 
     }
 
     destroy( ) {
 
-        this._detach( );
+        this.setElement( null );
 
     }
 
@@ -63,17 +78,17 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
 
     }
 
-    _attach( ) {
+    _attach( element ) {
 
-        this._element.addEventListener( 'keydown', this._onKeyDown_ );
-        this._element.addEventListener( 'keyup', this._onKeyUp_ );
+        element.addEventListener( 'keydown', this._onKeyDown_ );
+        element.addEventListener( 'keyup', this._onKeyUp_ );
 
     }
 
     _detach( ) {
 
-        this._element.removeEventListener( 'keydown', this._onKeyDown_ );
-        this._element.removeEventListener( 'keyup', this._onKeyUp_ );
+        element.removeEventListener( 'keydown', this._onKeyDown_ );
+        element.removeEventListener( 'keyup', this._onKeyUp_ );
 
     }
 
@@ -85,21 +100,27 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
         if ( e.metaKey || e.ctrlKey || e.shiftKey || e.altKey )
             return ;
 
-        if ( typeof this._map[ e.keyCode ] === 'undefined' )
+        if ( ! this.map )
+            return ;
+
+        if ( typeof this.map[ e.keyCode ] === 'undefined' )
             return ;
 
         e.preventDefault( );
 
-        this.emit( 'keydown', this._map[ e.keyCode ] );
+        this.emit( 'keydown', this.map[ e.keyCode ] );
 
     }
 
     _onKeyUp( e ) {
 
-        if ( typeof this._map[ e.keyCode ] === 'undefined' )
+        if ( ! this.map )
             return ;
 
-        this.emit( 'keyup', this._map[ e.keyCode ] );
+        if ( typeof this.map[ e.keyCode ] === 'undefined' )
+            return ;
+
+        this.emit( 'keyup', this.map[ e.keyCode ] );
 
     }
 

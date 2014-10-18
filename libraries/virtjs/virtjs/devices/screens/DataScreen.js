@@ -2,26 +2,26 @@ export class DataScreen {
 
     constructor( ) {
 
-        this._inputWidth = 0;
-        this._inputHeight = 0;
+        this.data = null;
 
-        this._data = null;
+        this.inputWidth = 0;
+        this.inputHeight = 0;
 
     }
 
     setInputSize( width, height ) {
 
-        this._inputWidth = width;
-        this._inputHeight = height;
+        this.inputWidth = width;
+        this.inputHeight = height;
 
-        this._data = new Uint8Array( this._inputWidth * this._inputHeight * 3 );
+        this.data = new Uint8Array( this.inputWidth * this.inputHeight * 3 );
 
     }
 
     setPixel( x, y, r, g, b ) {
 
-        var target = this._data;
-        var index = ( y * this._inputWidth + x ) * 3;
+        var target = this.data;
+        var index = ( y * this.inputWidth + x ) * 3;
 
         target[ index + 0 ] = r;
         target[ index + 1 ] = g;
