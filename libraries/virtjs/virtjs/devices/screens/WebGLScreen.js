@@ -39,16 +39,19 @@ var gFragmentShaderScript = `
 
 export class WebGLScreen extends DataScreen {
 
-    constructor( options = { } ) {
+    constructor( options ) {
 
         super( options );
 
-        this.canvas = options.canvas || document.createElement( 'canvas' );
+        var { canvas = document.createElement( 'canvas' ), useDebugContext = false } = options;
+
+        this.canvas = canvas;
         this.gl = null;
 
         this.outputWidth = 0;
         this.outputHeight = 0;
 
+        this._useDebugContext = useDebugContext;
         this._shaderProgram = null;
 
         this._uMatrixLocation = null;
@@ -163,7 +166,9 @@ export class WebGLScreen extends DataScreen {
         var options = { };
 
         this.gl = this.canvas.getContext( 'webgl', options ) || this.canvas.getContext( 'experimental-webgl', options );
-        this.gl = WebGLDebugUtils.makeDebugContext( this.gl );
+
+        if ( this._useDebugContext )
+            this.gl = WebGLDebugUtils.makeDebugContext( this.gl );
 
         this.gl.clearColor( 0.0, 0.0, 0.0, 0.0);
         this.gl.blendFunc( this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA );
