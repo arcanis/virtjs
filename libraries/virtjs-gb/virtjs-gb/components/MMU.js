@@ -73,8 +73,10 @@ export class MMU extends mixin( null, EmitterMixin ) {
         this._environment = null;
 
         this._hram = null;
-        this._vram = null;
         this._oam = null;
+
+        this._vramBanks = null;
+        this._vramBankNN = null;
 
         this._wramBanks = null;
         this._wramBank00 = null;
@@ -101,11 +103,18 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
         this._wramBanks = [ ];
 
-        for ( var wramBank = 0; wramBank * 0x2000 < this._environment.wramBuffer.byteLength; ++ wramBank )
-            this._wramBanks[ wramBank ] = new Uint8Array( this._environment.wramBuffer, wramBank * 0x2000, 0x2000 );
+        for ( var wramBank = 0; wramBank * 0x1000 < this._environment.wramBuffer.byteLength; ++ wramBank )
+            this._wramBanks[ wramBank ] = new Uint8Array( this._environment.wramBuffer, wramBank * 0x1000, 0x1000 );
 
         this._wramBank00 = this._wramBanks[ 0x00 ];
         this._wramBankNN = this._wramBanks[ this._environment.mmuWramBank ];
+
+        this._vramBanks = [ ];
+
+        for ( var vramBank = 0; vramBank * 0x2000 < this._environment.vramBuffer.byteLength; ++ vramBank )
+            this._vramBanks[ vramBank ] = new Uint8Array( this._environment.vramBuffer, vramBank * 0x2000, 0x2000 );
+
+        this._vramBankNN = this._vramBanks[ this._environment.cgbVramBank ];
 
         var type = new Uint8Array( this._environment.romBuffer )[ 0x0147 ];
 
@@ -157,11 +166,17 @@ export class MMU extends mixin( null, EmitterMixin ) {
         else if ( address >= 0xA000 && address < 0xC000 )
             return this.mbc.readRamUint8( address - 0xA000 );
 
-        else if ( address >= 0xC000 && address < 0xE000 )
+        else if ( address >= 0xC000 && address < 0xD000 )
             return this._wramBank00[ address - 0xC000 ];
 
-        else if ( address >= 0xE000 && address < 0xFE00 )
-            return this._wramBankNN[ address - 0xE000 ];
+        else if ( address >= 0xD000 && address < 0xE000 )
+            return this._wramBankNN[ address - 0xD000 ];
+
+        else if ( address >= 0xE000 && address < 0xF000 )
+            return this._wramBank00[ address - 0xE000 ];
+
+        else if ( address >= 0xF000 && address < 0xFE00 )
+            return this._wramBankNN[ address - 0xF000 ];
 
         else if ( address >= 0xFE00 && address < 0xFEA0 )
             return this._oam[ address - 0xFE00 ];
@@ -218,14 +233,14 @@ export class MMU extends mixin( null, EmitterMixin ) {
             case 0xFF45:
                 return this._environment.gpuLyc;
 
-            case 0xFF47:
-                return this._gpu.getPalette( 0 );
+            case 0xFF47: // Cf [MMU1]
+                return this._gpu.getDmgPalette( 0 );
 
-            case 0xFF48:
-                return this._gpu.getPalette( 1 );
+            case 0xFF48: // Cf [MMU1]
+                return this._gpu.getDmgPalette( 1 );
 
-            case 0xFF49:
-                return this._gpu.getPalette( 2 );
+            case 0xFF49: // Cf [MMU1]
+                return this._gpu.getDmgPalette( 2 );
 
             case 0xFF4A:
                 return this._environment.gpuWindowPosition[ 1 ];
@@ -235,6 +250,12 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
             case 0xFF4D: if ( this._environment.cgbUnlocked ) {
                 return this._environment.cgbCurrentSpeed << 7 | this._environment.cgbPrepareSpeedSwitch;
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF4F: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbVramBank;
             } else {
                 return 0;
             } break ;
@@ -269,6 +290,30 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 return 0;
             } break ;
 
+            case 0xFF68: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbBackgroundPaletteOffset | ( this._environment.cgbBackgroundPaletteIncrement << 7 );
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF69: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbBackgroundPalettes[ this._environment.cgbBackgroundPaletteOffset >>> 1 ][ 3 + this._environment.cgbBackgroundPaletteOffset & 1 ];
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF6A: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbSpritePaletteOffset | ( this._environment.cgbSpritePaletteIncrement << 7 );
+            } else {
+                return 0;
+            } break ;
+
+            case 0xFF6B: if ( this._environment.cgbUnlocked ) {
+                return this._environment.cgbSpritePalettes[ this._environment.cgbSpritePaletteOffset >>> 1 ][ 3 + this._environment.cgbSpritePaletteOffset & 1 ];
+            } else {
+                return 0;
+            } break ;
+
             case 0xFFFF:
                 return this._environment.enabledInterrupts;
 
@@ -281,17 +326,16 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
     _fastWriteUint8( address, value ) {
 
-        if ( address === 0x0143 && value & 0x80 )
-            this._environment.cgbUnlocked = true;
-
-        else if ( address >= 0x0000 && address < 0x8000 )
+        if ( address >= 0x0000 && address < 0x8000 )
             this.mbc.writeRomUint8( address, value );
 
         else if ( address >= 0x8000 && address < 0xA000 ) {
             if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode !== 0x03 ) {
-                this._vram[ address & 0x1FFF ] = value;
+                this._vramBankNN[ address & 0x1FFF ] = value;
                 if ( address < 0x9800 ) {
-                    this._gpu.updateTile( address & 0x1FFF );
+                    this._gpu.updateTile( this._environment.cgbVramBank, address & 0x1FFF );
+                } else if ( this._environment.cgbVramBank === 0x01 ) {
+                    this._gpu.updateMetadata( address - 0x9800 );
                 }
             }
         }
@@ -299,11 +343,17 @@ export class MMU extends mixin( null, EmitterMixin ) {
         else if ( address >= 0xA000 && address < 0xC000 )
             this.mbc.writeRamUint8( address - 0xA000, value );
 
-        else if ( address >= 0xC000 && address < 0xE000 )
+        else if ( address >= 0xC000 && address < 0xD000 )
             this._wramBank00[ address - 0xC000 ] = value;
 
-        else if ( address >= 0xE000 && address < 0xFE00 )
-            this._wramBankNN[ address - 0xE000 ] = value;
+        else if ( address >= 0xD000 && address < 0xE000 )
+            this._wramBankNN[ address - 0xD000 ] = value;
+
+        else if ( address >= 0xE000 && address < 0xF000 )
+            this._wramBank00[ address - 0xE000 ] = value;
+
+        else if ( address >= 0xF000 && address < 0xFE00 )
+            this._wramBankNN[ address - 0xF000 ] = value;
 
         else if ( address >= 0xFE00 && address < 0xFEA0 ) {
             if ( ! this._environment.gpuLcdFeature || this._environment.gpuMode <= 0x01 ) {
@@ -378,17 +428,14 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 this._gpu.transferDma( value );
             break ;
 
-            case 0xFF47:
-                this._gpu.setPalette( 0, value );
-            break ;
+            case 0xFF47: // Cf [MMU1]
+                this._gpu.setDmgPalette( 0, value );
 
-            case 0xFF48:
-                this._gpu.setPalette( 1, value );
-            break ;
+            case 0xFF48: // Cf [MMU1]
+                this._gpu.setDmgPalette( 1, value );
 
-            case 0xFF49:
-                this._gpu.setPalette( 2, value );
-            break ;
+            case 0xFF49: // Cf [MMU1]
+                this._gpu.setDmgPalette( 2, value );
 
             case 0xFF4A:
                 this._environment.gpuWindowPosition[ 1 ] = value;
@@ -401,6 +448,13 @@ export class MMU extends mixin( null, EmitterMixin ) {
             case 0xFF4D: if ( this._environment.cgbUnlocked ) {
 
                 this._environment.cgbPrepareSpeedSwitch = value & 0b1;
+
+            } break ;
+
+            case 0xFF4F: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbVramBank = value & 0b1;
+                this._rebankVram( );
 
             } break ;
 
@@ -438,7 +492,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
                 if ( ( value >>> 7 ) === 0 ) {
 
-                    if ( this._environment.cgbVramStatus === 1 ) {
+                    if ( this._environment.cgbVramDmaStatus === 1 ) {
 
                         var source      = 0x0000 + ( this._environment.cgbVramDmaSource      & 0b1111111111110000 );
                         var destination = 0x8000 + ( this._environment.cgbVramDmaDestination & 0b0001111111110000 );
@@ -459,7 +513,45 @@ export class MMU extends mixin( null, EmitterMixin ) {
 
             } break ;
 
+            case 0xFF68: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbBackgroundPaletteOffset = value & 0x3F;
+                this._environment.cgbBackgroundPaletteIncrement = value >>> 7;
+
+            } break ;
+
+            case 0xFF69: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbBackgroundCgbPalettes[ this._environment.cgbBackgroundPaletteOffset ] = value;
+                this._gpu.compileCgbPaletteToRgb( this._environment.cgbBackgroundRgbPalettes, this._environment.cgbBackgroundCgbPalettes, this._environment.cgbBackgroundPaletteOffset & ~1 );
+
+                if ( this._environment.cgbBackgroundPaletteIncrement ) {
+                    this._environment.cgbBackgroundPaletteOffset = ( this._environment.cgbBackgroundPaletteOffset + 1 ) & 0x3F;
+                }
+
+            } break ;
+
+            case 0xFF6A: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbSpritePaletteOffset = value & 0x3F;
+                this._environment.cgbSpritePaletteIncrement = value >>> 7;
+
+            } break ;
+
+            case 0xFF6B: if ( this._environment.cgbUnlocked ) {
+
+                this._environment.cgbSpriteCgbPalettes[ this._environment.cgbSpritePaletteOffset ] = value;
+                this._gpu.compileCgbPaletteToRgb( this._environment.cgbSpriteRgbPalettes, this._environment.cgbSpriteCgbPalettes, this._environment.cgbSpritePaletteOffset & ~1 );
+
+                if ( this._environment.cgbSpritePaletteIncrement ) {
+                    this._environment.cgbSpritePaletteOffset = ( this._environment.cgbSpritePaletteOffset + 1 ) & 0x3F;
+                }
+
+            } break ;
+
             case 0xFF70: if ( this._environment.cgbUnlocked ) {
+
+                console.log( '[wram rebank] ' + value );
 
                 this._environment.mmuWramBank = value & 0b111;
                 this._wramBankNN = this._wramBanks[ Math.max( 1, this._environment.mmuWramBank ) ];
@@ -497,6 +589,12 @@ export class MMU extends mixin( null, EmitterMixin ) {
         for ( var t = 0; t < length; ++ t ) {
             this.writeUint8( destination + t, this.readUint8( source + t ) );
         }
+
+    }
+
+    _rebankVram( ) {
+
+        this._vramBankNN = this._vramBanks[ this._environment.cgbVramBank ];
 
     }
 

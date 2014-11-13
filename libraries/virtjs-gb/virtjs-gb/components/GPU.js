@@ -20,7 +20,7 @@ export class GPU {
         this._screen = screen;
         this._screen.setInputSize( 160, 144 );
 
-        this._scanline = new Uint16Array( 160 );
+        this._scanline = new Uint32Array( 160 );
 
         // Initialized at link time
 
@@ -31,12 +31,13 @@ export class GPU {
         this._environment = null;
 
         this._oam = null;
-        this._vram = null;
+
+        this._vramBanks = null;
+        this._vramBank00 = null;
+        this._vramBank01 = null;
 
         this._sprites = null;
         this._tilesets = null;
-
-
 
     }
 
@@ -51,15 +52,23 @@ export class GPU {
         this._environment = environment;
 
         this._oam = new Uint8Array( environment.oamBuffer );
-        this._vram = new Uint8Array( environment.vramBuffer );
+
+        this._vramBanks = [ ];
+
+        for ( var vramBank = 0; vramBank * 0x2000 < this._environment.vramBuffer.byteLength; ++ vramBank )
+            this._vramBanks[ vramBank ] = new Uint8Array( this._environment.vramBuffer, vramBank * 0x2000, 0x2000 );
+
+        this._vramBank00 = this._vramBanks[ 0x00 ];
+        this._vramBank01 = this._vramBanks[ 0x01 ];
 
         // There is 40 GPU sprites
         // We store each of them in an internal array so we don't have to unserialize whenever we need them.
         // That also means that we have to take care of updating these structures when the mapped memory area changes.
 
         this._sprites = [ ];
+
         for ( var t = 0; t < 40; ++ t )
-            this._sprites[ t ] = { x : 0, y : 0, tile : 0, palette : 0, xflip : 0, yflip : 0, priority : 0 };
+            this._sprites[ t ] = { x : 0, y : 0, bank : 0, tile : 0, paletteDmg : 0, paletteCgb : 0, xflip : 0, yflip : 0, priority : 0 };
 
         // Since we may be loading a serialized environment, we have to populate the sprite with the right data extracted from the RAM.
         // So we iterate on each data cell as if it was dirty.
@@ -67,21 +76,46 @@ export class GPU {
         for ( var t = 0; t < 160; ++ t )
             this.updateSprite( t );
 
-        // There is 384 GPU tiles
+        // There is 384*2 GPU tiles (*2 because in CGB mode, there is two VRAM banks)
         // Each tile is encoded on two bytes (those tiles are 8x8 wide, and each pixel takes two bits)
 
-        this._tilesets = [ ];
+        this._tilesets = [ [ ], [ ] ];
+
         for ( var t = 0; t < 384; ++ t ) {
-            this._tilesets[ t ] = [ ];
+
+            this._tilesets[ 0 ][ t ] = [ ];
+            this._tilesets[ 1 ][ t ] = [ ];
+
             for ( var y = 0; y < 8; ++ y ) {
-                this._tilesets[ t ][ y ] = new Uint8Array( 8 );
+
+                this._tilesets[ 0 ][ t ][ y ] = new Uint8Array( 8 );
+                this._tilesets[ 1 ][ t ][ y ] = new Uint8Array( 8 );
+
             }
+
         }
 
-        // Same as for the sprites, we may be in an unserialized environment. So let's populate it !
+        // Same as for the sprites, we may be in an unserialized environment. So let's populate it!
+        // Don't forget that in CGB mode, there is two vram banks (and since we are lazy, we initialize them both even with DMG).
 
         for ( var t = 0; t < 384 * 16; ++ t ) {
-            this.updateTile( t );
+
+            this.updateTile( 0, t );
+            this.updateTile( 1, t );
+
+        }
+
+        // In CGB mode, the background maps also have metadata associated to them.
+
+        this._metadata = [ ];
+
+        for ( var t = 0; t < 32 * 32 * 2; ++ t )
+            this._metadata[ t ] = { bank : 0, paletteCgb : 0, xflip : 0, yflip : 0, priority : 0 };
+
+        // Same as for sprites and tiles
+
+        for ( var t = 0; t < 32 * 32 * 2; ++ t ) {
+            this.updateMetadata( t );
         }
 
     }
@@ -97,9 +131,9 @@ export class GPU {
 
     }
 
-    setPalette( index, value ) {
+    setDmgPalette( index, value ) {
 
-        var palette = this._environment.gpuPalettes[ index ];
+        var palette = this._environment.gpuDmgPalettes[ index ];
 
         palette[ 0 ] = ( value >> 0 ) & 0x3;
         palette[ 1 ] = ( value >> 2 ) & 0x3;
@@ -108,9 +142,9 @@ export class GPU {
 
     }
 
-    getPalette( index ) {
+    getDmgPalette( index ) {
 
-        var palette = this._environment.gpuPalettes[ index ];
+        var palette = this._environment.gpuDmgPalettes[ index ];
 
         return (
             ( palette[ 0 ] << 0 ) |
@@ -132,18 +166,34 @@ export class GPU {
             case 1: sprite.x = value -  8; break ;
             case 2: sprite.tile = value;   break ;
 
-            case 3: sprite.palette = value & 0x10 ? 1 : 0;
-            /*and*/ sprite.xflip = value & 0x20 ? 1 : 0;
-            /*and*/ sprite.yflip = value & 0x40 ? 1 : 0;
-            /*and*/ sprite.priority = value & 0x80 ? 1 : 0;
+            case 3: sprite.paletteCgb = ( value & 0b00000111 ) >>> 0;
+            /*and*/ sprite.bank       = ( value & 0b00001000 ) >>> 3;
+            /*and*/ sprite.paletteDmg = ( value & 0b00010000 ) >>> 4;
+            /*and*/ sprite.xflip      = ( value & 0b00100000 ) >>> 5;
+            /*and*/ sprite.yflip      = ( value & 0b01000000 ) >>> 6;
+            /*and*/ sprite.priority   = ( value & 0b10000000 ) >>> 7;
 
         }
 
     }
 
-    updateTile( address ) {
+    updateMetadata( index ) {
+
+        var metadata = this._metadata[ index ];
+        var value = this._vramBank01[ 0x1800 + index ];
+
+        metadata.paletteCgb = ( value & 0b00000111 ) >>> 0;
+        metadata.bank       = ( value & 0b00001000 ) >>> 3;
+        metadata.xflip      = ( value & 0b00100000 ) >>> 5;
+        metadata.yflip      = ( value & 0b01000000 ) >>> 6;
+        metadata.priority   = ( value & 0b10000000 ) >>> 7;
+
+    }
+
+    updateTile( vramBank, address ) {
 
         var rowAddress = address & 0xFFFE;
+        var vramBankNN = this._vramBanks[ vramBank ];
 
         var tileIndex = rowAddress >>> 4;
 
@@ -153,12 +203,29 @@ export class GPU {
 
             var mask = 1 << ( 7 - x );
 
-            this._tilesets[ tileIndex ][ y ][ x ] =
-                ( this._vram[ rowAddress + 0 ] & mask ? 0x1 : 0x0 ) |
-                ( this._vram[ rowAddress + 1 ] & mask ? 0x2 : 0x0 )
+            this._tilesets[ vramBank ][ tileIndex ][ y ][ x ] =
+                ( vramBankNN[ rowAddress + 0 ] & mask ? 0x1 : 0x0 ) |
+                ( vramBankNN[ rowAddress + 1 ] & mask ? 0x2 : 0x0 )
             ;
 
         }
+
+    }
+
+    compileCgbPaletteToRgb( destination, source, colorOffset ) {
+
+        var cgb15 = ( source[ colorOffset + 1 ] << 8 ) | ( source[ colorOffset ] );
+
+        var tr = ( ( cgb15 >>>  0 ) & 0x1F ) * 0xFF / 0x1F;
+        var tg = ( ( cgb15 >>>  5 ) & 0x1F ) * 0xFF / 0x1F;
+        var tb = ( ( cgb15 >>> 10 ) & 0x1F ) * 0xFF / 0x1F;
+
+        var rgb32 = ( tr << 16 ) | ( tg << 8 ) | ( tb << 0 );
+
+        var paletteIndex = ( colorOffset >>> ( 2 + 1 ) );
+        var colorIndex = ( colorOffset >>> 1 ) & 0b11;
+
+        destination[ paletteIndex ][ colorIndex ] = rgb32;
 
     }
 
@@ -169,7 +236,7 @@ export class GPU {
             // HBlank
             case HBLANK_MODE :
 
-                // End of line reached, step to the next one
+            // End of line reached, step to the next one
 
                 this._environment.gpuLy += 1;
 
@@ -321,7 +388,7 @@ export class GPU {
 
         if ( ! this._environment.gpuLcdFeature || ! this._environment.gpuBackgroundFeature )
             for ( var x = 0, X = this._scanline.length; x < X; ++ x )
-                this._scanline[ x ] = 0x00FF;
+                this._scanline[ x ] = 0x00FFFFFF;
 
         // Then if there is no LCD display, we quit instantly
 
@@ -330,10 +397,15 @@ export class GPU {
 
         // We can now display the various features if they are enabled
 
-        if ( this._environment.gpuBackgroundFeature )
+        // In Non-CGB mode, both background and window are controlled by the 0-bit of the LCDC register. Note that it is different from SGB, where only the background is affected by this flag (so there's a compatibility issue).
+        // In CGB mode,
+
+        var showBgWin = this._environment.gpuBackgroundFeature || this._environment.cgbUnlocked;
+
+        if ( showBgWin )
             this._drawBackgroundScanline( line );
 
-        if ( this._environment.gpuWindowFeature )
+        if ( showBgWin && this._environment.gpuWindowFeature )
             this._drawWindowScanline( line );
 
         if ( this._environment.gpuSpriteFeature )
@@ -344,9 +416,9 @@ export class GPU {
         for ( var x = 0, X = this._scanline.length; x < X; ++ x ) {
 
             // Remove the internal transparency byte from the color
-            var color = this._scanline[ x ] & 0xFF;
+            var color = this._scanline[ x ] & 0x00FFFFFF;
 
-            this._screen.setPixel( x, line, color, color, color );
+            this._screen.setPixel( x, line, color );
 
         }
 
@@ -414,11 +486,16 @@ export class GPU {
         var tileY = actualY & 0x7;
 
         // The background palette is the first palette
-        var palette = this._environment.gpuPalettes[ 0 ];
+        var palette = this._environment.gpuDmgPalettes[ 0 ];
+
+        // In DMG, we always take the vram palette from the 0x00 bank (since there's only one bank)
+        // Check below to see how this variable gets rewrote if we're in CGB mode
+        var vramBank = 0x00;
 
         for ( var x = 0; x < 160; ++ x ) {
 
             // Same computations than before, but for X coordinates
+
             var actualX = ( scrollX + offsetX + x ) & 0xFF;
             var mapOffsetX = ( actualX >>> 3 ) & 31;
             var tileX = actualX & 0x7;
@@ -426,7 +503,7 @@ export class GPU {
             // Knowing the X and Y map offset, we can now fetch the tile index from the VRAM
 
             var mapOffset = baseAddress + mapOffsetY + mapOffsetX;
-            var tileIndex = this._vram[ mapOffset ];
+            var tileIndex = this._vramBank00[ mapOffset ];
 
             // When using the second tileset, the index is actually a signed number so that whatever the tileset, the same index greater than 0x7F (such as 0xFF) will always point toward the same tile (that's actually pretty clever!)
 
@@ -434,14 +511,31 @@ export class GPU {
                 if ( tileIndex > 0x7f )
                     tileIndex -= 0x100;
 
+            // In CGB, each mixed tile has also metadata associed
+
+            if ( this._environment.cgbUnlocked ) {
+
+                var metadata = this._metadata[ mapOffset - 0x1800 ];
+
+                if ( metadata.xflip )
+                    tileX = 8 - ( tileX + 1 );
+
+                if ( metadata.yflip )
+                    tileY = 8 - ( tileY + 1 );
+
+                vramBank = metadata.bank;
+                palette = this._environment.cgbBackgroundRgbPalettes[ metadata.paletteCgb ];
+
+            }
+
             // We just have to get the palette index color stored in the tileset cell, then the color from the palette
 
-            var paletteIndex = this._tilesets[ tilesOffset + tileIndex ][ tileY ][ tileX ];
-            var trueColor = colors[ palette[ paletteIndex ] ];
+            var paletteIndex = this._tilesets[ vramBank ][ tilesOffset + tileIndex ][ tileY ][ tileX ];
+            var trueColor = palette[ paletteIndex ];
 
             // We store the palette index inside the 'color' (internally only, it will disappear when sent to the screen device), because the sprite may be behind the background. In such case, we have to know if they are behind a transparent pixel or not.
 
-            this._scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
+            this._scanline[ x ] = ( paletteIndex << 24 ) | trueColor;
 
         }
 
@@ -451,6 +545,10 @@ export class GPU {
 
         // Did you know that the Gameboy can have 16-lines-tall sprites ? Well, now you know. It is used in Zelda, so if you have an half Link, you know what to look for.
         var size = this._environment.gpuSpriteSize ? 16 : 8;
+
+        // In DMG, we always take the vram palette from the 0x00 bank (since there's only one bank)
+        // Check below to see how this variable gets rewrote if we're in CGB mode
+        var vramBank = 0x00;
 
         // We have to iterate on each sprite to know if they are on the currently rendered line
 
@@ -485,8 +583,21 @@ export class GPU {
 
             }
 
-            // Gets the sprite palette, based in the inner structure data
-            var palette = this._environment.gpuPalettes[ 1 + sprite.palette ];
+            // In CGB, sprite tiles and palette are a bit different
+
+            if ( this._environment.cgbUnlocked ) {
+
+                vramBank = sprite.bank;
+
+                // Gets the sprite palette specified in the inner structure data
+                var palette = this._environment.cgbSpriteRgbPalettes[ sprite.paletteCgb ];
+
+            } else {
+
+                // Gets the sprite palette specified in the inner structure data
+                var palette = this._environment.gpuDmgPalettes[ 1 + sprite.paletteDmg ];
+
+            }
 
             // That's a modulo 8 - we get the tile Y coordinate based on the current rendered line and the sprite Y position
             var tileY = ( line - sprite.y ) & 0x07;
@@ -498,7 +609,11 @@ export class GPU {
 
             // Good, fetch the tile pixel row
 
-            var tileRow = this._tilesets[ tileIndex ][ tileY ];
+            var tileRow = this._tilesets[ vramBank ][ tileIndex ][ tileY ];
+
+            // If the gameboy is in CGB mode, then the 0 bit of the LCDC register means "Background and windows are behind sprites"
+
+            var ignoreBgPriority = ! this._environment.cgbUnlocked && this._environment.gpuBackgroundFeature;
 
             // Now we can iterate on this row and set every pixels which are in the rendered part of the screen
 
@@ -526,14 +641,14 @@ export class GPU {
 
                 // Check if the sprite is behind a non-transparent part of the background - if so, next
 
-                if ( sprite.priority && this._scanline[ x ] & 0xFF00 )
+                if ( ! ignoreBgPriority && sprite.priority && this._scanline[ x ] & 0xFF000000 )
                     continue ;
 
                 // Apply the color on the scanline
 
-                var trueColor = colors[ palette[ paletteIndex ] ];
+                var trueColor = palette[ paletteIndex ];
 
-                this._scanline[ x ] = ( paletteIndex << 8 ) | trueColor;
+                this._scanline[ x ] = ( paletteIndex << 24 ) | trueColor;
 
             }
 

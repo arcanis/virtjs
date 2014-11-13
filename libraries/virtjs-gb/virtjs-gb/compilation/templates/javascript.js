@@ -1166,11 +1166,11 @@ export var templates = {
 
     'RR_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var rightMostBit = rBefore & 0x01;
 
         var rAfter = (rBefore >>> 1) | (${h.carry()} << 7);
-        ${h.writeR8(parameters[1], 'rAfter')}
+        ${h.writeR8(parameters[0], 'rAfter')}
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1188,7 +1188,7 @@ export var templates = {
 
     'RR_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1216,11 +1216,11 @@ export var templates = {
 
     'RRC_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var rightMostBit = rBefore & 0x01;
         var rAfter = (rBefore >>> 1) | (rightMostBit << 7);
 
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1238,7 +1238,7 @@ export var templates = {
 
     'RRC_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1310,11 +1310,11 @@ export var templates = {
 
     'RL_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var leftMostBit = rBefore >>> 7;
         var rAfter = ((rBefore << 1) | ${h.carry()}) & 0xFF;
 
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1332,7 +1332,7 @@ export var templates = {
 
     'RL_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1360,11 +1360,11 @@ export var templates = {
 
     'RLC_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var leftMostBit = rBefore >>> 7;
         var rAfter = ((rBefore << 1) | leftMostBit) & 0xFF;
 
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1382,7 +1382,7 @@ export var templates = {
 
     'RLC_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1454,11 +1454,11 @@ export var templates = {
 
     'SLA_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var leftMostBit = rBefore >>> 7;
         var rAfter = (rBefore << 1) & 0xFF;
 
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1476,7 +1476,7 @@ export var templates = {
 
     'SLA_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1504,12 +1504,12 @@ export var templates = {
 
     'SRA_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var leftMostBit = rBefore >>> 7;
         var rightMostBit = rBefore & 0x01;
         var rAfter = (rBefore >>> 1) | (leftMostBit << 7);
 
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1527,7 +1527,7 @@ export var templates = {
 
     'SRA_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1556,11 +1556,11 @@ export var templates = {
 
     'SRL_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
         var rightMostBit = rBefore & 0x01;
         var rAfter = rBefore >>> 1;
 
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1578,7 +1578,7 @@ export var templates = {
 
     'SRL_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 
@@ -1606,7 +1606,7 @@ export var templates = {
 
     'BIT_u8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var bit = ${h.readR8(parameters[2])} & (1 << ${parameters[1]});
+        var bit = ${h.readR8(parameters[1])} & (1 << ${parameters[0]});
 
         ${h.bcd(false)};
         ${h.zero('bit')};
@@ -1620,7 +1620,7 @@ export var templates = {
 
         ${h.applyClockCycles(1)};
 
-        var bit = ${h.readMem8(h.readR16(parameters[2]))} & (1 << ${parameters[1]});
+        var bit = ${h.readMem8(h.readR16(parameters[1]))} & (1 << ${parameters[0]});
 
         ${h.bcd(false)};
         ${h.zero('bit')};
@@ -1632,8 +1632,8 @@ export var templates = {
 
     'RES_u8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rAfter = ${h.readR8(parameters[2])} & ~(1 << ${parameters[1]});
-        ${h.writeR8(parameters[2], 'rAfter')};
+        var rAfter = ${h.readR8(parameters[1])} & ~(1 << ${parameters[0]});
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.applyClockCycles(2)};
 
@@ -1641,11 +1641,11 @@ export var templates = {
 
     'RES_u8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[2])};
+        var target = ${h.readR16(parameters[1])};
 
         ${h.applyClockCycles(1)};
 
-        var rAfter = ${h.readMem8('target')} & ~(1 << ${parameters[1]});
+        var rAfter = ${h.readMem8('target')} & ~(1 << ${parameters[0]});
 
         ${h.applyClockCycles(1)};
 
@@ -1657,8 +1657,8 @@ export var templates = {
 
     'SET_u8_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rAfter = ${h.readR8(parameters[2])} | (1 << ${parameters[1]});
-        ${h.writeR8(parameters[2], 'rAfter')};
+        var rAfter = ${h.readR8(parameters[1])} | (1 << ${parameters[0]});
+        ${h.writeR8(parameters[1], 'rAfter')};
 
         ${h.applyClockCycles(2)};
 
@@ -1666,11 +1666,11 @@ export var templates = {
 
     'SET_u8_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[2])};
+        var target = ${h.readR16(parameters[1])};
 
         ${h.applyClockCycles(1)};
 
-        var rAfter = ${h.readMem8('target')} | (1 << ${parameters[1]});
+        var rAfter = ${h.readMem8('target')} | (1 << ${parameters[0]});
 
         ${h.applyClockCycles(1)};
 
@@ -1682,10 +1682,10 @@ export var templates = {
 
     'SWAP_r8' : ( address, nextAddress, parameters, h ) => `
 
-        var rBefore = ${h.readR8(parameters[1])};
+        var rBefore = ${h.readR8(parameters[0])};
 
         var rAfter = ((rBefore << 4) | (rBefore >>> 4)) & 0xFF;
-        ${h.writeR8(parameters[1], 'rAfter')};
+        ${h.writeR8(parameters[0], 'rAfter')};
 
         ${h.bcd(false)};
         ${h.zero('rAfter')};
@@ -1698,7 +1698,7 @@ export var templates = {
 
     'SWAP_(r16)' : ( address, nextAddress, parameters, h ) => `
 
-        var target = ${h.readR16(parameters[1])};
+        var target = ${h.readR16(parameters[0])};
 
         ${h.applyClockCycles(1)};
 

@@ -2,6 +2,15 @@ import { TestEnvironment as TestEnvironmentBase } from 'virtjs/core/tests/TestEn
 
 import { CYCLES_PER_OAM }                         from 'virtjs-gb/components/GPU';
 
+function memset( destination, byte, size ) {
+
+    for ( var t = 0; t < size; ++ t )
+        destination[ t ] = byte;
+
+    return destination;
+
+}
+
 export class Environment {
 
     constructor( { romBuffer, initialState } = { } ) {
@@ -28,17 +37,26 @@ export class Environment {
         this.ramBuffer = new ArrayBuffer( 8192 * 16 );
 
         this.hramBuffer = new ArrayBuffer( 127 );
-        this.wramBuffer = new ArrayBuffer( 8192 * 8 );
-        this.vramBuffer = new ArrayBuffer( 8192 );
+        this.wramBuffer = memset( new ArrayBuffer( 4096 * 8 ), 0xFF, 4096 * 8 );
+        this.vramBuffer = new ArrayBuffer( 8192 * 2 );
         this.oamBuffer = new ArrayBuffer( 175 );
 
-        this.cgbUnlocked = false;
+        this.cgbUnlocked = new Uint8Array( this.romBuffer )[ 0x0143 ] & 0x80;
         this.cgbCurrentSpeed = 0;
         this.cgbPrepareSpeedSwitch = 0;
+        this.cgbVramBank = 0;
         this.cgbVramDmaSource = 0x0000;
         this.cgbVramDmaDestination = 0x0000;
         this.cgbVramDmaLength = 0;
         this.cgbVramDmaStatus = 1;
+        this.cgbBackgroundCgbPalettes = new Uint8Array( 8 * 4 * 2 );
+        this.cgbBackgroundRgbPalettes = [ [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ] ];
+        this.cgbBackgroundPaletteOffset = 0;
+        this.cgbBackgroundPaletteIncrement = false;
+        this.cgbSpriteCgbPalettes = new Uint8Array( 8 * 4 * 2 );
+        this.cgbSpriteRgbPalettes = [ [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ], [ 0x000000, 0x000000, 0x000000, 0x000000 ] ];
+        this.cgbSpritePaletteOffset = 0;
+        this.cgbSpritePaletteIncrement = false;
 
         this.mmuWramBank = 1;
 
@@ -71,7 +89,7 @@ export class Environment {
         this.gpuBgScroll = [ 0, 0 ];
         this.gpuWindowPosition = [ 0, 0 ];
         this.gpuCoincidence = false;
-        this.gpuPalettes = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ];
+        this.gpuDmgPalettes = [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ];
 
         this.timerDivider = 0;
         this.timerDividerBuffer = 0;

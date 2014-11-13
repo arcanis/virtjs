@@ -6,7 +6,7 @@ import { templates as assemblyTemplates }   from './compilation/templates/assemb
 import { templates as javascriptTemplates } from './compilation/templates/javascript';
 import { InterpreterHelpers }               from './compilation/InterpreterHelpers';
 import { instructions, cbInstructions }     from './compilation/instructions';
-import { i8_t, u8_t, u16_t }                from './compilation/instructions';
+import { x8_t, i8_t, u8_t, u16_t }          from './compilation/instructions';
 
 var interruptLocations = new Uint16Array( 256 );
 
@@ -18,6 +18,7 @@ interruptLocations[ 1 << 3 ] = 0x0060;
 function getInstructionSize( parameters ) {
 
     return parameters.reduce( ( sum, parameter ) => { switch ( parameter ) {
+        case x8_t  : return sum + 1;
         case i8_t  : return sum + 1;
         case u8_t  : return sum + 1;
         case u16_t : return sum + 2;
@@ -37,11 +38,12 @@ function getInstructionStaticArguments( parameters, address, mmu ) {
     };
 
     return parameters.map( parameter => { switch ( parameter ) {
+        case x8_t  : return null;
         case i8_t  : return mmu.readInt8( address + getParameterOffset( 1 ) );
         case u8_t  : return mmu.readUint8( address + getParameterOffset( 1 ) );
         case u16_t : return mmu.readUint16( address + getParameterOffset( 2 ) );
         default    : return parameter;
-    } } );
+    } } ).filter( value => value !== null );
 
 }
 
@@ -218,6 +220,7 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
         };
 
         var size = parameters.reduce( ( sum, parameter ) => { switch ( parameter ) {
+            case x8_t  : return sum + 1;
             case i8_t  : return sum + 1;
             case u8_t  : return sum + 1;
             case u16_t : return sum + 2;
@@ -225,11 +228,12 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
         } }, 1 );
 
         var args = parameters.map( parameter => { switch ( parameter ) {
+            case x8_t  : return null;
             case i8_t  : return `interpreter._mmu.readInt8(address + ${offset(1)})`;
             case u8_t  : return `interpreter._mmu.readUint8(address + ${offset(1)})`;
             case u16_t : return `interpreter._mmu.readUint16(address + ${offset(2)})`;
             default    : return  parameter;
-        } } );
+        } } ).filter( value => value !== null );
 
         var address = 'address';
         var nextAddress = this._helpers.add16( 'address', size );

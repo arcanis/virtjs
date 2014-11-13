@@ -18,14 +18,14 @@ export class DataScreen {
 
     }
 
-    setPixel( x, y, r, g, b ) {
+    setPixel( x, y, color ) {
 
         var target = this.data;
         var index = ( y * this.inputWidth + x ) * 3;
 
-        target[ index + 0 ] = r;
-        target[ index + 1 ] = g;
-        target[ index + 2 ] = b;
+        target[ index + 0 ] = ( color & 0xFF0000 ) >>> 16;
+        target[ index + 1 ] = ( color & 0x00FF00 ) >>>  8;
+        target[ index + 2 ] = ( color & 0x0000FF ) >>>  0;
 
     }
 
