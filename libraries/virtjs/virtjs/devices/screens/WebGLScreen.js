@@ -84,10 +84,8 @@ export class WebGLScreen extends DataScreen {
 
     setOutputSize( width, height ) {
 
-        this.outputWidth = this.canvas.width = width;
-        this.outputHeight = this.canvas.height = height;
-
-        this.gl.viewport( 0, 0, this.canvas.width, this.canvas.height );
+        this.outputWidth = width;
+        this.outputHeight = height;
 
         this._updateViewport( );
         this._draw( );
@@ -237,6 +235,17 @@ export class WebGLScreen extends DataScreen {
         var outputWidth = this.outputWidth;
         var outputHeight = this.outputHeight;
 
+        var isUndefined = value => value == null || value === '';
+
+        if ( isUndefined( outputWidth ) && isUndefined( outputHeight ) )
+            outputWidth = inputWidth, outputHeight = inputHeight;
+
+        if ( isUndefined( outputWidth ) )
+            outputWidth = inputWidth * ( outputHeight / inputHeight );
+
+        if ( isUndefined( outputHeight ) )
+            outputHeight = inputHeight * ( outputWidth / inputWidth );
+
         var widthRatio = outputWidth / inputWidth;
         var heightRatio = outputHeight / inputHeight;
 
@@ -245,12 +254,17 @@ export class WebGLScreen extends DataScreen {
         var viewportWidth = widthRatio / ratio;
         var viewportHeight = heightRatio / ratio;
 
+        this.canvas.width = outputWidth;
+        this.canvas.height = outputHeight;
+
         var matrix = this._createOrthoMatrix( - viewportWidth, viewportWidth, - viewportHeight, viewportHeight, - 100, 100 );
         this.gl.uniformMatrix4fv( this._uMatrixLocation, false, matrix );
 
         this.gl.uniform2f( this._uInputResolutionLocation, inputWidth, inputHeight );
         this.gl.uniform2f( this._uOutputResolutionLocation, outputWidth, outputHeight );
         this.gl.uniform2f( this._uViewportResolutionLocation, viewportWidth * inputWidth, viewportHeight * inputHeight );
+
+        this.gl.viewport( 0, 0, outputWidth, outputHeight );
 
     }
 
