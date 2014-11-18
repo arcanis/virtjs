@@ -234,13 +234,13 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 return this._environment.gpuLyc;
 
             case 0xFF47: // Cf [MMU1]
-                return this._gpu.getDmgPalette( 0 );
+                return this._environment.gpuPalettes[ 0 ];
 
             case 0xFF48: // Cf [MMU1]
-                return this._gpu.getDmgPalette( 1 );
+                return this._environment.gpuPalettes[ 1 ];
 
             case 0xFF49: // Cf [MMU1]
-                return this._gpu.getDmgPalette( 2 );
+                return this._environment.gpuPalettes[ 2 ];
 
             case 0xFF4A:
                 return this._environment.gpuWindowPosition[ 1 ];
@@ -429,13 +429,16 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF47: // Cf [MMU1]
-                this._gpu.setDmgPalette( 0, value );
+                this._environment.gpuPalettes[ 0 ] = value;
+                this._gpu.updateDmgPalette( 0 );
 
             case 0xFF48: // Cf [MMU1]
-                this._gpu.setDmgPalette( 1, value );
+                this._environment.gpuPalettes[ 1 ] = value;
+                this._gpu.updateDmgPalette( 1 );
 
             case 0xFF49: // Cf [MMU1]
-                this._gpu.setDmgPalette( 2, value );
+                this._environment.gpuPalettes[ 2 ] = value;
+                this._gpu.updateDmgPalette( 2 );
 
             case 0xFF4A:
                 this._environment.gpuWindowPosition[ 1 ] = value;

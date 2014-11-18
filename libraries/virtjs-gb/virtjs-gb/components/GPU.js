@@ -1,5 +1,161 @@
-var dmgTrueColors = { 0b00 : 0xE3E6C9, 0b01 : 0xC3C4A5, 0b10 : 0x8E8B61, 0b11 : 0x6C6C4E };
-var dmgColors     = { 0xE3E6C9 : 0b00, 0xC3C4A5 : 0b01, 0x8E8B61 : 0b10, 0x6C6C4E : 0b11 };
+var defaultColorsets = [ [ 0xE3E6C9, 0xC3C4A5, 0x8E8B61, 0x6C6C4E ], [ 0xE3E6C9, 0xC3C4A5, 0x8E8B61, 0x6C6C4E ], [ 0xE3E6C9, 0xC3C4A5, 0x8E8B61, 0x6C6C4E ] ];
+
+var p005 = [ [ 0xffffff, 0x52ff00, 0xff4200, 0x000000 ], [ 0xffffff, 0x52ff00, 0xff4200, 0x000000 ], [ 0xffffff, 0x52ff00, 0xff4200, 0x000000 ] ];
+var p006 = [ [ 0xffffff, 0xff9c00, 0xff0000, 0x000000 ], [ 0xffffff, 0xff9c00, 0xff0000, 0x000000 ], [ 0xffffff, 0xff9c00, 0xff0000, 0x000000 ] ];
+var p007 = [ [ 0xffffff, 0xffff00, 0xff0000, 0x000000 ], [ 0xffffff, 0xffff00, 0xff0000, 0x000000 ], [ 0xffffff, 0xffff00, 0xff0000, 0x000000 ] ];
+var p008 = [ [ 0xa59cff, 0xffff00, 0x006300, 0x000000 ], [ 0xa59cff, 0xffff00, 0x006300, 0x000000 ], [ 0xa59cff, 0xffff00, 0x006300, 0x000000 ] ];
+var p012 = [ [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ] ];
+var p013 = [ [ 0x000000, 0x008484, 0xffde00, 0xffffff ], [ 0x000000, 0x008484, 0xffde00, 0xffffff ], [ 0x000000, 0x008484, 0xffde00, 0xffffff ] ];
+var p016 = [ [ 0xffffff, 0xa5a5a5, 0x525252, 0x000000 ], [ 0xffffff, 0xa5a5a5, 0x525252, 0x000000 ], [ 0xffffff, 0xa5a5a5, 0x525252, 0x000000 ] ];
+var p017 = [ [ 0xffffa5, 0xff9494, 0x9494ff, 0x000000 ], [ 0xffffa5, 0xff9494, 0x9494ff, 0x000000 ], [ 0xffffa5, 0xff9494, 0x9494ff, 0x000000 ] ];
+var p100 = [ [ 0xffffff, 0xadad84, 0x42737b, 0x000000 ], [ 0xffffff, 0xff7300, 0x944200, 0x000000 ], [ 0xffffff, 0xadad84, 0x42737b, 0x000000 ] ];
+var p10B = [ [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p10D = [ [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ] ];
+var p110 = [ [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p11C = [ [ 0xffffff, 0x7bff31, 0x0063c5, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x7bff31, 0x0063c5, 0x000000 ] ];
+var p20B = [ [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p20C = [ [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffc542, 0xffd600, 0x943a00, 0x4a0000 ] ];
+var p300 = [ [ 0xffffff, 0xadad84, 0x42737b, 0x000000 ], [ 0xffffff, 0xff7300, 0x944200, 0x000000 ], [ 0xffffff, 0xff7300, 0x944200, 0x000000 ] ];
+var p304 = [ [ 0xffffff, 0x7bff00, 0xb57300, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p305 = [ [ 0xffffff, 0x52ff00, 0xff4200, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p306 = [ [ 0xffffff, 0xff9c00, 0xff0000, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p308 = [ [ 0xa59cff, 0xffff00, 0x006300, 0x000000 ], [ 0xff6352, 0xd60000, 0x630000, 0x000000 ], [ 0xff6352, 0xd60000, 0x630000, 0x000000 ] ];
+var p30A = [ [ 0xb5b5ff, 0xffff94, 0xad5a42, 0x000000 ], [ 0x000000, 0xffffff, 0xff8484, 0x943a3a ], [ 0x000000, 0xffffff, 0xff8484, 0x943a3a ] ];
+var p30C = [ [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffc542, 0xffd600, 0x943a00, 0x4a0000 ], [ 0xffc542, 0xffd600, 0x943a00, 0x4a0000 ] ];
+var p30D = [ [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p30E = [ [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p30F = [ [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p312 = [ [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ] ];
+var p319 = [ [ 0xffe6c5, 0xce9c84, 0x846b29, 0x5a3108 ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ] ];
+var p31C = [ [ 0xffffff, 0x7bff31, 0x0063c5, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p405 = [ [ 0xffffff, 0x52ff00, 0xff4200, 0x000000 ], [ 0xffffff, 0x52ff00, 0xff4200, 0x000000 ], [ 0xffffff, 0x5abdff, 0xff0000, 0x0000ff ] ];
+var p406 = [ [ 0xffffff, 0xff9c00, 0xff0000, 0x000000 ], [ 0xffffff, 0xff9c00, 0xff0000, 0x000000 ], [ 0xffffff, 0x5abdff, 0xff0000, 0x0000ff ] ];
+var p407 = [ [ 0xffffff, 0xffff00, 0xff0000, 0x000000 ], [ 0xffffff, 0xffff00, 0xff0000, 0x000000 ], [ 0xffffff, 0x5abdff, 0xff0000, 0x0000ff ] ];
+var p500 = [ [ 0xffffff, 0xadad84, 0x42737b, 0x000000 ], [ 0xffffff, 0xff7300, 0x944200, 0x000000 ], [ 0xffffff, 0x5abdff, 0xff0000, 0x0000ff ] ];
+var p501 = [ [ 0xffff9c, 0x94b5ff, 0x639473, 0x003a3a ], [ 0xffc542, 0xffd600, 0x943a00, 0x4a0000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p502 = [ [ 0x6bff00, 0xffffff, 0xff524a, 0x000000 ], [ 0xffffff, 0xffffff, 0x63a5ff, 0x0000ff ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ] ];
+var p503 = [ [ 0x52de00, 0xff8400, 0xffff00, 0xffffff ], [ 0xffffff, 0xffffff, 0x63a5ff, 0x0000ff ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ] ];
+var p508 = [ [ 0xa59cff, 0xffff00, 0x006300, 0x000000 ], [ 0xff6352, 0xd60000, 0x630000, 0x000000 ], [ 0x0000ff, 0xffffff, 0xffff7b, 0x0084ff ] ];
+var p509 = [ [ 0xffffce, 0x63efef, 0x9c8431, 0x5a5a5a ], [ 0xffffff, 0xff7300, 0x944200, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p50B = [ [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xffff7b, 0x0084ff, 0xff0000 ] ];
+var p50C = [ [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffc542, 0xffd600, 0x943a00, 0x4a0000 ], [ 0xffffff, 0x5abdff, 0xff0000, 0x0000ff ] ];
+var p50D = [ [ 0xffffff, 0x8c8cde, 0x52528c, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ] ];
+var p50E = [ [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p50F = [ [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ] ];
+var p510 = [ [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p511 = [ [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x00ff00, 0x318400, 0x004a00 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p512 = [ [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p514 = [ [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffff00, 0xff0000, 0x630000, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ] ];
+var p515 = [ [ 0xffffff, 0xadad84, 0x42737b, 0x000000 ], [ 0xffffff, 0xffad63, 0x843100, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+var p518 = [ [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ] ];
+var p51A = [ [ 0xffffff, 0xffff00, 0x7b4a00, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ], [ 0xffffff, 0x7bff31, 0x008400, 0x000000 ] ];
+var p51C = [ [ 0xffffff, 0x7bff31, 0x0063c5, 0x000000 ], [ 0xffffff, 0xff8484, 0x943a3a, 0x000000 ], [ 0xffffff, 0x63a5ff, 0x0000ff, 0x000000 ] ];
+
+var compatibilityColorsetsMap = {
+    "ALLEY WAY"        : p008,
+    "ASTEROIDS/MISCMD" : p30E,
+    "BA.TOSHINDEN"     : p50F,
+    "BALLOON KID"      : p006,
+    "BASEBALL"         : p503,
+    "BOY AND BLOB GB1" : p512,
+    "BOY AND BLOB GB2" : p512,
+    "BT2RAGNAROKWORLD" : p312,
+    "DEFENDER/JOUST"   : p50F,
+    "DMG FOOTBALL"     : p30E,
+    "DONKEY KONG"      : p306,
+    "DONKEYKONGLAND"   : p50C,
+    "DONKEYKONGLAND 2" : p50C,
+    "DONKEYKONGLAND 3" : p50C,
+    "DONKEYKONGLAND95" : p501,
+    "DR.MARIO"         : p20B,
+    "DYNABLASTER"      : p30F,
+    "F1RACE"           : p012,
+    "G&W GALLERY"      : p304,
+    "GALAGA&GALAXIAN"  : p013,
+    "GAME&WATCH"       : p012,
+    "GAMEBOY GALLERY"  : p304,
+    "GAMEBOY GALLERY2" : p304,
+    "GBWARS"           : p500,
+    "GOLF"             : p30E,
+    "Game and Watch 2" : p304,
+    "HOSHINOKA-BI"     : p508,
+    "JAMES  BOND  007" : p11C,
+    "KAERUNOTAMENI"    : p10D,
+    "KEN GRIFFEY JR"   : p31C,
+    "KID ICARUS"       : p30D,
+    "KILLERINSTINCT95" : p50D,
+    "KINGOFTHEZOO"     : p30F,
+    "KIRAKIRA KIDS"    : p012,
+    "KIRBY BLOCKBALL"  : p508,
+    "KIRBY DREAM LAND" : p508,
+    "KIRBY'S PINBALL"  : p308,
+    "KIRBY2"           : p508,
+    "LOLO2"            : p50F,
+    "MAGNETIC SOCCER"  : p50E,
+    "MANSELL"          : p012,
+    "MARIO & YOSHI"    : p305,
+    "MARIO'S PICROSS"  : p012,
+    "MARIOLAND2"       : p509,
+    "MEGA MAN 2"       : p50F,
+    "MEGAMAN"          : p50F,
+    "MEGAMAN3"         : p50F,
+    "METROID2"         : p514,
+    "MILLI/CENTI/PEDE" : p31C,
+    "MOGURANYA"        : p300,
+    "MYSTIC QUEST"     : p50E,
+    "NETTOU KOF 95"    : p50F,
+    "NEW CHESSMASTER"  : p30F,
+    "OTHELLO"          : p50E,
+    "PAC-IN-TIME"      : p51C,
+    "PICROSS 2"        : p012,
+    "PINOCCHIO"        : p20C,
+    "POKEBOM"          : p30C,
+    "POKEMON BLUE"     : p10B,
+    "POKEMON GREEN"    : p11C,
+    "POKEMON RED"      : p110,
+    "POKEMON YELLOW"   : p007,
+    "QIX"              : p407,
+    "RADARMISSION"     : p100,
+    "ROCKMAN WORLD"    : p50F,
+    "ROCKMAN WORLD2"   : p50F,
+    "ROCKMANWORLD3"    : p50F,
+    "SEIKEN DENSETSU"  : p50E,
+    "SOCCER"           : p502,
+    "SOLARSTRIKER"     : p013,
+    "SPACE INVADERS"   : p013,
+    "STAR STACKER"     : p012,
+    "STAR WARS"        : p512,
+    "STAR WARS-NOA"    : p512,
+    "STREET FIGHTER 2" : p50F,
+    "SUPER MARIOLAND"  : p30A,
+    "SUPER RC PRO-AM"  : p50F,
+    "SUPERDONKEYKONG"  : p501,
+    "SUPERMARIOLAND3"  : p500,
+    "TENNIS"           : p502,
+    "TETRIS"           : p007,
+    "TETRIS ATTACK"    : p405,
+    "TETRIS BLAST"     : p006,
+    "TETRIS FLASH"     : p407,
+    "TETRIS PLUS"      : p31C,
+    "TETRIS2"          : p407,
+    "THE CHESSMASTER"  : p30F,
+    "TOPRANKINGTENNIS" : p502,
+    "TOPRANKTENNIS"    : p502,
+    "TOY STORY"        : p30E,
+    "TRIP WORLD"       : p500, // unofficial
+    "VEGAS STAKES"     : p50E,
+    "WARIO BLAST"      : p31C,
+    "WARIOLAND2"       : p515,
+    "WAVERACE"         : p50B,
+    "WORLD CUP"        : p30E,
+    "X"                : p016,
+    "YAKUMAN"          : p012,
+    "YOSHI'S COOKIE"   : p406,
+    "YOSSY NO COOKIE"  : p406,
+    "YOSSY NO PANEPON" : p405,
+    "YOSSY NO TAMAGO"  : p305,
+    "ZELDA"            : p511
+};
 
 export var HBLANK_MODE = 0x00;
 export var VBLANK_MODE = 0x01;
@@ -37,6 +193,9 @@ export class GPU {
         this._vramBank00 = null;
         this._vramBank01 = null;
 
+        this._dmgColorsets = null;
+        this._dmgRgbPalettes = null;
+
         this._sprites = null;
         this._tilesets = null;
 
@@ -61,6 +220,34 @@ export class GPU {
 
         this._vramBank00 = this._vramBanks[ 0x00 ];
         this._vramBank01 = this._vramBanks[ 0x01 ];
+
+        // Compute the right colorset, based on the rom title (only for monochrome games)
+
+        this._dmgColorsets = defaultColorsets;
+
+        var romView = new Uint8Array( this._environment.romBuffer );
+
+        if ( ! ( romView[ 0x0143 ] & 0x80 ) ) {
+
+            for ( var title = '', t = 0; t < 0x10 && romView[ 0x0134 + t ] !== 0; ++ t )
+                title += String.fromCharCode( romView[ 0x0134 + t ] );
+
+            var colorsets = compatibilityColorsetsMap[ title ];
+
+            if ( colorsets ) {
+                this._dmgColorsets = colorsets;
+            }
+
+        }
+
+        // Setup the truecolor palettes
+
+        this._dmgRgbPalettes = [ ];
+
+        for ( var t = 0, T = this._environment.gpuPalettes.length; t < T; ++ t ) {
+            this._dmgRgbPalettes[ t ] = [ 0x000000, 0x000000, 0x000000, 0x000000 ];
+            this.updateDmgPalette( t );
+        }
 
         // There is 40 GPU sprites
         // We store each of them in an internal array so we don't have to unserialize whenever we need them.
@@ -132,30 +319,6 @@ export class GPU {
 
     }
 
-    setDmgPalette( index, value ) {
-
-        var palette = this._environment.gpuDmgPalettes[ index ];
-
-        palette[ 0 ] = dmgTrueColors[ ( value >> 0 ) & 0x3 ];
-        palette[ 1 ] = dmgTrueColors[ ( value >> 2 ) & 0x3 ];
-        palette[ 2 ] = dmgTrueColors[ ( value >> 4 ) & 0x3 ];
-        palette[ 3 ] = dmgTrueColors[ ( value >> 6 ) & 0x3 ];
-
-    }
-
-    getDmgPalette( index ) {
-
-        var palette = this._environment.gpuDmgPalettes[ index ];
-
-        return (
-            ( dmgColors[ palette[ 0 ] ] << 0 ) |
-            ( dmgColors[ palette[ 1 ] ] << 2 ) |
-            ( dmgColors[ palette[ 2 ] ] << 4 ) |
-            ( dmgColors[ palette[ 3 ] ] << 6 )
-        );
-
-    }
-
     updateSprite( address ) {
 
         var sprite = this._sprites[ address >>> 2 ];
@@ -210,6 +373,18 @@ export class GPU {
             ;
 
         }
+
+    }
+
+    updateDmgPalette( index ) {
+
+        var palette = this._dmgRgbPalettes[ index ];
+        var dmgColor = this._environment.gpuPalettes[ index ];
+
+        palette[ 0 ] = this._dmgColorsets[ index ][ ( dmgColor >> 0 ) & 0x3 ];
+        palette[ 1 ] = this._dmgColorsets[ index ][ ( dmgColor >> 2 ) & 0x3 ];
+        palette[ 2 ] = this._dmgColorsets[ index ][ ( dmgColor >> 4 ) & 0x3 ];
+        palette[ 3 ] = this._dmgColorsets[ index ][ ( dmgColor >> 6 ) & 0x3 ];
 
     }
 
@@ -487,7 +662,7 @@ export class GPU {
         var tileY = actualY & 0x7;
 
         // The background palette is the first palette
-        var palette = this._environment.gpuDmgPalettes[ 0 ];
+        var palette = this._dmgRgbPalettes[ 0 ];
 
         // In DMG, we always take the vram palette from the 0x00 bank (since there's only one bank)
         // Check below to see how this variable gets rewrote if we're in CGB mode
@@ -596,7 +771,7 @@ export class GPU {
             } else {
 
                 // Gets the sprite palette specified in the inner structure data
-                var palette = this._environment.gpuDmgPalettes[ 1 + sprite.paletteDmg ];
+                var palette = this._dmgRgbPalettes[ 1 + sprite.paletteDmg ];
 
             }
 
