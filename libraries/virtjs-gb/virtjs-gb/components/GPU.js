@@ -614,7 +614,7 @@ export class GPU {
 
             // If the gameboy is in CGB mode, then the 0 bit of the LCDC register means "Background and windows are behind sprites"
 
-            var ignoreBgPriority = ! this._environment.cgbUnlocked && this._environment.gpuBackgroundFeature;
+            var ignoreBgPriority = this._environment.cgbUnlocked && this._environment.gpuBackgroundFeature;
 
             // Now we can iterate on this row and set every pixels which are in the rendered part of the screen
 
