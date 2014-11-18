@@ -1,4 +1,5 @@
-var colors = { 0 : 255, 1 : 192, 2 : 96, 3 : 0 };
+var dmgTrueColors = { 0b00 : 0xE3E6C9, 0b01 : 0xC3C4A5, 0b10 : 0x8E8B61, 0b11 : 0x6C6C4E };
+var dmgColors     = { 0xE3E6C9 : 0b00, 0xC3C4A5 : 0b01, 0x8E8B61 : 0b10, 0x6C6C4E : 0b11 };
 
 export var HBLANK_MODE = 0x00;
 export var VBLANK_MODE = 0x01;
@@ -135,10 +136,10 @@ export class GPU {
 
         var palette = this._environment.gpuDmgPalettes[ index ];
 
-        palette[ 0 ] = ( value >> 0 ) & 0x3;
-        palette[ 1 ] = ( value >> 2 ) & 0x3;
-        palette[ 2 ] = ( value >> 4 ) & 0x3;
-        palette[ 3 ] = ( value >> 6 ) & 0x3;
+        palette[ 0 ] = dmgTrueColors[ ( value >> 0 ) & 0x3 ];
+        palette[ 1 ] = dmgTrueColors[ ( value >> 2 ) & 0x3 ];
+        palette[ 2 ] = dmgTrueColors[ ( value >> 4 ) & 0x3 ];
+        palette[ 3 ] = dmgTrueColors[ ( value >> 6 ) & 0x3 ];
 
     }
 
@@ -147,10 +148,10 @@ export class GPU {
         var palette = this._environment.gpuDmgPalettes[ index ];
 
         return (
-            ( palette[ 0 ] << 0 ) |
-            ( palette[ 1 ] << 2 ) |
-            ( palette[ 2 ] << 4 ) |
-            ( palette[ 3 ] << 6 )
+            ( dmgColors[ palette[ 0 ] ] << 0 ) |
+            ( dmgColors[ palette[ 1 ] ] << 2 ) |
+            ( dmgColors[ palette[ 2 ] ] << 4 ) |
+            ( dmgColors[ palette[ 3 ] ] << 6 )
         );
 
     }
@@ -216,11 +217,11 @@ export class GPU {
 
         var cgb15 = ( source[ colorOffset + 1 ] << 8 ) | ( source[ colorOffset ] );
 
-        var tr = ( ( cgb15 >>>  0 ) & 0x1F ) * 0xFF / 0x1F;
-        var tg = ( ( cgb15 >>>  5 ) & 0x1F ) * 0xFF / 0x1F;
-        var tb = ( ( cgb15 >>> 10 ) & 0x1F ) * 0xFF / 0x1F;
+        var tr = ( cgb15 >>>  0 ) & 0x1F;
+        var tg = ( cgb15 >>>  5 ) & 0x1F;
+        var tb = ( cgb15 >>> 10 ) & 0x1F;
 
-        var rgb32 = ( tr << 16 ) | ( tg << 8 ) | ( tb << 0 );
+        var rgb32 = ( ( ( tr * 13 + tg * 2 + tb ) >>> 1 ) << 16 ) | ( ( tg * 3 + tb ) << 9 ) | ( ( tr * 3 + tg * 2 + tb * 11 ) >>> 1 );
 
         var paletteIndex = ( colorOffset >>> ( 2 + 1 ) );
         var colorIndex = ( colorOffset >>> 1 ) & 0b11;
