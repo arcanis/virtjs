@@ -164,7 +164,27 @@ export function unserialize( serialization ) {
 
     }, { } );
 
-    var { format, tree } = JSON.parse( serialization );
+    var { format, tree } = typeof serialization === 'object' ? serialization : JSON.parse( serialization );
     return complexify( format, tree );
+
+}
+
+export function clone( input ) {
+
+    if ( typeof input !== 'object' )
+        return input;
+
+    if ( input instanceof Array )
+        return input.map( value => clone( value ) );
+
+    if ( input instanceof ArrayBuffer )
+        return input.slice( );
+
+    var output = { };
+
+    for ( var key of Object.keys( input ) )
+        output[ key ] = clone( input[ key ] );
+
+    return output;
 
 }

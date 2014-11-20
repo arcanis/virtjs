@@ -1,4 +1,5 @@
 import { TestEnvironment as TestEnvironmentBase } from 'virtjs/core/tests/TestEnvironment';
+import { clone }                                  from 'virtjs/utils/ObjectUtils';
 
 import { CYCLES_PER_OAM }                         from 'virtjs-gb/components/GPU';
 
@@ -130,7 +131,7 @@ export class Environment {
     loadState( state ) {
 
         for ( var key of Object.keys( state ) ) {
-            this[ key ] = state[ key ];
+            this[ key ] = clone( state[ key ] );
         }
 
     }
