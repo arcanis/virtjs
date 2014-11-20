@@ -108,7 +108,7 @@ export class Environment {
         Object.defineProperty( this, 'de', merge( 'd', 'e' ) );
         Object.defineProperty( this, 'hl', merge( 'h', 'l' ) );
 
-        if ( typeof initialState !== 'undefined' ) {
+        if ( initialState != null ) {
             this.loadState( initialState );
         }
 
