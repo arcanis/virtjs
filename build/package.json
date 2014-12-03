@@ -1,0 +1,6 @@
+{
+    "dependencies" : {
+        "webpack" : "*",
+        "webpack-traceur-loader" : "*"
+    }
+}
