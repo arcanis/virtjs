@@ -222,7 +222,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             );
 
             case 0xFF42:
-            return this._environment.gpuBgScroll[ 1 ];
+                return this._environment.gpuBgScroll[ 1 ];
 
             case 0xFF43:
                 return this._environment.gpuBgScroll[ 0 ];
@@ -297,7 +297,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             } break ;
 
             case 0xFF69: if ( this._environment.cgbUnlocked ) {
-                return this._environment.cgbBackgroundPalettes[ this._environment.cgbBackgroundPaletteOffset >>> 1 ][ 3 + this._environment.cgbBackgroundPaletteOffset & 1 ];
+                return this._environment.cgbBackgroundCgbPalettes[ this._environment.cgbBackgroundPaletteOffset ];
             } else {
                 return 0;
             } break ;
@@ -309,7 +309,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             } break ;
 
             case 0xFF6B: if ( this._environment.cgbUnlocked ) {
-                return this._environment.cgbSpritePalettes[ this._environment.cgbSpritePaletteOffset >>> 1 ][ 3 + this._environment.cgbSpritePaletteOffset & 1 ];
+                return this._environment.cgbSpriteCgbPalettes[ this._environment.cgbSpritePaletteOffset ];
             } else {
                 return 0;
             } break ;

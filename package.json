@@ -1,7 +1,7 @@
 {
     "name" : "virtjs",
     "description" : "Javascript emulation library",
-    "version" : "0.2.1",
+    "version" : "0.2.2",
 
     "main" : "./output/virtjs.node.js"
 }
