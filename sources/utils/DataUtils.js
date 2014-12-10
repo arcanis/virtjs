@@ -31,7 +31,7 @@ export function fetchArrayBuffer( path ) {
     return new Promise( ( resolve, reject ) => {
 
         var isBlob = typeof Blob !== 'undefined' && path instanceof Blob;
-        var isDataURI = path.match( base64DataUrl );
+        var isDataURI = typeof path === 'string' && path.match( base64DataUrl );
         var isBrowser = typeof window !== 'undefined';
         var isWeb = isBrowser || /^(https?:\/\/|blob:)/.test( path );
 
