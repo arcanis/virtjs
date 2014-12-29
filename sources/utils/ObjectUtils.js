@@ -178,7 +178,7 @@ export function clone( input ) {
         return input.map( value => clone( value ) );
 
     if ( input instanceof ArrayBuffer )
-        return input.slice( );
+        return input.slice( 0 );
 
     var output = { };
 
