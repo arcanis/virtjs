@@ -157,15 +157,15 @@ var compatibilityColorsetsMap = {
     "ZELDA"            : p511
 };
 
-export var HBLANK_MODE = 0x00;
-export var VBLANK_MODE = 0x01;
-export var OAM_MODE    = 0x02;
-export var VRAM_MODE   = 0x03;
+export var HBLANK_MODE = 0x00; // Mode 0
+export var VBLANK_MODE = 0x01; // Mode 1
+export var OAM_MODE    = 0x02; // Mode 2
+export var VRAM_MODE   = 0x03; // Mode 3
 
-export var CYCLES_PER_HBLANK_LINE =  51 * 4;
-export var CYCLES_PER_VBLANK_LINE = 114 * 4;
-export var CYCLES_PER_OAM         =  20 * 4;
-export var CYCLES_PER_VRAM        =  43 * 4;
+export var CYCLES_PER_HBLANK_LINE =  51 * 4; // Mode 0
+export var CYCLES_PER_VBLANK_LINE = 114 * 4; // Mode 1
+export var CYCLES_PER_OAM         =  20 * 4; // Mode 2
+export var CYCLES_PER_VRAM        =  43 * 4; // Mode 3
 
 export var HBLANK_LINE_COUNT      = 144;
 export var MAX_VIRTUAL_LINE_COUNT = 154;
@@ -308,6 +308,35 @@ export class GPU {
 
     }
 
+    resetClock( ) {
+
+        this._environment.gpuClock = CYCLES_PER_OAM;
+        this._environment.gpuMode = OAM_MODE;
+        this._environment.gpuLine = 0;
+
+        this.setLy( 0 );
+
+    }
+
+    setLy( value ) {
+
+        this._environment.gpuLy = value;
+
+        // Check if the new line matches the line in the LYC register
+
+        this._environment.gpuCoincidence =
+            this._environment.gpuLy === this._environment.gpuLyc;
+
+        // If the user program asked for being notified, trigger an interrupt
+
+        if ( this._environment.gpuCoincidence ) {
+            if ( this._environment.gpuInterrupts & ( 1 << 6 ) ) {
+                this._environment.pendingInterrupts |= 0x02;
+            }
+        }
+
+    }
+
     transferDma( value ) {
 
         var start = value << 8;
@@ -412,31 +441,21 @@ export class GPU {
             // HBlank
             case HBLANK_MODE :
 
-            // End of line reached, step to the next one
+                // End of line reached, step to the next one
 
-                this._environment.gpuLy += 1;
-
-                // Check if the new line matches the line in the LYC register
-
-                this._environment.gpuCoincidence =
-                    this._environment.gpuLy === this._environment.gpuLyc;
-
-                // If the user program asked for being notified, trigger an interrupt
-
-                if ( this._environment.gpuCoincidence )
-                    if ( this._environment.gpuInterrupts & ( 1 << 6 ) )
-                        this._environment.pendingInterrupts |= 0x02;
+                this._environment.gpuLine += 1;
+                this.setLy( this._environment.gpuLine );
 
                 // Finally, set the new mode (depending on the current new line, it will be OAM or VBlank)
 
-                if ( this._environment.gpuLy < HBLANK_LINE_COUNT ) {
+                if ( this._environment.gpuLine < HBLANK_LINE_COUNT ) {
 
-                    this._environment.gpuClock = CYCLES_PER_OAM;
+                    this._environment.gpuClock += CYCLES_PER_OAM;
                     this._setMode( OAM_MODE );
 
                 } else {
 
-                    this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+                    this._environment.gpuClock += CYCLES_PER_VBLANK_LINE;
                     this._setMode( VBLANK_MODE );
 
                     // In this case, we want to tell the JIT that we're ready to exit the running loop
@@ -453,34 +472,24 @@ export class GPU {
                 // End of line reached, step to the next one
                 // Btw, you may wonder why we're talking about "step to the next one" since the VBlank occurs after all the 144 screen lines have been processed by the HBlank events; it's because the VBlank event has 10 'fake' lines, which will bring the line counter up to 154. Strange, uh?
 
-                this._environment.gpuLy += 1;
+                this._environment.gpuLine += 1;
 
-                // When we reach the 154th line, we go back to the first one ...
+                if ( this._environment.gpuLine === MAX_VIRTUAL_LINE_COUNT )
+                    this._environment.gpuLine = 0;
 
-                if ( this._environment.gpuLy === MAX_VIRTUAL_LINE_COUNT )
-                    this._environment.gpuLy = 0;
-
-                // ... then we set the coincidence check ...
-
-                this._environment.gpuCoincidence =
-                    this._environment.gpuLy === this._environment.gpuLyc;
-
-                // ... then we trigger the interrupt if asked ...
-
-                if ( this._environment.gpuCoincidence )
-                    if ( this._environment.gpuInterrupts & ( 1 << 6 ) )
-                        this._environment.pendingInterrupts |= 0x02;
+                if ( this._environment.gpuLine !== 0 )
+                    this.setLy( this._environment.gpuLine );
 
                 // ... then we go to OAM mode!
 
-                if ( this._environment.gpuLy === 0 ) {
+                if ( this._environment.gpuLine === 0 ) {
 
-                    this._environment.gpuClock = CYCLES_PER_OAM;
+                    this._environment.gpuClock += CYCLES_PER_OAM;
                     this._setMode( OAM_MODE );
 
                 } else {
 
-                    this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+                    this._environment.gpuClock += CYCLES_PER_VBLANK_LINE;
                     //this._setMode( VBLANK_MODE );
 
                 }
@@ -492,7 +501,7 @@ export class GPU {
 
                 // Once the OAM mode is finished, goes to the VRAM mode
 
-                this._environment.gpuClock = CYCLES_PER_VRAM;
+                this._environment.gpuClock += CYCLES_PER_VRAM;
                 this._setMode( VRAM_MODE );
 
             return false;
@@ -502,7 +511,7 @@ export class GPU {
 
                 // And once the VRAM mode is finished, goes to the HBlank again!
 
-                this._environment.gpuClock = CYCLES_PER_HBLANK_LINE;
+                this._environment.gpuClock += CYCLES_PER_HBLANK_LINE;
                 this._setMode( HBLANK_MODE );
 
                 // When we go to the HBLANK_MODE, we have to check if there is an H-Blank DMA going on
@@ -540,7 +549,7 @@ export class GPU {
         // Trigger the HBlank / VBlank events
 
         /****/ if ( mode === HBLANK_MODE ) {
-            this._triggerHblank( this._environment.gpuLy );
+            this._triggerHblank( this._environment.gpuLine );
         } else if ( mode === VBLANK_MODE ) {
             this._triggerVblank( );
         }
@@ -555,39 +564,42 @@ export class GPU {
 
     _triggerHblank( line ) {
 
+        // In Non-CGB mode, both background and window are both controlled by the 0-bit of the LCDC register. Note that it is different in the classic GB hardware, where only the background is affected by this flag (so there's a compatibility issue).
+        // In CGB mode, the background will always be displayed. The LCDC register 0-bit is used for sprite priority instead (so we don't care about it yet).
+
+        var showSomething = this._environment.gpuLcdFeature;
+        var showBackground = this._environment.gpuBackgroundFeature || this._environment.cgbUnlocked;
+        var showWindow = showBackground && this._environment.gpuWindowFeature;
+        var showSprites = this._environment.gpuSpriteFeature;
+
         // HBlank is when the physical LCD laser is moving from the end of an LCD line to the start of the next line.
         // The Gameboy screen contains 160 lines, and so there is 159 HBlank per frame (the last one being the VBlank, see below).
 
         // Note that we have to respect the HBlank, and bufferize line during the HBlank (rather than doing all of them at once during the VBlank), because the VRAM is still available at this time, and so the user program will be able to modify the content of the lines below the one being drawn during the line rendering.
 
-        // First, we have to reset the line if there is no LCD display, or no background
+        // First, we have to reset the line if there is no LCD display, or no background (notice that there is always a background in GBC mode)
 
-        if ( ! this._environment.gpuLcdFeature || ! this._environment.gpuBackgroundFeature )
+        if ( ! showSomething || ! showBackground )
             for ( var x = 0, X = this._scanline.length; x < X; ++ x )
                 this._scanline[ x ] = 0x00FFFFFF;
 
         // Then if there is no LCD display, we quit instantly
 
-        if ( ! this._environment.gpuLcdFeature )
+        if ( ! showSomething )
             return ;
 
         // We can now display the various features if they are enabled
 
-        // In Non-CGB mode, both background and window are controlled by the 0-bit of the LCDC register. Note that it is different from SGB, where only the background is affected by this flag (so there's a compatibility issue).
-        // In CGB mode,
-
-        var showBgWin = this._environment.gpuBackgroundFeature || this._environment.cgbUnlocked;
-
-        if ( showBgWin )
+        if ( showBackground )
             this._drawBackgroundScanline( line );
 
-        if ( showBgWin && this._environment.gpuWindowFeature )
+        if ( showWindow )
             this._drawWindowScanline( line );
 
-        if ( this._environment.gpuSpriteFeature )
+        if ( showSprites )
             this._drawSpriteScanline( line );
 
-        // Finally, we send the rendered line to the output device
+        // Finally, we send the rendered line to the output device, one pixel at a time
 
         for ( var x = 0, X = this._scanline.length; x < X; ++ x ) {
 
@@ -788,8 +800,9 @@ export class GPU {
             var tileRow = this._tilesets[ vramBank ][ tileIndex ][ tileY ];
 
             // If the gameboy is in CGB mode, then the 0 bit of the LCDC register means "Background and windows are behind sprites"
+            // In such a case, we just always show the sprite
 
-            var ignoreBgPriority = this._environment.cgbUnlocked && this._environment.gpuBackgroundFeature;
+            var useSpritePriority = ! this._environment.cgbUnlocked || this._environment.gpuBackgroundFeature;
 
             // Now we can iterate on this row and set every pixels which are in the rendered part of the screen
 
@@ -815,10 +828,11 @@ export class GPU {
                 if ( paletteIndex === 0 )
                     continue ;
 
-                // Check if the sprite is behind a non-transparent part of the background - if so, next
+                // Check if the sprite is behind a non-transparent part of the background
+                // Don't forget : if sprite.priority is true, then the sprite is behind the background
 
-                if ( ! ignoreBgPriority && sprite.priority && this._scanline[ x ] & 0xFF000000 )
-                    continue ;
+                if ( useSpritePriority && sprite.priority && ( this._scanline[ x ] & 0xFF000000 ) )
+                    /* if so, ignore this sprite */ continue ;
 
                 // Apply the color on the scanline
 

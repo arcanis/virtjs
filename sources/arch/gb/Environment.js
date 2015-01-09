@@ -1,7 +1,7 @@
 import { memset }         from '../../utils/MemoryUtils';
 import { clone }          from '../../utils/ObjectUtils';
 
-import { CYCLES_PER_OAM } from './components/GPU';
+import { VBLANK_MODE }    from './components/GPU';
 
 export class Environment {
 
@@ -55,10 +55,12 @@ export class Environment {
         this.mbcMode = 0;
         this.mbcRamFeature = false;
         this.mbcRtc = [ 0, 0, 0, 0, 0 ];
-        this.mbcRomBank = 1;
+        this.mbcRomBank = 0;
         this.mbcRamBank = 0;
         this.mbcRtcIndex = 0;
 
+        this.cpuInterruptSwitch = false;
+        this.cpuInterruptSwitchDelay = -1;
         this.cpuInterruptFeature = false;
         this.cpuStop = false;
         this.cpuHalt = false;
@@ -73,10 +75,11 @@ export class Environment {
         this.gpuTilesetBase = 1;
         this.gpuBackgroundBase = 0;
         this.gpuWindowBase = 0;
-        this.gpuInterrupts = 0;
-        this.gpuMode = 0x02;
-        this.gpuClock = CYCLES_PER_OAM;
-        this.gpuLy = 0;
+        this.gpuInterrupts = 0x80;
+        this.gpuMode = VBLANK_MODE;
+        this.gpuClock = 296;
+        this.gpuLine = 144;
+        this.gpuLy = 144;
         this.gpuLyc = 0;
         this.gpuBgScroll = [ 0, 0 ];
         this.gpuWindowPosition = [ 0, 0 ];

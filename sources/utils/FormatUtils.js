@@ -26,15 +26,12 @@ export function formatDecimal( value, size ) {
 
 };
 
-export function formatString( str, size, leftAligned ) {
+export function formatString( str, size, leftAligned = true ) {
 
     str = str.toString( );
 
     if ( typeof size === 'undefined' )
         return str;
-
-    if ( typeof leftAligned === 'undefined' )
-        leftAligned = true;
 
     for ( var t = str.length; t < size; ++ t ) {
         if ( leftAligned ) {

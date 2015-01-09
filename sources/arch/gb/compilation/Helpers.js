@@ -20,6 +20,41 @@ export class Helpers {
 
     }
 
+    stop( ) { return `{
+
+        environment.cpuStop = true;
+
+    }`; }
+
+    halt( ) { return `{
+
+        environment.cpuHalt = true;
+
+    }`; }
+
+    applySpeedSwitch( ) { return `{
+
+        if ( environment.cgbPrepareSpeedSwitch ) {
+
+            environment.cgbPrepareSpeedSwitch = 0;
+
+            if ( environment.cgbCurrentSpeed ) {
+                environment.cgbCurrentSpeed = 0;
+            } else {
+                environment.cgbCurrentSpeed = 1;
+            }
+
+        }
+
+    }`; }
+
+    delayInterruptSwitch( value, delay ) { return `{
+
+        environment.cpuInterruptSwitch = ${value};
+        environment.cpuInterruptSwitchDelay = ${delay};
+
+    }`; }
+
     readR8( register ) {
 
         return `(environment.${register} >>> 0)`;

@@ -1,12 +1,13 @@
-import { EmitterMixin }                     from '../../mixins/EmitterMixin';
-import { formatHexadecimal }                from '../../utils/FormatUtils';
-import { mixin }                            from '../../utils/ObjectUtils';
+import { EmitterMixin }                        from '../../mixins/EmitterMixin';
+import { formatHexadecimal }                   from '../../utils/FormatUtils';
+import { mixin }                               from '../../utils/ObjectUtils';
 
-import { templates as assemblyTemplates }   from './compilation/templates/assembly';
-import { templates as javascriptTemplates } from './compilation/templates/javascript';
-import { InterpreterHelpers }               from './compilation/InterpreterHelpers';
-import { instructions, cbInstructions }     from './compilation/instructions';
-import { x8_t, i8_t, u8_t, u16_t }          from './compilation/instructions';
+import { templates as assemblyTemplates }      from './compilation/templates/assembly';
+import { templates as javascriptTemplates }    from './compilation/templates/javascript';
+import { InterpreterHelpers }                  from './compilation/InterpreterHelpers';
+import { instructions, cbInstructions }        from './compilation/instructions';
+import { x8_t, i8_t, u8_t, u16_t }             from './compilation/instructions';
+import { VBLANK_MODE, CYCLES_PER_VBLANK_LINE } from './components/GPU';
 
 var interruptLocations = new Uint16Array( 256 );
 
@@ -14,6 +15,9 @@ interruptLocations[ 1 << 0 ] = 0x0040;
 interruptLocations[ 1 << 1 ] = 0x0048;
 interruptLocations[ 1 << 2 ] = 0x0050;
 interruptLocations[ 1 << 3 ] = 0x0060;
+
+export var NORMAL_SPEED = 0;
+export var DOUBLE_SPEED = 1;
 
 function getInstructionSize( parameters ) {
 
@@ -278,6 +282,12 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         var environment = this._environment;
 
+        // Update the master interrupt if required
+
+        if ( environment.cpuInterruptSwitchDelay >= 0 )
+            if ( -- environment.cpuInterruptSwitchDelay === -1 )
+                environment.cpuInterruptFeature = environment.cpuInterruptSwitch;
+
         // Check which are the interrupts that should be triggered
 
         var enabledInterrupts = environment.enabledInterrupts;
@@ -321,7 +331,7 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
 
         // And finally, we increase the clocks
 
-        this._applyClockCycles( 4 );
+        this._applyClockCycles( 20 );
 
     }
 
@@ -337,6 +347,9 @@ export class Interpreter extends mixin( null, EmitterMixin ) {
         if ( environment.gpuLcdFeature ) {
 
             environment.gpuClock -= count;
+
+            if ( environment.gpuMode === VBLANK_MODE && environment.gpuLy === 153 && CYCLES_PER_VBLANK_LINE - environment.gpuClock >= 8 )
+                this._gpu.setLy( 0 ); // There is an early reset during the vram mode (the Ly register stays at the 153 line for only a few cycles)
 
             if ( environment.gpuClock <= 0 ) {
                 if ( this._gpu.nextMode( ) ) {

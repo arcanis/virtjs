@@ -1,6 +1,6 @@
-![Virt.js](http://arcanis.github.io/virt.js/documents/assets/logo.png)
+![Virt.js](http://arcanis.github.io/virtjs/documents/assets/logo.png)
 
-![](http://arcanis.github.io/virt.js/documents/assets/github-banner.png)
+![](http://arcanis.github.io/virtjs/documents/assets/github-banner.png)
 
 **Warning :** This library is still in a very early development phase. API are subject to many changes, and nothing is guaranteed. Take a look in the [example](https://github.com/arcanis/Virtjs/tree/master/examples) directory to check how to use the current revision.
 
@@ -40,7 +40,7 @@ var engine = new GameboyEngine( ... );
 
 ### Browser, as standalone file
 
-  - Download the [current release file](https://github.com/arcanis/virt.js/tree/master/build/output/virtjs.web.js) and include it into your app
+  - Download the [current release file](https://github.com/arcanis/virtjs/tree/master/build/output/virtjs.web.js) and include it into your app
   - Use the `virtjs` function to fetch Virtjs' modules
 
 ```js
@@ -53,7 +53,7 @@ var engine = new GameboyEngine( ... );
   - Clone the repository somewhere
   - Configure the `System.paths` property to target the virtjs source directory
 
-```
+```js
 System.paths[ 'virtjs' ] = './libraries/virtjs/';
 
 Promise.all( [
@@ -67,23 +67,21 @@ Promise.all( [
 
 ] ).then( function ( results ) {
 
-        var input = new results[ 1 ].KeyboardInput( );
-        var screen = new results[ 2 ].WebGLScreen( );
-        var timer = new results[ 3 ].AnimationFrameTimer( );
+    var input = new results[ 1 ].KeyboardInput( );
+    var screen = new results[ 2 ].WebGLScreen( );
+    var timer = new results[ 3 ].AnimationFrameTimer( );
 
-        var engine = new results[ 0 ].Engine( { devices : {
-            input : input,
-            screen : screen,
-            timer : timer
-        } } );
+    var engine = new results[ 0 ].Engine( { devices : {
+        input : input,
+        screen : screen,
+        timer : timer
+    } } );
 
-        results[ 4 ].fetch( 'http://example.org/rom.gb' ).then( function ( rom ) {
-            engine.loadArrayBuffer( rom );
-        } );
-
+    results[ 4 ].fetch( 'http://example.org/rom.gb' ).then( function ( rom ) {
+        engine.loadArrayBuffer( rom );
     } );
 
-</script>
+} );
 ```
 
 Note that, if you're in an ES6 module, you can also use the usual `import` statements:

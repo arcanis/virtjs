@@ -8,7 +8,7 @@ export var templates = {
 
     'DI' : ( address, nextAddress, parameters, h ) => `
 
-        environment.cpuInterruptFeature = false;
+        ${h.delayInterruptSwitch(false, 0)};
 
         ${h.applyClockCycles(1)};
 
@@ -16,7 +16,9 @@ export var templates = {
 
     'EI' : ( address, nextAddress, parameters, h ) => `
 
-        environment.cpuInterruptFeature = true;
+        // Note that EI is the only instruction to have a delayed interrupt switch (not even RETI!)
+
+        ${h.delayInterruptSwitch(true, 1)};
 
         ${h.applyClockCycles(1)};
 
@@ -683,7 +685,7 @@ export var templates = {
 
     'RETI' : ( address, nextAddress, parameters, h ) => `
 
-        environment.cpuInterruptFeature = true;
+        ${h.delayInterruptSwitch(true, 0)};
 
         var retTarget;
         ${h.popStack('retTarget')};
@@ -1720,7 +1722,9 @@ export var templates = {
 
     'STOP_u8' : ( address, nextAddress, parameters, h ) => `
 
-        environment.cpuStop = true;
+        ${h.stop()};
+
+        ${h.applySpeedSwitch()};
 
         ${h.applyClockCycles(1)};
 
@@ -1728,7 +1732,7 @@ export var templates = {
 
     'HALT' : ( address, nextAddress, parameters, h ) => `
 
-        environment.cpuHalt = true;
+        ${h.halt()};
 
         ${h.applyClockCycles(1)};
 

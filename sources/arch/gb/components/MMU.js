@@ -98,7 +98,6 @@ export class MMU extends mixin( null, EmitterMixin ) {
         this._environment = environment;
 
         this._hram = new Uint8Array( this._environment.hramBuffer );
-        this._vram = new Uint8Array( this._environment.vramBuffer );
         this._oam = new Uint8Array( this._environment.oamBuffer );
 
         this._wramBanks = [ ];
@@ -161,7 +160,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
             return this.mbc.readRomUint8( address );
 
         else if ( address >= 0x8000 && address < 0xA000 )
-            return this._vram[ address & 0x1FFF ];
+            return this._vramBankNN[ address & 0x1FFF ];
 
         else if ( address >= 0xA000 && address < 0xC000 )
             return this.mbc.readRamUint8( address - 0xA000 );
@@ -249,7 +248,7 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 return this._environment.gpuWindowPosition[ 0 ];
 
             case 0xFF4D: if ( this._environment.cgbUnlocked ) {
-                return this._environment.cgbCurrentSpeed << 7 | this._environment.cgbPrepareSpeedSwitch;
+                return ( this._environment.cgbCurrentSpeed << 7 ) | 0b01111110 | ( this._environment.cgbPrepareSpeedSwitch << 0 );
             } else {
                 return 0;
             } break ;
@@ -394,6 +393,9 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF40:
+
+                var oldLcdFeature = this._environment.gpuLcdFeature;
+
                 this._environment.gpuBackgroundFeature = value & ( 1 << 0 ) ? true : false;
                 this._environment.gpuSpriteFeature     = value & ( 1 << 1 ) ? true : false;
                 this._environment.gpuSpriteSize        = value & ( 1 << 2 ) ? 1 : 0;
@@ -402,10 +404,17 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 this._environment.gpuWindowFeature     = value & ( 1 << 5 ) ? true : false;
                 this._environment.gpuWindowBase        = value & ( 1 << 6 ) ? 1 : 0;
                 this._environment.gpuLcdFeature        = value & ( 1 << 7 ) ? true : false;
+
+                // Writing here may also reset the GPU clock
+
+                if ( this._environment.gpuLcdFeature !== oldLcdFeature ) {
+                    this._gpu.resetClock( );
+                }
+
             break ;
 
             case 0xFF41:
-                this._environment.gpuInterrupts = value & 0x78;
+                this._environment.gpuInterrupts = 0x80 | ( value & 0x78 );
             break ;
 
             case 0xFF42:
@@ -417,7 +426,8 @@ export class MMU extends mixin( null, EmitterMixin ) {
             break ;
 
             case 0xFF44:
-                this._environment.gpuLy = 0;
+                this._environment.gpuLine = 0;
+                this._gpu.setLy( 0 );
             break ;
 
             case 0xFF45:
@@ -553,8 +563,6 @@ export class MMU extends mixin( null, EmitterMixin ) {
             } break ;
 
             case 0xFF70: if ( this._environment.cgbUnlocked ) {
-
-                console.log( '[wram rebank] ' + value );
 
                 this._environment.mmuWramBank = value & 0b111;
                 this._wramBankNN = this._wramBanks[ Math.max( 1, this._environment.mmuWramBank ) ];
