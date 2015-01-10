@@ -10,3 +10,19 @@
 # MMU
 
   - **[MMU1]** Even in CGB mode, the Gameboy allows to write (and read) from these registers. However, they are not used by the LCD display. Some games rely on this behavior; for example, Pokemon Gold palettes won't be correctly copied if you just drop the writes and return 0 everytime.
+
+# Hard roms
+
+These rom have been mentioned on #gbdev as being extremely difficult to get right, due to the use of hardware hacks.
+
+  - Smurfs (Halt bug)
+  - Gauntlet 2 (Speech)
+  - Ant soldiers (graphics fuckup due to window)
+  - Super Chase HQ (road not scrolling properly)
+  - Mr Do (locked up after intro screen)
+  - gejmboj (demo) (all sorts of fucked up things here)
+  - Dr Franken (one scanline of corrupt graphics under "II" on title screen (window issue))
+  - Fifa Soccer 97, Hercules, Road Rash, Q*bert 2 (interrupt things)
+  - Chuck Rock, Montezuma's Return, and Reservoir Rat (same game engine, weird interrupt issues)
+  - Hook (locks up on title screen)
+  - Altered Space (lots of issues)

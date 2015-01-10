@@ -313,6 +313,12 @@ export class MMU extends mixin( null, EmitterMixin ) {
                 return 0;
             } break ;
 
+            case 0xFF70: if ( this._environment.cgbUnlocked ) {
+                return 0x40 | this._environment.mmuWramBank;
+            } else {
+                return 0;
+            } break ;
+
             case 0xFFFF:
                 return this._environment.enabledInterrupts;
 
