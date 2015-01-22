@@ -18,6 +18,15 @@ export class DataScreen {
 
     }
 
+    setData( data ) {
+
+        if ( data.length !== this.inputWidth * this.inputHeight * 3 )
+            throw new Error( 'Invalid data buffer' );
+
+        this.data.set( data );
+
+    }
+
     setPixel( x, y, color ) {
 
         var target = this.data;

@@ -75,7 +75,7 @@ export class WebGLScreen extends DataScreen {
 
     setInputSize( width, height ) {
 
-        super( width, height );
+        super.setInputSize( width, height );
 
         this._updateViewport( );
         this._draw( );

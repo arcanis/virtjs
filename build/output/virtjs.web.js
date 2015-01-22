@@ -57,52 +57,48 @@ var virtjs =
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./arch/gb/Engine.js": 20,
-		"./arch/gb/Environment.js": 21,
-		"./arch/gb/Interpreter.js": 22,
-		"./arch/gb/compilation/Helpers.js": 25,
-		"./arch/gb/compilation/InterpreterHelpers.js": 26,
-		"./arch/gb/compilation/instructions.js": 27,
-		"./arch/gb/compilation/templates/assembly.js": 28,
-		"./arch/gb/compilation/templates/javascript.js": 29,
-		"./arch/gb/components/GPU.js": 30,
-		"./arch/gb/components/KeyIO.js": 31,
-		"./arch/gb/components/MMU.js": 32,
-		"./arch/gb/constants.js": 23,
-		"./arch/gb/mbcs/MBC1.js": 33,
-		"./arch/gb/mbcs/MBC3.js": 34,
-		"./arch/gb/mbcs/MBC5.js": 35,
-		"./arch/gb/mbcs/NoMBC.js": 36,
-		"./arch/gb/tools.js": 24,
-		"./core/Engine.js": 6,
-		"./core/jit/CodePath.js": 7,
-		"./core/jit/JIT.js": 8,
-		"./core/jit/PageSet.js": 9,
-		"./core/jit/ReadOnlyPage.js": 10,
-		"./core/jit/VersionedPage.js": 11,
-		"./core/tests/ExpectationReader.js": 12,
-		"./core/tests/TestEnvironment.js": 13,
-		"./core/tests/TestResults.js": 14,
-		"./devices/data/LocalStorageData.js": 37,
-		"./devices/debug/TracerDebug.js": 38,
-		"./devices/inputs/ButtonInput.js": 39,
-		"./devices/inputs/KeyboardInput.js": 40,
-		"./devices/inputs/MixedInput.js": 41,
-		"./devices/inputs/NullInput.js": 42,
-		"./devices/screens/DataScreen.js": 43,
-		"./devices/screens/NullScreen.js": 44,
-		"./devices/screens/WebGLScreen.js": 45,
-		"./devices/timers/AnimationFrameTimer.js": 46,
-		"./devices/timers/ImmediateTimer.js": 47,
-		"./devices/timers/NullTimer.js": 48,
-		"./devices/timers/SerialTimer.js": 49,
+		"./arch/gb/Engine.js": 13,
+		"./arch/gb/Environment.js": 14,
+		"./arch/gb/Interpreter.js": 15,
+		"./arch/gb/compilation/Helpers.js": 18,
+		"./arch/gb/compilation/InterpreterHelpers.js": 19,
+		"./arch/gb/compilation/instructions.js": 20,
+		"./arch/gb/compilation/templates/assembly.js": 21,
+		"./arch/gb/compilation/templates/javascript.js": 22,
+		"./arch/gb/components/GPU.js": 23,
+		"./arch/gb/components/KeyIO.js": 24,
+		"./arch/gb/components/MMU.js": 25,
+		"./arch/gb/constants.js": 16,
+		"./arch/gb/mbcs/MBC1.js": 26,
+		"./arch/gb/mbcs/MBC3.js": 27,
+		"./arch/gb/mbcs/MBC5.js": 28,
+		"./arch/gb/mbcs/NoMBC.js": 29,
+		"./arch/gb/tools.js": 17,
+		"./arch/gba/Engine.js": 30,
+		"./arch/gba/Environment.js": 31,
+		"./arch/gba/Interpreter.js": 32,
+		"./arch/gba/components/GPU.js": 33,
+		"./arch/gba/components/MMU.js": 34,
+		"./core/Engine.js": 5,
+		"./devices/inputs/ButtonInput.js": 35,
+		"./devices/inputs/KeyboardInput.js": 36,
+		"./devices/inputs/MixedInput.js": 37,
+		"./devices/inputs/NullInput.js": 38,
+		"./devices/screens/DataScreen.js": 39,
+		"./devices/screens/NullScreen.js": 40,
+		"./devices/screens/WebGLScreen.js": 41,
+		"./devices/timers/AnimationFrameTimer.js": 42,
+		"./devices/timers/ImmediateTimer.js": 43,
+		"./devices/timers/NullTimer.js": 44,
+		"./devices/timers/SerialTimer.js": 45,
 		"./index.js": 4,
-		"./mixins/EmitterMixin.js": 15,
-		"./mixins/IterableMixin.js": 16,
-		"./tools.js": 5,
-		"./utils/FormatUtils.js": 17,
-		"./utils/MemoryUtils.js": 18,
-		"./utils/ObjectUtils.js": 19
+		"./mixins/EmitterMixin.js": 6,
+		"./mixins/RunnableMixin.js": 7,
+		"./utils/DataUtils.js": 8,
+		"./utils/FormatUtils.js": 9,
+		"./utils/MemoryUtils.js": 10,
+		"./utils/ObjectUtils.js": 11,
+		"./utils/TypeUtils.js": 12
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -2627,168 +2623,6 @@ var virtjs =
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer, module) {"use strict";
-	var $__2 = $traceurRuntime.initGeneratorFunction(range);
-	Object.defineProperties(exports, {
-	  range: {get: function() {
-	      return range;
-	    }},
-	  nodeToUint8: {get: function() {
-	      return nodeToUint8;
-	    }},
-	  binaryStringToUint8: {get: function() {
-	      return binaryStringToUint8;
-	    }},
-	  toSigned8: {get: function() {
-	      return toSigned8;
-	    }},
-	  hashString: {get: function() {
-	      return hashString;
-	    }},
-	  fetch: {get: function() {
-	      return fetch;
-	    }},
-	  __esModule: {value: true}
-	});
-	__webpack_require__(2);
-	function range(from, to) {
-	  return $traceurRuntime.createGeneratorInstance(function($ctx) {
-	    while (true)
-	      switch ($ctx.state) {
-	        case 0:
-	          $ctx.state = (from < to) ? 1 : -2;
-	          break;
-	        case 1:
-	          $ctx.state = 2;
-	          return from++;
-	        case 2:
-	          $ctx.maybeThrow();
-	          $ctx.state = 0;
-	          break;
-	        default:
-	          return $ctx.end();
-	      }
-	  }, $__2, this);
-	}
-	function nodeToUint8() {
-	  for (var buffers = [],
-	      $__0 = 0; $__0 < arguments.length; $__0++)
-	    buffers[$__0] = arguments[$__0];
-	  var totalByteLength = buffers.reduce((function(sum, buffer) {
-	    return sum + buffer.length;
-	  }), 0);
-	  var array = new Uint8Array(totalByteLength),
-	      offset = 0;
-	  buffers.forEach((function(buffer) {
-	    for (var t = 0,
-	        T = array.length; t < T; ++t)
-	      array[offset++] = buffer[t];
-	  }));
-	  return array;
-	}
-	function binaryStringToUint8() {
-	  for (var strings = [],
-	      $__1 = 0; $__1 < arguments.length; $__1++)
-	    strings[$__1] = arguments[$__1];
-	  var totalByteLength = strings.reduce((function(sum, string) {
-	    return sum + string.length;
-	  }), 0);
-	  var array = new Uint8Array(totalByteLength),
-	      offset = 0;
-	  strings.forEach((function(string) {
-	    for (var t = 0,
-	        T = string.length; t < T; ++t)
-	      array[offset++] = string.charCodeAt(t);
-	  }));
-	  return array;
-	}
-	var toSigned8 = (function() {
-	  var tmp = new Int8Array(1);
-	  return (function(n) {
-	    tmp[0] = n;
-	    return tmp[0];
-	  });
-	})();
-	function hashString(str) {
-	  if (!str.length)
-	    return 0;
-	  var hash = 0;
-	  for (var t = 0,
-	      T = str.length; t < T; ++t) {
-	    hash = ((hash << 5) - hash) + str.charCodeAt(0);
-	    hash = hash | 0;
-	  }
-	  return hash >>> 0;
-	}
-	var base64DataUrl = /^data:[^;]*;base64,([a-zA-Z0-9+/]+={0,2})$/;
-	function fetch(path) {
-	  return new Promise((function(resolve, reject) {
-	    var isBlob = typeof Blob !== 'undefined' && path instanceof Blob;
-	    var isDataURI = path.match(base64DataUrl);
-	    var isBrowser = typeof window !== 'undefined';
-	    var isWeb = isBrowser || /^(https?:\/\/|blob:)/.test(path);
-	    if (!isWeb && path.indexOf(':') !== -1)
-	      throw new Error('Invalid protocol');
-	    if (isBlob) {
-	      var fileReader = new FileReader();
-	      fileReader.addEventListener('load', (function(e) {
-	        resolve(e.target.result);
-	      }));
-	      fileReader.addEventListener('error', (function(e) {
-	        reject();
-	      }));
-	      fileReader.readAsArrayBuffer(path);
-	    } else if (isDataURI) {
-	      if (isBrowser) {
-	        resolve(binaryStringToUint8(atob(isDataURI[1])).buffer);
-	      } else {
-	        resolve(nodeToUint8(new Buffer(isDataURI[1], 'base64')).buffer);
-	      }
-	    } else if (isBrowser) {
-	      var xhr = new XMLHttpRequest();
-	      xhr.open('GET', path, true);
-	      xhr.responseType = 'arraybuffer';
-	      xhr.onload = (function() {
-	        return resolve(xhr.response);
-	      });
-	      xhr.onerror = (function() {
-	        return reject(xhr.status);
-	      });
-	      xhr.send(null);
-	    } else if (isWeb) {
-	      var protocol = path.substr(0, path.indexOf(':'));
-	      var web = module.require(protocol);
-	      var buffers = [];
-	      web.get(path, function(res) {
-	        res.on('data', (function(chunk) {
-	          buffers.push(chunk);
-	        }));
-	        res.on('error', (function(err) {
-	          reject(err.message);
-	        }));
-	        res.on('end', (function() {
-	          resolve(nodeToUint8.apply(null, $traceurRuntime.spread(buffers)).buffer);
-	        }));
-	      });
-	    } else {
-	      var fs = module.require('fs');
-	      fs.readFile(path, (function(err, buffer) {
-	        if (err) {
-	          reject(err);
-	        } else {
-	          resolve(nodeToUint8(buffer).buffer);
-	        }
-	      }));
-	    }
-	  }));
-	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50).Buffer, __webpack_require__(52)(module)))
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
 	"use strict";
 	Object.defineProperties(exports, {
 	  Engine: {get: function() {
@@ -2870,589 +2704,7 @@ var virtjs =
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  CodePath: {get: function() {
-	      return CodePath;
-	    }},
-	  __esModule: {value: true}
-	});
-	__webpack_require__(2);
-	var CodePath = function CodePath(beginAddress, $__1) {
-	  var maxSize = $__1.maxSize;
-	  this._compiler = null;
-	  this._maxSize = maxSize;
-	  this.begin = beginAddress;
-	  this.end = null;
-	  this.upToDate = false;
-	  this.overflow = 0;
-	  this.fn = null;
-	};
-	($traceurRuntime.createClass)(CodePath, {
-	  link: function($__1) {
-	    var compiler = $__1.compiler;
-	    this._compiler = compiler;
-	  },
-	  rebuild: function() {
-	    var compilation = this._compiler.compileFrom(this.begin, this._maxSize);
-	    var $__1 = compilation,
-	        fn = $__1.fn,
-	        overflow = $__1.overflow,
-	        end = $__1.end;
-	    this.end = end;
-	    this.overflow = overflow;
-	    this.fn = fn;
-	    this.upToDate = true;
-	  }
-	}, {});
-	;
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  JIT: {get: function() {
-	      return JIT;
-	    }},
-	  __esModule: {value: true}
-	});
-	__webpack_require__(2);
-	var JIT = function JIT($__3) {
-	  var $__5 = $__3;
-	  this._compiler = null;
-	  this._environment = null;
-	  this._addressSize = 16;
-	  this._pageIndexBits = 12;
-	  this._pagePointerBits = this._addressSize - this._pageIndexBits;
-	  this._addressMask = ~((~0) >>> this._addressSize << this._addressSize >>> 0);
-	  this._pagePointerMask = ((1 << this._pagePointerBits) - 1) >>> 0;
-	  this._pageIndexMask = ((~this._pagePointerBits) & this._addressMask) >>> 0;
-	  this._pageCount = 1 << this._pageIndexBits >>> 0;
-	  this._pageSize = 1 << this._pagePointerBits >>> 0;
-	  this._pages = [];
-	  this._sets = {};
-	};
-	($traceurRuntime.createClass)(JIT, {
-	  link: function($__3) {
-	    var compiler = $__3.compiler;
-	    this._compiler = compiler;
-	  },
-	  setup: function(environment) {
-	    this._environment = environment;
-	  },
-	  declarePageSet: function(name, begin, end, Page) {
-	    var set = this._sets[name] = [];
-	    var startIndex = begin >>> this._pagePointerBits;
-	    var endIndex = end >>> this._pagePointerBits;
-	    for (var index = startIndex; index <= endIndex; ++index) {
-	      var baseAddress = index * this._pageSize;
-	      var pageSize = this._pageSize;
-	      var previous = this._pages[index - 1] || null;
-	      var page = this._pages[index] = new Page(baseAddress, pageSize);
-	      page.previous = previous;
-	      page.link({compiler: this._compiler});
-	      set.push(page);
-	    }
-	  },
-	  switchPageSetTarget: function(name, version) {
-	    for (var $__1 = this._sets[name][Symbol.iterator](),
-	        $__2; !($__2 = $__1.next()).done; ) {
-	      var page = $__2.value;
-	      {
-	        page.switchTarget(version);
-	      }
-	    }
-	  },
-	  invalidateAddress: function(address) {
-	    var version = arguments[1] !== (void 0) ? arguments[1] : null;
-	    var pageIndex = address >>> this._pagePointerBits;
-	    var pagePointer = address & this._pagePointerMask;
-	    var page = this._pages[pageIndex];
-	    page.invalidateAddress(pagePointer);
-	    return this;
-	  },
-	  jumpTo: function(address) {
-	    var pageIndex = address >>> this._pagePointerBits;
-	    var pagePointer = address & this._pagePointerMask;
-	    var page = this._page = this._pages[pageIndex];
-	    this._codePath = page.getFreshCodePath(pagePointer);
-	    console.assert(this._codePath);
-	  },
-	  stillValid: function() {
-	    return this._codePath && this._codePath.upToDate;
-	  },
-	  stop: function() {
-	    this._running = false;
-	  },
-	  resume: function() {
-	    this._running = true;
-	    do {
-	      var next = this._codePath.fn(this, this._environment);
-	      this.jumpTo(next);
-	    } while (this._running);
-	  }
-	}, {});
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  PageSet: {get: function() {
-	      return PageSet;
-	    }},
-	  __esModule: {value: true}
-	});
-	__webpack_require__(2);
-	var PageSet = function PageSet(PageType, baseAddress, size) {
-	  this._PageType = PageType;
-	  this._baseAddress = baseAddress;
-	  this._size = size;
-	  this._compiler = null;
-	  this._previous = null;
-	  this._pages = [];
-	  this._page = null;
-	};
-	($traceurRuntime.createClass)(PageSet, {
-	  link: function($__1) {
-	    var compiler = $__1.compiler;
-	    this._compiler = compiler;
-	  },
-	  switchTarget: function(target) {
-	    if (!this._pages[target]) {
-	      var PageType = this._PageType;
-	      var page = this._pages[target] = new PageType(this._baseAddress, this._size);
-	      var previous = this.previous;
-	      page.previous = previous;
-	      page.link({compiler: this._compiler});
-	    }
-	    this._page = this._pages[target];
-	    if (this.previous) {
-	      this.previous.invalidateOverflows(+Infinity);
-	    }
-	  },
-	  invalidateOverflows: function(distance) {
-	    this._page.invalidateOverflows(distance);
-	  },
-	  invalidateAddress: function(localAddress) {
-	    this._page.invalidateAddress(localAddress);
-	  },
-	  getFreshCodePath: function(localAddress) {
-	    return this._page.getFreshCodePath(localAddress);
-	  }
-	}, {});
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  ReadOnlyPage: {get: function() {
-	      return ReadOnlyPage;
-	    }},
-	  __esModule: {value: true}
-	});
-	var $__CodePath__;
-	__webpack_require__(2);
-	var CodePath = ($__CodePath__ = __webpack_require__(7), $__CodePath__ && $__CodePath__.__esModule && $__CodePath__ || {default: $__CodePath__}).CodePath;
-	var ReadOnlyPage = function ReadOnlyPage(baseAddress, size) {
-	  this._compiler = null;
-	  this._previous = null;
-	  this._codePaths = [];
-	  this._overflows = null;
-	  this._maxOverflow = 0;
-	  for (var localAddress = 0; localAddress < size; ++localAddress) {
-	    var maxSize = size - localAddress;
-	    var codePath = new CodePath(baseAddress + localAddress, {maxSize: maxSize});
-	    this._codePaths.push(codePath);
-	  }
-	};
-	($traceurRuntime.createClass)(ReadOnlyPage, {
-	  link: function($__4) {
-	    var compiler = $__4.compiler;
-	    this._compiler = compiler;
-	    this._overflows = [];
-	    this._maxOverflow = 0;
-	    for (var $__2 = this._codePaths[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var codePath = $__3.value;
-	      {
-	        codePath.link({compiler: compiler});
-	        codePath.rebuild();
-	        if (codePath.overflow !== 0)
-	          this._overflows.push(codePath);
-	        if (codePath.overflow > this._maxOverflow) {
-	          this._maxOverflow = codePath.overflow;
-	        }
-	      }
-	    }
-	  },
-	  invalidateOverflows: function(distance) {
-	    if (distance >= this._maxOverflow)
-	      return;
-	    for (var $__2 = this._overflows[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var codePath = $__3.value;
-	      {
-	        if (codePath.overflow > distance) {
-	          codePath.rebuild();
-	        }
-	      }
-	    }
-	  },
-	  invalidateAddress: function(localAddress) {},
-	  getFreshCodePath: function(localAddress) {
-	    return this._codePaths[localAddress];
-	  }
-	}, {});
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  VersionedPage: {get: function() {
-	      return VersionedPage;
-	    }},
-	  __esModule: {value: true}
-	});
-	var $__CodePath__;
-	__webpack_require__(2);
-	var CodePath = ($__CodePath__ = __webpack_require__(7), $__CodePath__ && $__CodePath__.__esModule && $__CodePath__ || {default: $__CodePath__}).CodePath;
-	var VersionedPage = function VersionedPage(baseAddress, size) {
-	  this._compiler = null;
-	  this._previous = null;
-	  this._codePaths = [];
-	  this._overflows = [];
-	  this._maxOverflow = 0;
-	  this._timeBeforeOverflowCheck = 0;
-	  for (var localAddress = 0; localAddress < size; ++localAddress) {
-	    var maxSize = size - localAddress;
-	    var codePath = new CodePath(baseAddress + localAddress, {maxSize: maxSize});
-	    this._codePaths.push(codePath);
-	  }
-	};
-	($traceurRuntime.createClass)(VersionedPage, {
-	  link: function($__4) {
-	    var compiler = $__4.compiler;
-	    this._compiler = compiler;
-	    this._timeBeforeOverflowCheck = 0;
-	    for (var $__2 = this._codePaths[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var codePath = $__3.value;
-	      {
-	        codePath.link({compiler: compiler});
-	        codePath.upToDate = false;
-	      }
-	    }
-	  },
-	  invalidateOverflows: function(distance) {
-	    if (distance >= this._maxOverflow)
-	      return;
-	    if (this._timeBeforeOverflowCheck <= 0) {
-	      this._updateOverflowList();
-	      this._timeBeforeOverflowCheck = 100;
-	    }
-	    for (var $__2 = this._overflows[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var codePath = $__3.value;
-	      {
-	        if (codePath.overflow > distance) {
-	          codePath.upToDate = false;
-	        }
-	      }
-	    }
-	  },
-	  invalidateAddress: function(localAddress) {
-	    if (this.previous)
-	      this.previous.invalidateOverflows(localAddress);
-	    for (var address = 0; address <= localAddress; ++address) {
-	      var codePath = this._codePaths[address];
-	      if (codePath.end > localAddress) {
-	        codePath.upToDate = false;
-	      }
-	    }
-	  },
-	  getFreshCodePath: function(localAddress) {
-	    var codePath = this._codePaths[localAddress];
-	    if (!codePath.upToDate) {
-	      var wasOverflowing = codePath.overflow > 0;
-	      codePath.rebuild();
-	      var isOverflowing = codePath.overflow > 0;
-	      if (!wasOverflowing && isOverflowing) {
-	        this._overflows.push(codePath);
-	        if (codePath.overflow > this._maxOverflow) {
-	          this._maxOverflow = codePath.overflow;
-	        }
-	      } else if (wasOverflowing && !isOverflowing) {
-	        this._timeBeforeOverflowCheck -= 1;
-	      }
-	    }
-	    return codePath;
-	  },
-	  _updateOverflowList: function() {
-	    this._overflows.length = 0;
-	    this._maxOverflow = 0;
-	    for (var $__2 = this._codePaths[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var codePath = $__3.value;
-	      {
-	        if (!codePath.upToDate)
-	          continue;
-	        if (codePath.overflow !== 0)
-	          this._overflows.push(codePath);
-	        if (codePath.overflow > this._maxOverflow) {
-	          this._maxOverflow = codePath.overflow;
-	        }
-	      }
-	    }
-	  }
-	}, {});
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  ExpectationReader: {get: function() {
-	      return ExpectationReader;
-	    }},
-	  __esModule: {value: true}
-	});
-	__webpack_require__(2);
-	var PassThrough = __webpack_require__(51).PassThrough;
-	var newLineRegex = /\n+/g;
-	var commentRegex = /^ *(#|$)/;
-	var spacesRegex = / +/g;
-	var expectationRegex = /^\$([0-9A-Fa-f]+) 0x([0-9A-Fa-f]+) (.*)$/;
-	var registerRegex = /^([a-z]+):([0-9A-Fa-f]+)->([0-9A-Fa-f]+)$/;
-	function parseExpectation(expectation) {
-	  var $__2 = expectation.match(expectationRegex),
-	      address = $__2[1],
-	      opcode = $__2[2],
-	      registerLine = $__2[3];
-	  var registerList = registerLine.trim().split(spacesRegex);
-	  var registers = [];
-	  for (var t = 0,
-	      T = registerList.length; t < T; ++t) {
-	    var $__2 = registerList[t].match(registerRegex),
-	        name = $__2[1],
-	        before = $__2[2],
-	        after = $__2[3];
-	    registers.push([name, parseInt(before, 16), parseInt(after, 16)]);
-	  }
-	  return {
-	    address: parseInt(address, 16),
-	    opcode: parseInt(opcode, 16),
-	    registers: registers
-	  };
-	}
-	var ExpectationReader = function ExpectationReader() {
-	  var $__0 = this;
-	  this._temp = '';
-	  this._buffer = [];
-	  this.stream = new PassThrough();
-	  this.stream.on('data', (function(buffer) {
-	    var stringBuffer = $__0._temp + buffer.toString();
-	    var endOfBuffer = stringBuffer.lastIndexOf('\n');
-	    $__0._temp = stringBuffer.substr(endOfBuffer + 1);
-	    stringBuffer = stringBuffer.substr(0, endOfBuffer);
-	    $__0._buffer = $__0._buffer.concat(stringBuffer.split(newLineRegex));
-	  }));
-	  this.stream.on('end', (function() {
-	    $__0._closed = true;
-	  }));
-	  this.promise = new Promise((function(resolve) {
-	    if ($__0._closed) {
-	      resolve();
-	    } else
-	      $__0.stream.on('end', (function() {
-	        resolve();
-	      }));
-	  }));
-	};
-	($traceurRuntime.createClass)(ExpectationReader, {
-	  findNext: function() {
-	    var expectation;
-	    do {
-	      expectation = this._buffer.shift();
-	    } while (expectation !== undefined && expectation.match(commentRegex));
-	    if (!expectation && this._closed)
-	      return false;
-	    return expectation;
-	  },
-	  readNext: function() {
-	    var expectation = this.findNext();
-	    if (!expectation)
-	      return expectation;
-	    return parseExpectation(expectation);
-	  },
-	  then: function() {
-	    return this.promise.then.apply(this.promise, arguments);
-	  }
-	}, {});
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  TestEnvironment: {get: function() {
-	      return TestEnvironment;
-	    }},
-	  __esModule: {value: true}
-	});
-	var $__virtjs_47_utils_47_FormatUtils__;
-	__webpack_require__(2);
-	var $__0 = ($__virtjs_47_utils_47_FormatUtils__ = __webpack_require__(17), $__virtjs_47_utils_47_FormatUtils__ && $__virtjs_47_utils_47_FormatUtils__.__esModule && $__virtjs_47_utils_47_FormatUtils__ || {default: $__virtjs_47_utils_47_FormatUtils__}),
-	    formatAddress = $__0.formatAddress,
-	    formatHexadecimal = $__0.formatHexadecimal;
-	var TestEnvironment = function TestEnvironment() {
-	  var options = arguments[0] !== (void 0) ? arguments[0] : {};
-	  this.test = {
-	    expectations: options.expectations,
-	    address: null,
-	    opcode: null,
-	    expectation: null,
-	    opcodes: {}
-	  };
-	};
-	($traceurRuntime.createClass)(TestEnvironment, {
-	  testBegin: function(address, opcode) {
-	    this.test.expectation = this.test.expectations.readNext();
-	    if (this.test.expectation === undefined)
-	      return false;
-	    if (this.test.expectation === false)
-	      return true;
-	    if (this.test.expectation.address !== address)
-	      throw new Error('Wrong address (' + formatAddress(address, 16) + ' instead of ' + formatAddress(this.test.expectation.address, 16) + ')');
-	    if (this.test.expectation.opcode !== opcode)
-	      throw new Error('Wrong opcode at ' + formatAddress(address, 16) + ', expected ' + formatHexadecimal(this.test.expectation.opcode, 8) + ' rather than ' + formatHexadecimal(opcode, 8));
-	    this.test.address = address;
-	    this.test.opcode = opcode;
-	    if (!this.test.opcodes[opcode])
-	      this.test.opcodes[opcode] = [];
-	    for (var $__2 = this.test.expectation.registers[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var $__4 = $__3.value,
-	          name = $__4[0],
-	          before = $__4[1];
-	      this[name] = before;
-	    }
-	    return true;
-	  },
-	  testCommit: function() {
-	    if (!this.test.expectation)
-	      return;
-	    var diffs = null;
-	    for (var $__2 = this.test.expectation.registers[Symbol.iterator](),
-	        $__3; !($__3 = $__2.next()).done; ) {
-	      var $__4 = $__3.value,
-	          name = $__4[0],
-	          before = $__4[1],
-	          after = $__4[2];
-	      {
-	        if (this[name] !== after) {
-	          diffs = diffs || [];
-	          diffs.push([name, before, after, this[name]]);
-	          this[name] = after;
-	        }
-	      }
-	    }
-	    if (diffs && this.test.opcodes[this.test.opcode].length < 3) {
-	      this.test.opcodes[this.test.opcode].push([this.test.address, diffs]);
-	    }
-	  }
-	}, {});
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  TestResults: {get: function() {
-	      return TestResults;
-	    }},
-	  __esModule: {value: true}
-	});
-	var $___46__46__47__46__46__47_utils_47_FormatUtils__;
-	__webpack_require__(2);
-	var $__0 = ($___46__46__47__46__46__47_utils_47_FormatUtils__ = __webpack_require__(17), $___46__46__47__46__46__47_utils_47_FormatUtils__ && $___46__46__47__46__46__47_utils_47_FormatUtils__.__esModule && $___46__46__47__46__46__47_utils_47_FormatUtils__ || {default: $___46__46__47__46__46__47_utils_47_FormatUtils__}),
-	    formatAddress = $__0.formatAddress,
-	    formatHexadecimal = $__0.formatHexadecimal;
-	var GREEN = '\u001B[32m';
-	var RED = '\u001B[31m';
-	var YELLOW = '\u001B[33m';
-	var NORMAL = '\u001B[m';
-	var TestResults = function TestResults(testEnvironment) {
-	  var additiveMask = arguments[1] !== (void 0) ? arguments[1] : 0x00;
-	  this._environment = testEnvironment;
-	  this._additiveMask = additiveMask;
-	};
-	($traceurRuntime.createClass)(TestResults, {toString: function() {
-	    var output = '    ';
-	    for (var x = 0; x < 16; ++x)
-	      output += ' ' + formatHexadecimal(x, 8);
-	    for (var y = 0; y < 16; ++y) {
-	      output += '\n' + formatHexadecimal(y << 4, 8);
-	      for (var x = 0; x < 16; ++x) {
-	        var result = this._environment.test.opcodes[(y * 16 + x) | this._additiveMask];
-	        var color = result ? result.length ? RED : GREEN : YELLOW;
-	        output += ' ' + color + '\u2588\u2588\u2588\u2588' + NORMAL;
-	      }
-	    }
-	    output += '\n';
-	    for (var y = 0; y < 16; ++y) {
-	      for (var x = 0; x < 16; ++x) {
-	        var fails = this._environment.test.opcodes[(y * 16 + x) | this._additiveMask];
-	        if (!fails || fails.length === 0)
-	          continue;
-	        fails.forEach((function($__2) {
-	          var $__3 = $__2,
-	              address = $__3[0],
-	              fail = $__3[1];
-	          output += '\nOpcode ' + formatHexadecimal(y * 16 + x, 8) + ' @ ' + formatAddress(address, 16) + ': ';
-	          output += fail.map((function($__3) {
-	            var $__4 = $__3,
-	                register = $__4[0],
-	                before = $__4[1],
-	                expected = $__4[2],
-	                value = $__4[3];
-	            var format = ['pc', 'sp'].indexOf(register) !== -1 ? (function(n) {
-	              return formatHexadecimal(n, 16);
-	            }) : (function(n) {
-	              return formatHexadecimal(n, 8);
-	            });
-	            return (register + " (" + format(before) + " -> " + format(expected) + ") = " + format(value));
-	          })).join(', ');
-	        }));
-	        output += '\n';
-	      }
-	    }
-	    return output;
-	  }}, {});
-
-
-/***/ },
-/* 15 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3508,70 +2760,140 @@ var virtjs =
 
 
 /***/ },
-/* 16 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperties(exports, {
-	  IterableMixin: {get: function() {
-	      return IterableMixin;
+	  RunnableMixin: {get: function() {
+	      return RunnableMixin;
 	    }},
 	  __esModule: {value: true}
 	});
 	__webpack_require__(2);
-	var IterableMixin = function IterableMixin() {};
-	($traceurRuntime.createClass)(IterableMixin, {
-	  slice: function(from, count) {
-	    var length = this.length();
-	    if (typeof from === 'undefined')
-	      from = 0;
-	    if (typeof count === 'undefined')
-	      count = length;
-	    var begin = from < 0 ? length + from : from;
-	    var end = Math.min(begin + count, length);
-	    var subset = [];
-	    for (var t = begin; t < end; ++t)
-	      subset.push(this.at(t));
-	    return subset;
-	  },
-	  forEach: function(callback, context) {
-	    for (var t = 0,
-	        T = this.length(); t < T; ++t) {
-	      callback.call(context, this.at(t), t, this);
-	    }
-	  },
-	  map: function(callback, context) {
-	    var result = [];
-	    for (var t = 0,
-	        T = this.length(); t < T; ++t)
-	      result.push(callback.call(context, this.at(t), t, this));
-	    return result;
-	  },
-	  filter: function(callback, context) {
-	    var result = [];
-	    for (var t = 0,
-	        T = this.length(); t < T; ++t) {
-	      var element = this.at(t);
-	      if (callback.call(context, element, t, this)) {
-	        result.push(element);
-	      }
-	    }
-	    return result;
-	  },
-	  reduce: function(callback, previous, context) {
-	    var index = 0;
-	    if (typeof previous === 'undefined')
-	      previous = this.at(index++);
-	    for (var length = this.length(); index < length; ++index)
-	      previous = callback.call(context, previous, this.at(index), index, this);
-	    return previous;
-	  }
-	}, {});
-	;
+	var RunnableMixin = function RunnableMixin() {
+	  this._runTimer = null;
+	};
+	($traceurRuntime.createClass)(RunnableMixin, {run: function() {
+	    if (this._runTimer)
+	      return;
+	    if (!this._canStart())
+	      return;
+	    this._start();
+	  }}, {});
 
 
 /***/ },
-/* 17 */
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(Buffer, module) {"use strict";
+	Object.defineProperties(exports, {
+	  fetchArrayBuffer: {get: function() {
+	      return fetchArrayBuffer;
+	    }},
+	  __esModule: {value: true}
+	});
+	__webpack_require__(2);
+	var base64DataUrl = /^data:[^;]*;base64,([a-zA-Z0-9+/]+={0,2})$/;
+	function nodeToUint8() {
+	  for (var buffers = [],
+	      $__0 = 0; $__0 < arguments.length; $__0++)
+	    buffers[$__0] = arguments[$__0];
+	  var totalByteLength = buffers.reduce((function(sum, buffer) {
+	    return sum + buffer.length;
+	  }), 0);
+	  var array = new Uint8Array(totalByteLength),
+	      offset = 0;
+	  buffers.forEach((function(buffer) {
+	    for (var t = 0,
+	        T = array.length; t < T; ++t)
+	      array[offset++] = buffer[t];
+	  }));
+	  return array;
+	}
+	function binaryStringToUint8() {
+	  for (var strings = [],
+	      $__1 = 0; $__1 < arguments.length; $__1++)
+	    strings[$__1] = arguments[$__1];
+	  var totalByteLength = strings.reduce((function(sum, string) {
+	    return sum + string.length;
+	  }), 0);
+	  var array = new Uint8Array(totalByteLength),
+	      offset = 0;
+	  strings.forEach((function(string) {
+	    for (var t = 0,
+	        T = string.length; t < T; ++t)
+	      array[offset++] = string.charCodeAt(t);
+	  }));
+	  return array;
+	}
+	function fetchArrayBuffer(path) {
+	  return new Promise((function(resolve, reject) {
+	    var isBlob = typeof Blob !== 'undefined' && path instanceof Blob;
+	    var isDataURI = typeof path === 'string' && path.match(base64DataUrl);
+	    var isBrowser = typeof window !== 'undefined';
+	    var isWeb = isBrowser || /^(https?:\/\/|blob:)/.test(path);
+	    if (!isWeb && path.indexOf(':') !== -1)
+	      throw new Error('Invalid protocol');
+	    if (isBlob) {
+	      var fileReader = new FileReader();
+	      fileReader.addEventListener('load', (function(e) {
+	        resolve(e.target.result);
+	      }));
+	      fileReader.addEventListener('error', (function(e) {
+	        reject();
+	      }));
+	      fileReader.readAsArrayBuffer(path);
+	    } else if (isDataURI) {
+	      if (isBrowser) {
+	        resolve(binaryStringToUint8(atob(isDataURI[1])).buffer);
+	      } else {
+	        resolve(nodeToUint8(new Buffer(isDataURI[1], 'base64')).buffer);
+	      }
+	    } else if (isBrowser) {
+	      var xhr = new XMLHttpRequest();
+	      xhr.open('GET', path, true);
+	      xhr.responseType = 'arraybuffer';
+	      xhr.onload = (function() {
+	        return resolve(xhr.response);
+	      });
+	      xhr.onerror = (function() {
+	        return reject(xhr.status);
+	      });
+	      xhr.send(null);
+	    } else if (isWeb) {
+	      var protocol = path.substr(0, path.indexOf(':'));
+	      var web = module.require(protocol);
+	      var buffers = [];
+	      web.get(path, function(res) {
+	        res.on('data', (function(chunk) {
+	          buffers.push(chunk);
+	        }));
+	        res.on('error', (function(err) {
+	          reject(err.message);
+	        }));
+	        res.on('end', (function() {
+	          resolve(nodeToUint8.apply(null, $traceurRuntime.spread(buffers)).buffer);
+	        }));
+	      });
+	    } else {
+	      var fs = module.require('fs');
+	      fs.readFile(path, (function(err, buffer) {
+	        if (err) {
+	          reject(err);
+	        } else {
+	          resolve(nodeToUint8(buffer).buffer);
+	        }
+	      }));
+	    }
+	  }));
+	}
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(46).Buffer, __webpack_require__(47)(module)))
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3615,12 +2937,11 @@ var virtjs =
 	  return str;
 	}
 	;
-	function formatString(str, size, leftAligned) {
+	function formatString(str, size) {
+	  var leftAligned = arguments[2] !== (void 0) ? arguments[2] : true;
 	  str = str.toString();
 	  if (typeof size === 'undefined')
 	    return str;
-	  if (typeof leftAligned === 'undefined')
-	    leftAligned = true;
 	  for (var t = str.length; t < size; ++t) {
 	    if (leftAligned) {
 	      str += ' ';
@@ -3670,65 +2991,28 @@ var virtjs =
 
 
 /***/ },
-/* 18 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperties(exports, {
-	  createUnaddressable: {get: function() {
-	      return createUnaddressable;
-	    }},
-	  createImmutable: {get: function() {
-	      return createImmutable;
-	    }},
-	  createAccessor: {get: function() {
-	      return createAccessor;
-	    }},
-	  createPlainOldData: {get: function() {
-	      return createPlainOldData;
+	  memset: {get: function() {
+	      return memset;
 	    }},
 	  __esModule: {value: true}
 	});
 	var $__FormatUtils__;
 	__webpack_require__(2);
-	var formatAddress = ($__FormatUtils__ = __webpack_require__(17), $__FormatUtils__ && $__FormatUtils__.__esModule && $__FormatUtils__ || {default: $__FormatUtils__}).formatAddress;
-	function createUnaddressable(address, bits) {
-	  return function(value, user) {
-	    throw new Error('Address ' + formatAddress(user, bits) + ' is unaddressable');
-	  };
+	var formatAddress = ($__FormatUtils__ = __webpack_require__(9), $__FormatUtils__ && $__FormatUtils__.__esModule && $__FormatUtils__ || {default: $__FormatUtils__}).formatAddress;
+	function memset(destination, value, offset, size) {
+	  for (var t = 0; t < size; ++t)
+	    destination[offset + t] = value;
+	  return destination;
 	}
-	;
-	function createImmutable(value) {
-	  return function() {
-	    return value;
-	  };
-	}
-	;
-	function createAccessor(accessor, context) {
-	  for (var bindings = [],
-	      $__1 = 2; $__1 < arguments.length; $__1++)
-	    bindings[$__1 - 2] = arguments[$__1];
-	  if (!arguments[0])
-	    throw new Error('Undefined accessor cannot be bound');
-	  var n = bindings.length;
-	  return function(a, b, c) {
-	    bindings[n + 0] = a;
-	    bindings[n + 1] = b;
-	    bindings[n + 2] = c;
-	    return accessor.apply(context, bindings);
-	  };
-	}
-	;
-	function createPlainOldData(object, key) {
-	  if (!object)
-	    throw new Error('An undefined object cannot be mapped');
-	  return [object, key];
-	}
-	;
 
 
 /***/ },
-/* 19 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3892,7 +3176,7 @@ var virtjs =
 	      return clone(value);
 	    }));
 	  if (input instanceof ArrayBuffer)
-	    return input.slice();
+	    return input.slice(0);
 	  var output = {};
 	  for (var $__3 = Object.keys(input)[Symbol.iterator](),
 	      $__4; !($__4 = $__3.next()).done; ) {
@@ -3904,7 +3188,28 @@ var virtjs =
 
 
 /***/ },
-/* 20 */
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperties(exports, {
+	  toSigned8: {get: function() {
+	      return toSigned8;
+	    }},
+	  __esModule: {value: true}
+	});
+	__webpack_require__(2);
+	var toSigned8 = (function() {
+	  var tmp = new Int8Array(1);
+	  return function(n) {
+	    tmp[0] = n;
+	    return tmp[0];
+	  };
+	})();
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3914,15 +3219,12 @@ var virtjs =
 	    }},
 	  __esModule: {value: true}
 	});
-	var $__virtjs_47_core_47_jit_47_PageSet__,
-	    $__virtjs_47_core_47_jit_47_ReadOnlyPage__,
-	    $__virtjs_47_core_47_jit_47_VersionedPage__,
-	    $__virtjs_47_core_47_Engine__,
-	    $__virtjs_47_devices_47_inputs_47_NullInput__,
-	    $__virtjs_47_devices_47_screens_47_NullScreen__,
-	    $__virtjs_47_devices_47_timers_47_SerialTimer__,
-	    $__virtjs_47_mixins_47_EmitterMixin__,
-	    $__virtjs_47_utils_47_ObjectUtils__,
+	var $___46__46__47__46__46__47_core_47_Engine__,
+	    $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__,
+	    $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__,
+	    $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__,
+	    $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
+	    $___46__46__47__46__46__47_utils_47_ObjectUtils__,
 	    $__components_47_GPU__,
 	    $__components_47_KeyIO__,
 	    $__components_47_MMU__,
@@ -3930,31 +3232,28 @@ var virtjs =
 	    $__Interpreter__,
 	    $__tools__;
 	__webpack_require__(2);
-	var PageSet = ($__virtjs_47_core_47_jit_47_PageSet__ = __webpack_require__(9), $__virtjs_47_core_47_jit_47_PageSet__ && $__virtjs_47_core_47_jit_47_PageSet__.__esModule && $__virtjs_47_core_47_jit_47_PageSet__ || {default: $__virtjs_47_core_47_jit_47_PageSet__}).PageSet;
-	var ReadOnlyPage = ($__virtjs_47_core_47_jit_47_ReadOnlyPage__ = __webpack_require__(10), $__virtjs_47_core_47_jit_47_ReadOnlyPage__ && $__virtjs_47_core_47_jit_47_ReadOnlyPage__.__esModule && $__virtjs_47_core_47_jit_47_ReadOnlyPage__ || {default: $__virtjs_47_core_47_jit_47_ReadOnlyPage__}).ReadOnlyPage;
-	var VersionedPage = ($__virtjs_47_core_47_jit_47_VersionedPage__ = __webpack_require__(11), $__virtjs_47_core_47_jit_47_VersionedPage__ && $__virtjs_47_core_47_jit_47_VersionedPage__.__esModule && $__virtjs_47_core_47_jit_47_VersionedPage__ || {default: $__virtjs_47_core_47_jit_47_VersionedPage__}).VersionedPage;
-	var BaseEngine = ($__virtjs_47_core_47_Engine__ = __webpack_require__(6), $__virtjs_47_core_47_Engine__ && $__virtjs_47_core_47_Engine__.__esModule && $__virtjs_47_core_47_Engine__ || {default: $__virtjs_47_core_47_Engine__}).Engine;
-	var NullInput = ($__virtjs_47_devices_47_inputs_47_NullInput__ = __webpack_require__(42), $__virtjs_47_devices_47_inputs_47_NullInput__ && $__virtjs_47_devices_47_inputs_47_NullInput__.__esModule && $__virtjs_47_devices_47_inputs_47_NullInput__ || {default: $__virtjs_47_devices_47_inputs_47_NullInput__}).NullInput;
-	var NullScreen = ($__virtjs_47_devices_47_screens_47_NullScreen__ = __webpack_require__(44), $__virtjs_47_devices_47_screens_47_NullScreen__ && $__virtjs_47_devices_47_screens_47_NullScreen__.__esModule && $__virtjs_47_devices_47_screens_47_NullScreen__ || {default: $__virtjs_47_devices_47_screens_47_NullScreen__}).NullScreen;
-	var SerialTimer = ($__virtjs_47_devices_47_timers_47_SerialTimer__ = __webpack_require__(49), $__virtjs_47_devices_47_timers_47_SerialTimer__ && $__virtjs_47_devices_47_timers_47_SerialTimer__.__esModule && $__virtjs_47_devices_47_timers_47_SerialTimer__ || {default: $__virtjs_47_devices_47_timers_47_SerialTimer__}).SerialTimer;
-	var EmitterMixin = ($__virtjs_47_mixins_47_EmitterMixin__ = __webpack_require__(15), $__virtjs_47_mixins_47_EmitterMixin__ && $__virtjs_47_mixins_47_EmitterMixin__.__esModule && $__virtjs_47_mixins_47_EmitterMixin__ || {default: $__virtjs_47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var $__8 = ($__virtjs_47_utils_47_ObjectUtils__ = __webpack_require__(19), $__virtjs_47_utils_47_ObjectUtils__ && $__virtjs_47_utils_47_ObjectUtils__.__esModule && $__virtjs_47_utils_47_ObjectUtils__ || {default: $__virtjs_47_utils_47_ObjectUtils__}),
-	    createDefensiveProxy = $__8.createDefensiveProxy,
-	    mixin = $__8.mixin;
-	var GPU = ($__components_47_GPU__ = __webpack_require__(30), $__components_47_GPU__ && $__components_47_GPU__.__esModule && $__components_47_GPU__ || {default: $__components_47_GPU__}).GPU;
-	var KeyIO = ($__components_47_KeyIO__ = __webpack_require__(31), $__components_47_KeyIO__ && $__components_47_KeyIO__.__esModule && $__components_47_KeyIO__ || {default: $__components_47_KeyIO__}).KeyIO;
-	var MMU = ($__components_47_MMU__ = __webpack_require__(32), $__components_47_MMU__ && $__components_47_MMU__.__esModule && $__components_47_MMU__ || {default: $__components_47_MMU__}).MMU;
-	var Environment = ($__Environment__ = __webpack_require__(21), $__Environment__ && $__Environment__.__esModule && $__Environment__ || {default: $__Environment__}).Environment;
-	var Interpreter = ($__Interpreter__ = __webpack_require__(22), $__Interpreter__ && $__Interpreter__.__esModule && $__Interpreter__ || {default: $__Interpreter__}).Interpreter;
-	var fixRomSize = ($__tools__ = __webpack_require__(24), $__tools__ && $__tools__.__esModule && $__tools__ || {default: $__tools__}).fixRomSize;
+	var BaseEngine = ($___46__46__47__46__46__47_core_47_Engine__ = __webpack_require__(5), $___46__46__47__46__46__47_core_47_Engine__ && $___46__46__47__46__46__47_core_47_Engine__.__esModule && $___46__46__47__46__46__47_core_47_Engine__ || {default: $___46__46__47__46__46__47_core_47_Engine__}).Engine;
+	var NullInput = ($___46__46__47__46__46__47_devices_47_inputs_47_NullInput__ = __webpack_require__(38), $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__ && $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__.__esModule && $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__ || {default: $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__}).NullInput;
+	var NullScreen = ($___46__46__47__46__46__47_devices_47_screens_47_NullScreen__ = __webpack_require__(40), $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__ && $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__.__esModule && $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__ || {default: $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__}).NullScreen;
+	var SerialTimer = ($___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__ = __webpack_require__(45), $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__ && $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__.__esModule && $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__ || {default: $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__}).SerialTimer;
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var $__5 = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}),
+	    createDefensiveProxy = $__5.createDefensiveProxy,
+	    mixin = $__5.mixin;
+	var GPU = ($__components_47_GPU__ = __webpack_require__(23), $__components_47_GPU__ && $__components_47_GPU__.__esModule && $__components_47_GPU__ || {default: $__components_47_GPU__}).GPU;
+	var KeyIO = ($__components_47_KeyIO__ = __webpack_require__(24), $__components_47_KeyIO__ && $__components_47_KeyIO__.__esModule && $__components_47_KeyIO__ || {default: $__components_47_KeyIO__}).KeyIO;
+	var MMU = ($__components_47_MMU__ = __webpack_require__(25), $__components_47_MMU__ && $__components_47_MMU__.__esModule && $__components_47_MMU__ || {default: $__components_47_MMU__}).MMU;
+	var Environment = ($__Environment__ = __webpack_require__(14), $__Environment__ && $__Environment__.__esModule && $__Environment__ || {default: $__Environment__}).Environment;
+	var Interpreter = ($__Interpreter__ = __webpack_require__(15), $__Interpreter__ && $__Interpreter__.__esModule && $__Interpreter__ || {default: $__Interpreter__}).Interpreter;
+	var fixRomSize = ($__tools__ = __webpack_require__(17), $__tools__ && $__tools__.__esModule && $__tools__ || {default: $__tools__}).fixRomSize;
 	var Engine = function Engine() {
-	  var $__18,
-	      $__19,
-	      $__20;
-	  var $__17 = arguments[0] !== (void 0) ? arguments[0] : {},
-	      devices = ($__18 = $__17.devices) === void 0 ? {} : $__18,
-	      advanced = ($__19 = $__17.advanced) === void 0 ? {} : $__19,
-	      events = ($__20 = $__17.events) === void 0 ? [] : $__20;
+	  var $__15,
+	      $__16,
+	      $__17;
+	  var $__14 = arguments[0] !== (void 0) ? arguments[0] : {},
+	      devices = ($__15 = $__14.devices) === void 0 ? {} : $__15,
+	      advanced = ($__16 = $__14.advanced) === void 0 ? {} : $__16,
+	      events = ($__17 = $__14.events) === void 0 ? [] : $__17;
 	  $traceurRuntime.superCall(this, $Engine.prototype, "constructor", []);
 	  this._startEvent = !!~events.indexOf('start') ? {} : null;
 	  this._stopEvent = !!~events.indexOf('start') ? {} : null;
@@ -4004,10 +3303,10 @@ var virtjs =
 	    }
 	  },
 	  loadArrayBuffer: function(arrayBuffer) {
-	    var $__19;
-	    var $__18 = arguments[1] !== (void 0) ? arguments[1] : {},
-	        initialState = $__18.initialState,
-	        autoStart = ($__19 = $__18.autoStart) === void 0 ? true : $__19;
+	    var $__16;
+	    var $__15 = arguments[1] !== (void 0) ? arguments[1] : {},
+	        initialState = $__15.initialState,
+	        autoStart = ($__16 = $__15.autoStart) === void 0 ? true : $__16;
 	    var environment = new Environment({
 	      romBuffer: fixRomSize(arrayBuffer),
 	      initialState: initialState
@@ -4036,22 +3335,22 @@ var virtjs =
 	    }
 	  },
 	  run: function() {
-	    var $__15 = this;
+	    var $__12 = this;
 	    if (this._runTimer)
 	      return;
 	    if (!this.environment)
 	      return;
 	    var run = (function() {
-	      $__15._runTimer = $__15.timer.nextTick(entry);
-	      $__15.interpreter.runFrame();
+	      $__12._runTimer = $__12.timer.nextTick(entry);
+	      $__12.interpreter.runFrame();
 	    });
 	    var tryRun = (function() {
 	      try {
 	        run();
 	      } catch (err) {
-	        $__15.stop();
-	        $__15._errorEvent.error = err;
-	        $__15.emit('error', $__15._errorEvent);
+	        $__12.stop();
+	        $__12._errorEvent.error = err;
+	        $__12.emit('error', $__12._errorEvent);
 	      }
 	    });
 	    if (this._startEvent)
@@ -4064,7 +3363,7 @@ var virtjs =
 
 
 /***/ },
-/* 21 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4074,18 +3373,13 @@ var virtjs =
 	    }},
 	  __esModule: {value: true}
 	});
-	var $__virtjs_47_core_47_tests_47_TestEnvironment__,
-	    $__virtjs_47_utils_47_ObjectUtils__,
+	var $___46__46__47__46__46__47_utils_47_MemoryUtils__,
+	    $___46__46__47__46__46__47_utils_47_ObjectUtils__,
 	    $__components_47_GPU__;
 	__webpack_require__(2);
-	var TestEnvironmentBase = ($__virtjs_47_core_47_tests_47_TestEnvironment__ = __webpack_require__(13), $__virtjs_47_core_47_tests_47_TestEnvironment__ && $__virtjs_47_core_47_tests_47_TestEnvironment__.__esModule && $__virtjs_47_core_47_tests_47_TestEnvironment__ || {default: $__virtjs_47_core_47_tests_47_TestEnvironment__}).TestEnvironment;
-	var clone = ($__virtjs_47_utils_47_ObjectUtils__ = __webpack_require__(19), $__virtjs_47_utils_47_ObjectUtils__ && $__virtjs_47_utils_47_ObjectUtils__.__esModule && $__virtjs_47_utils_47_ObjectUtils__ || {default: $__virtjs_47_utils_47_ObjectUtils__}).clone;
-	var CYCLES_PER_OAM = ($__components_47_GPU__ = __webpack_require__(30), $__components_47_GPU__ && $__components_47_GPU__.__esModule && $__components_47_GPU__ || {default: $__components_47_GPU__}).CYCLES_PER_OAM;
-	function memset(destination, byte, size) {
-	  for (var t = 0; t < size; ++t)
-	    destination[t] = byte;
-	  return destination;
-	}
+	var memset = ($___46__46__47__46__46__47_utils_47_MemoryUtils__ = __webpack_require__(10), $___46__46__47__46__46__47_utils_47_MemoryUtils__ && $___46__46__47__46__46__47_utils_47_MemoryUtils__.__esModule && $___46__46__47__46__46__47_utils_47_MemoryUtils__ || {default: $___46__46__47__46__46__47_utils_47_MemoryUtils__}).memset;
+	var clone = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).clone;
+	var VBLANK_MODE = ($__components_47_GPU__ = __webpack_require__(23), $__components_47_GPU__ && $__components_47_GPU__.__esModule && $__components_47_GPU__ || {default: $__components_47_GPU__}).VBLANK_MODE;
 	var Environment = function Environment() {
 	  var $__7 = arguments[0] !== (void 0) ? arguments[0] : {},
 	      romBuffer = $__7.romBuffer,
@@ -4106,7 +3400,7 @@ var virtjs =
 	  this.romBuffer = romBuffer;
 	  this.ramBuffer = new ArrayBuffer(8192 * 16);
 	  this.hramBuffer = new ArrayBuffer(127);
-	  this.wramBuffer = memset(new ArrayBuffer(4096 * 8), 0xFF, 4096 * 8);
+	  this.wramBuffer = memset(new ArrayBuffer(4096 * 8), 0xFF, 0, 4096 * 8);
 	  this.vramBuffer = new ArrayBuffer(8192 * 2);
 	  this.oamBuffer = new ArrayBuffer(175);
 	  this.cgbUnlocked = new Uint8Array(this.romBuffer)[0x0143] & 0x80;
@@ -4129,9 +3423,11 @@ var virtjs =
 	  this.mbcMode = 0;
 	  this.mbcRamFeature = false;
 	  this.mbcRtc = [0, 0, 0, 0, 0];
-	  this.mbcRomBank = 1;
+	  this.mbcRomBank = 0;
 	  this.mbcRamBank = 0;
 	  this.mbcRtcIndex = 0;
+	  this.cpuInterruptSwitch = false;
+	  this.cpuInterruptSwitchDelay = -1;
 	  this.cpuInterruptFeature = false;
 	  this.cpuStop = false;
 	  this.cpuHalt = false;
@@ -4144,10 +3440,11 @@ var virtjs =
 	  this.gpuTilesetBase = 1;
 	  this.gpuBackgroundBase = 0;
 	  this.gpuWindowBase = 0;
-	  this.gpuInterrupts = 0;
-	  this.gpuMode = 0x02;
-	  this.gpuClock = CYCLES_PER_OAM;
-	  this.gpuLy = 0;
+	  this.gpuInterrupts = 0x80;
+	  this.gpuMode = VBLANK_MODE;
+	  this.gpuClock = 296;
+	  this.gpuLine = 144;
+	  this.gpuLy = 144;
 	  this.gpuLyc = 0;
 	  this.gpuBgScroll = [0, 0];
 	  this.gpuWindowPosition = [0, 0];
@@ -4199,44 +3496,56 @@ var virtjs =
 
 
 /***/ },
-/* 22 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 	Object.defineProperties(exports, {
+	  NORMAL_SPEED: {get: function() {
+	      return NORMAL_SPEED;
+	    }},
+	  DOUBLE_SPEED: {get: function() {
+	      return DOUBLE_SPEED;
+	    }},
 	  Interpreter: {get: function() {
 	      return Interpreter;
 	    }},
 	  __esModule: {value: true}
 	});
-	var $__virtjs_47_mixins_47_EmitterMixin__,
-	    $__virtjs_47_utils_47_FormatUtils__,
-	    $__virtjs_47_utils_47_ObjectUtils__,
+	var $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
+	    $___46__46__47__46__46__47_utils_47_FormatUtils__,
+	    $___46__46__47__46__46__47_utils_47_ObjectUtils__,
 	    $__compilation_47_templates_47_assembly__,
 	    $__compilation_47_templates_47_javascript__,
 	    $__compilation_47_InterpreterHelpers__,
 	    $__compilation_47_instructions__,
-	    $__compilation_47_instructions__;
+	    $__compilation_47_instructions__,
+	    $__components_47_GPU__;
 	__webpack_require__(2);
-	var EmitterMixin = ($__virtjs_47_mixins_47_EmitterMixin__ = __webpack_require__(15), $__virtjs_47_mixins_47_EmitterMixin__ && $__virtjs_47_mixins_47_EmitterMixin__.__esModule && $__virtjs_47_mixins_47_EmitterMixin__ || {default: $__virtjs_47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var formatHexadecimal = ($__virtjs_47_utils_47_FormatUtils__ = __webpack_require__(17), $__virtjs_47_utils_47_FormatUtils__ && $__virtjs_47_utils_47_FormatUtils__.__esModule && $__virtjs_47_utils_47_FormatUtils__ || {default: $__virtjs_47_utils_47_FormatUtils__}).formatHexadecimal;
-	var mixin = ($__virtjs_47_utils_47_ObjectUtils__ = __webpack_require__(19), $__virtjs_47_utils_47_ObjectUtils__ && $__virtjs_47_utils_47_ObjectUtils__.__esModule && $__virtjs_47_utils_47_ObjectUtils__ || {default: $__virtjs_47_utils_47_ObjectUtils__}).mixin;
-	var assemblyTemplates = ($__compilation_47_templates_47_assembly__ = __webpack_require__(28), $__compilation_47_templates_47_assembly__ && $__compilation_47_templates_47_assembly__.__esModule && $__compilation_47_templates_47_assembly__ || {default: $__compilation_47_templates_47_assembly__}).templates;
-	var javascriptTemplates = ($__compilation_47_templates_47_javascript__ = __webpack_require__(29), $__compilation_47_templates_47_javascript__ && $__compilation_47_templates_47_javascript__.__esModule && $__compilation_47_templates_47_javascript__ || {default: $__compilation_47_templates_47_javascript__}).templates;
-	var InterpreterHelpers = ($__compilation_47_InterpreterHelpers__ = __webpack_require__(26), $__compilation_47_InterpreterHelpers__ && $__compilation_47_InterpreterHelpers__.__esModule && $__compilation_47_InterpreterHelpers__ || {default: $__compilation_47_InterpreterHelpers__}).InterpreterHelpers;
-	var $__6 = ($__compilation_47_instructions__ = __webpack_require__(27), $__compilation_47_instructions__ && $__compilation_47_instructions__.__esModule && $__compilation_47_instructions__ || {default: $__compilation_47_instructions__}),
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var formatHexadecimal = ($___46__46__47__46__46__47_utils_47_FormatUtils__ = __webpack_require__(9), $___46__46__47__46__46__47_utils_47_FormatUtils__ && $___46__46__47__46__46__47_utils_47_FormatUtils__.__esModule && $___46__46__47__46__46__47_utils_47_FormatUtils__ || {default: $___46__46__47__46__46__47_utils_47_FormatUtils__}).formatHexadecimal;
+	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var assemblyTemplates = ($__compilation_47_templates_47_assembly__ = __webpack_require__(21), $__compilation_47_templates_47_assembly__ && $__compilation_47_templates_47_assembly__.__esModule && $__compilation_47_templates_47_assembly__ || {default: $__compilation_47_templates_47_assembly__}).templates;
+	var javascriptTemplates = ($__compilation_47_templates_47_javascript__ = __webpack_require__(22), $__compilation_47_templates_47_javascript__ && $__compilation_47_templates_47_javascript__.__esModule && $__compilation_47_templates_47_javascript__ || {default: $__compilation_47_templates_47_javascript__}).templates;
+	var InterpreterHelpers = ($__compilation_47_InterpreterHelpers__ = __webpack_require__(19), $__compilation_47_InterpreterHelpers__ && $__compilation_47_InterpreterHelpers__.__esModule && $__compilation_47_InterpreterHelpers__ || {default: $__compilation_47_InterpreterHelpers__}).InterpreterHelpers;
+	var $__6 = ($__compilation_47_instructions__ = __webpack_require__(20), $__compilation_47_instructions__ && $__compilation_47_instructions__.__esModule && $__compilation_47_instructions__ || {default: $__compilation_47_instructions__}),
 	    instructions = $__6.instructions,
 	    cbInstructions = $__6.cbInstructions;
-	var $__7 = ($__compilation_47_instructions__ = __webpack_require__(27), $__compilation_47_instructions__ && $__compilation_47_instructions__.__esModule && $__compilation_47_instructions__ || {default: $__compilation_47_instructions__}),
+	var $__7 = ($__compilation_47_instructions__ = __webpack_require__(20), $__compilation_47_instructions__ && $__compilation_47_instructions__.__esModule && $__compilation_47_instructions__ || {default: $__compilation_47_instructions__}),
 	    x8_t = $__7.x8_t,
 	    i8_t = $__7.i8_t,
 	    u8_t = $__7.u8_t,
 	    u16_t = $__7.u16_t;
+	var $__8 = ($__components_47_GPU__ = __webpack_require__(23), $__components_47_GPU__ && $__components_47_GPU__.__esModule && $__components_47_GPU__ || {default: $__components_47_GPU__}),
+	    VBLANK_MODE = $__8.VBLANK_MODE,
+	    CYCLES_PER_VBLANK_LINE = $__8.CYCLES_PER_VBLANK_LINE;
 	var interruptLocations = new Uint16Array(256);
 	interruptLocations[1 << 0] = 0x0040;
 	interruptLocations[1 << 1] = 0x0048;
 	interruptLocations[1 << 2] = 0x0050;
 	interruptLocations[1 << 3] = 0x0060;
+	var NORMAL_SPEED = 0;
+	var DOUBLE_SPEED = 1;
 	function getInstructionSize(parameters) {
 	  return parameters.reduce((function(sum, parameter) {
 	    switch (parameter) {
@@ -4297,11 +3606,11 @@ var virtjs =
 	    }
 	  }));
 	}
-	var Interpreter = function Interpreter($__11) {
-	  var $__13;
-	  var $__12 = $__11,
-	      engine = $__12.engine,
-	      events = ($__13 = $__12.events) === void 0 ? [] : $__13;
+	var Interpreter = function Interpreter($__12) {
+	  var $__14;
+	  var $__13 = $__12,
+	      engine = $__13.engine,
+	      events = ($__14 = $__13.events) === void 0 ? [] : $__14;
 	  $traceurRuntime.superCall(this, $Interpreter.prototype, "constructor", []);
 	  this._engine = engine;
 	  this._helpers = new InterpreterHelpers();
@@ -4314,10 +3623,10 @@ var virtjs =
 	};
 	var $Interpreter = Interpreter;
 	($traceurRuntime.createClass)(Interpreter, {
-	  link: function($__11) {
-	    var $__13 = $__11,
-	        mmu = $__13.mmu,
-	        gpu = $__13.gpu;
+	  link: function($__12) {
+	    var $__14 = $__12,
+	        mmu = $__14.mmu,
+	        gpu = $__14.gpu;
 	    this._mmu = mmu;
 	    this._gpu = gpu;
 	  },
@@ -4329,10 +3638,10 @@ var virtjs =
 	    var opcode = this._mmu.readUint8(address);
 	    if (opcode === 0xCB)
 	      opcode = 0xCB00 | this._mmu.readUint8(address + 1);
-	    var $__11 = instructions[opcode],
-	        type = $__11[0],
-	        parameters = $__11[1],
-	        flags = $__11[2];
+	    var $__12 = instructions[opcode],
+	        type = $__12[0],
+	        parameters = $__12[1],
+	        flags = $__12[2];
 	    var size = getInstructionSize(parameters);
 	    var args = getInstructionStaticArguments(parameters, address + 1, this._mmu);
 	    var assembly = type !== null ? assemblyTemplates[type](address, address + size, args) : ("<invalid opcode " + formatHexadecimal(opcode, 8) + ">");
@@ -4381,9 +3690,9 @@ var virtjs =
 	    var script = '/* Will contain the code required to fill the instruction array */';
 	    var opcodes = Object.keys(instructions);
 	    var functors = new Array(opcodes.length);
-	    for (var $__9 = opcodes[Symbol.iterator](),
-	        $__10; !($__10 = $__9.next()).done; ) {
-	      var opcode = $__10.value;
+	    for (var $__10 = opcodes[Symbol.iterator](),
+	        $__11; !($__11 = $__10.next()).done; ) {
+	      var opcode = $__11.value;
 	      {
 	        var code = this._craftInstructionFunctor(instructions[opcode]);
 	        script += ("functors[" + opcode + "] = " + code + ";");
@@ -4392,11 +3701,11 @@ var virtjs =
 	    var generator = this._compileFunction('functors', script);
 	    return generator(functors), functors;
 	  },
-	  _craftInstructionFunctor: function($__11) {
-	    var $__13 = $__11,
-	        type = $__13[0],
-	        parameters = $__13[1],
-	        flags = $__13[2];
+	  _craftInstructionFunctor: function($__12) {
+	    var $__14 = $__12,
+	        type = $__14[0],
+	        parameters = $__14[1],
+	        flags = $__14[2];
 	    if (!type || type === 'PREFIX_CB')
 	      return null;
 	    var argumentOffset = 1;
@@ -4460,6 +3769,9 @@ var virtjs =
 	  },
 	  _triggerInterrupts: function() {
 	    var environment = this._environment;
+	    if (environment.cpuInterruptSwitchDelay >= 0)
+	      if (--environment.cpuInterruptSwitchDelay === -1)
+	        environment.cpuInterruptFeature = environment.cpuInterruptSwitch;
 	    var enabledInterrupts = environment.enabledInterrupts;
 	    var pendingInterrupts = environment.pendingInterrupts;
 	    var firedInterrupts = pendingInterrupts & enabledInterrupts;
@@ -4475,7 +3787,7 @@ var virtjs =
 	    this._mmu.writeUint8(environment.sp + 0, (environment.pc & 0x00FF) >>> 0);
 	    this._mmu.writeUint8(environment.sp + 1, (environment.pc & 0xFF00) >>> 8);
 	    environment.pc = interruptLocations[interrupt];
-	    this._applyClockCycles(4);
+	    this._applyClockCycles(20);
 	  },
 	  _applyClockCycles: function(count) {
 	    var environment = this._environment;
@@ -4483,6 +3795,8 @@ var virtjs =
 	      count /= 2;
 	    if (environment.gpuLcdFeature) {
 	      environment.gpuClock -= count;
+	      if (environment.gpuMode === VBLANK_MODE && environment.gpuLy === 153 && CYCLES_PER_VBLANK_LINE - environment.gpuClock >= 8)
+	        this._gpu.setLy(0);
 	      if (environment.gpuClock <= 0) {
 	        if (this._gpu.nextMode()) {
 	          this._running = false;
@@ -4513,7 +3827,7 @@ var virtjs =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 23 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4537,7 +3851,7 @@ var virtjs =
 
 
 /***/ },
-/* 24 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4561,7 +3875,7 @@ var virtjs =
 
 
 /***/ },
-/* 25 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4585,6 +3899,18 @@ var virtjs =
 	  },
 	  endFrame: function() {
 	    throw new Error('Unimplemented');
+	  },
+	  stop: function() {
+	    return "{\n\n        environment.cpuStop = true;\n\n    }";
+	  },
+	  halt: function() {
+	    return "{\n\n        environment.cpuHalt = true;\n\n    }";
+	  },
+	  applySpeedSwitch: function() {
+	    return "{\n\n        if ( environment.cgbPrepareSpeedSwitch ) {\n\n            environment.cgbPrepareSpeedSwitch = 0;\n\n            if ( environment.cgbCurrentSpeed ) {\n                environment.cgbCurrentSpeed = 0;\n            } else {\n                environment.cgbCurrentSpeed = 1;\n            }\n\n        }\n\n    }";
+	  },
+	  delayInterruptSwitch: function(value, delay) {
+	    return ("{\n\n        environment.cpuInterruptSwitch = " + value + ";\n        environment.cpuInterruptSwitchDelay = " + delay + ";\n\n    }");
 	  },
 	  readR8: function(register) {
 	    return ("(environment." + register + " >>> 0)");
@@ -4687,7 +4013,7 @@ var virtjs =
 
 
 /***/ },
-/* 26 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4699,7 +4025,7 @@ var virtjs =
 	});
 	var $__Helpers__;
 	__webpack_require__(2);
-	var Helpers = ($__Helpers__ = __webpack_require__(25), $__Helpers__ && $__Helpers__.__esModule && $__Helpers__ || {default: $__Helpers__}).Helpers;
+	var Helpers = ($__Helpers__ = __webpack_require__(18), $__Helpers__ && $__Helpers__.__esModule && $__Helpers__ || {default: $__Helpers__}).Helpers;
 	var InterpreterHelpers = function InterpreterHelpers() {
 	  $traceurRuntime.defaultSuperCall(this, $InterpreterHelpers.prototype, arguments);
 	};
@@ -4727,7 +4053,7 @@ var virtjs =
 
 
 /***/ },
-/* 27 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -5295,7 +4621,7 @@ var virtjs =
 
 
 /***/ },
-/* 28 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -5305,9 +4631,9 @@ var virtjs =
 	    }},
 	  __esModule: {value: true}
 	});
-	var $__virtjs_47_utils_47_FormatUtils__;
+	var $___46__46__47__46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__;
 	__webpack_require__(2);
-	var $__0 = ($__virtjs_47_utils_47_FormatUtils__ = __webpack_require__(17), $__virtjs_47_utils_47_FormatUtils__ && $__virtjs_47_utils_47_FormatUtils__.__esModule && $__virtjs_47_utils_47_FormatUtils__ || {default: $__virtjs_47_utils_47_FormatUtils__}),
+	var $__0 = ($___46__46__47__46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__ = __webpack_require__(9), $___46__46__47__46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__ && $___46__46__47__46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__.__esModule && $___46__46__47__46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__ || {default: $___46__46__47__46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__}),
 	    formatAddress = $__0.formatAddress,
 	    formatHexadecimal = $__0.formatHexadecimal,
 	    formatRelativeAddress = $__0.formatRelativeAddress;
@@ -5678,7 +5004,7 @@ var virtjs =
 
 
 /***/ },
-/* 29 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -5694,10 +5020,10 @@ var virtjs =
 	    return ("\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
 	  }),
 	  'DI': (function(address, nextAddress, parameters, h) {
-	    return ("\n\n        environment.cpuInterruptFeature = false;\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
+	    return ("\n\n        " + h.delayInterruptSwitch(false, 0) + ";\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
 	  }),
 	  'EI': (function(address, nextAddress, parameters, h) {
-	    return ("\n\n        environment.cpuInterruptFeature = true;\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
+	    return ("\n\n        // Note that EI is the only instruction to have a delayed interrupt switch (not even RETI!)\n\n        " + h.delayInterruptSwitch(true, 1) + ";\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
 	  }),
 	  'PUSH_r16': (function(address, nextAddress, parameters, h) {
 	    return ("\n\n        " + h.pushStack(h.readR16(parameters[0])) + ";\n\n        " + h.applyClockCycles(4) + ";\n\n    ");
@@ -5856,7 +5182,7 @@ var virtjs =
 	    return ("\n\n        var retTarget;\n        " + h.popStack('retTarget') + ";\n\n        " + h.applyClockCycles(4) + ";\n        " + h.jumpTo('retTarget') + ";\n\n    ");
 	  }),
 	  'RETI': (function(address, nextAddress, parameters, h) {
-	    return ("\n\n        environment.cpuInterruptFeature = true;\n\n        var retTarget;\n        " + h.popStack('retTarget') + ";\n\n        " + h.applyClockCycles(4) + ";\n        " + h.jumpTo('retTarget') + ";\n\n    ");
+	    return ("\n\n        " + h.delayInterruptSwitch(true, 0) + ";\n\n        var retTarget;\n        " + h.popStack('retTarget') + ";\n\n        " + h.applyClockCycles(4) + ";\n        " + h.jumpTo('retTarget') + ";\n\n    ");
 	  }),
 	  'RST_u8': (function(address, nextAddress, parameters, h) {
 	    return ("\n\n        " + h.pushStack(nextAddress) + ";\n\n        " + h.applyClockCycles(4) + ";\n        " + h.jumpTo(parameters[0]) + ";\n\n    ");
@@ -6021,16 +5347,16 @@ var virtjs =
 	    return ("\n\n        var target = " + h.readR16(parameters[0]) + ";\n\n        " + h.applyClockCycles(1) + ";\n\n        var mBefore = " + h.readMem8('target') + ";\n        var mAfter = ((mBefore << 4) | (mBefore >>> 4)) & 0xFF;\n\n        " + h.applyClockCycles(1) + ";\n\n        " + h.writeMem8('target', 'mAfter') + ";\n\n        " + h.bcd(false) + ";\n        " + h.zero('mAfter') + ";\n        " + h.half(false) + ";\n        " + h.carry(false) + ";\n\n        " + h.applyClockCycles(2) + ";\n\n    ");
 	  }),
 	  'STOP_u8': (function(address, nextAddress, parameters, h) {
-	    return ("\n\n        environment.cpuStop = true;\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
+	    return ("\n\n        " + h.stop() + ";\n\n        " + h.applySpeedSwitch() + ";\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
 	  }),
 	  'HALT': (function(address, nextAddress, parameters, h) {
-	    return ("\n\n        environment.cpuHalt = true;\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
+	    return ("\n\n        " + h.halt() + ";\n\n        " + h.applyClockCycles(1) + ";\n\n    ");
 	  })
 	};
 
 
 /***/ },
-/* 30 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6324,6 +5650,21 @@ var virtjs =
 	      this.updateMetadata(t);
 	    }
 	  },
+	  resetClock: function() {
+	    this._environment.gpuClock = CYCLES_PER_OAM;
+	    this._environment.gpuMode = OAM_MODE;
+	    this._environment.gpuLine = 0;
+	    this.setLy(0);
+	  },
+	  setLy: function(value) {
+	    this._environment.gpuLy = value;
+	    this._environment.gpuCoincidence = this._environment.gpuLy === this._environment.gpuLyc;
+	    if (this._environment.gpuCoincidence) {
+	      if (this._environment.gpuInterrupts & (1 << 6)) {
+	        this._environment.pendingInterrupts |= 0x02;
+	      }
+	    }
+	  },
 	  transferDma: function(value) {
 	    var start = value << 8;
 	    for (var offset = 0; offset < 160; ++offset) {
@@ -6394,41 +5735,36 @@ var virtjs =
 	  nextMode: function() {
 	    switch (this._environment.gpuMode) {
 	      case HBLANK_MODE:
-	        this._environment.gpuLy += 1;
-	        this._environment.gpuCoincidence = this._environment.gpuLy === this._environment.gpuLyc;
-	        if (this._environment.gpuCoincidence)
-	          if (this._environment.gpuInterrupts & (1 << 6))
-	            this._environment.pendingInterrupts |= 0x02;
-	        if (this._environment.gpuLy < HBLANK_LINE_COUNT) {
-	          this._environment.gpuClock = CYCLES_PER_OAM;
+	        this._environment.gpuLine += 1;
+	        this.setLy(this._environment.gpuLine);
+	        if (this._environment.gpuLine < HBLANK_LINE_COUNT) {
+	          this._environment.gpuClock += CYCLES_PER_OAM;
 	          this._setMode(OAM_MODE);
 	        } else {
-	          this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+	          this._environment.gpuClock += CYCLES_PER_VBLANK_LINE;
 	          this._setMode(VBLANK_MODE);
 	          return true;
 	        }
 	        return false;
 	      case VBLANK_MODE:
-	        this._environment.gpuLy += 1;
-	        if (this._environment.gpuLy === MAX_VIRTUAL_LINE_COUNT)
-	          this._environment.gpuLy = 0;
-	        this._environment.gpuCoincidence = this._environment.gpuLy === this._environment.gpuLyc;
-	        if (this._environment.gpuCoincidence)
-	          if (this._environment.gpuInterrupts & (1 << 6))
-	            this._environment.pendingInterrupts |= 0x02;
-	        if (this._environment.gpuLy === 0) {
-	          this._environment.gpuClock = CYCLES_PER_OAM;
+	        this._environment.gpuLine += 1;
+	        if (this._environment.gpuLine === MAX_VIRTUAL_LINE_COUNT)
+	          this._environment.gpuLine = 0;
+	        if (this._environment.gpuLine !== 0)
+	          this.setLy(this._environment.gpuLine);
+	        if (this._environment.gpuLine === 0) {
+	          this._environment.gpuClock += CYCLES_PER_OAM;
 	          this._setMode(OAM_MODE);
 	        } else {
-	          this._environment.gpuClock = CYCLES_PER_VBLANK_LINE;
+	          this._environment.gpuClock += CYCLES_PER_VBLANK_LINE;
 	        }
 	        return false;
 	      case OAM_MODE:
-	        this._environment.gpuClock = CYCLES_PER_VRAM;
+	        this._environment.gpuClock += CYCLES_PER_VRAM;
 	        this._setMode(VRAM_MODE);
 	        return false;
 	      case 0x03:
-	        this._environment.gpuClock = CYCLES_PER_HBLANK_LINE;
+	        this._environment.gpuClock += CYCLES_PER_HBLANK_LINE;
 	        this._setMode(HBLANK_MODE);
 	        if (this._environment.cgbUnlocked && this._environment.cgbVramDmaStatus === 0) {
 	          var source = 0x0000 + (this._environment.cgbVramDmaSource & 65520);
@@ -6448,7 +5784,7 @@ var virtjs =
 	  _setMode: function(mode) {
 	    this._environment.gpuMode = mode;
 	    if (mode === HBLANK_MODE) {
-	      this._triggerHblank(this._environment.gpuLy);
+	      this._triggerHblank(this._environment.gpuLine);
 	    } else if (mode === VBLANK_MODE) {
 	      this._triggerVblank();
 	    }
@@ -6457,18 +5793,21 @@ var virtjs =
 	    }
 	  },
 	  _triggerHblank: function(line) {
-	    if (!this._environment.gpuLcdFeature || !this._environment.gpuBackgroundFeature)
+	    var showSomething = this._environment.gpuLcdFeature;
+	    var showBackground = this._environment.gpuBackgroundFeature || this._environment.cgbUnlocked;
+	    var showWindow = showBackground && this._environment.gpuWindowFeature;
+	    var showSprites = this._environment.gpuSpriteFeature;
+	    if (!showSomething || !showBackground)
 	      for (var x = 0,
 	          X = this._scanline.length; x < X; ++x)
 	        this._scanline[x] = 0x00FFFFFF;
-	    if (!this._environment.gpuLcdFeature)
+	    if (!showSomething)
 	      return;
-	    var showBgWin = this._environment.gpuBackgroundFeature || this._environment.cgbUnlocked;
-	    if (showBgWin)
+	    if (showBackground)
 	      this._drawBackgroundScanline(line);
-	    if (showBgWin && this._environment.gpuWindowFeature)
+	    if (showWindow)
 	      this._drawWindowScanline(line);
-	    if (this._environment.gpuSpriteFeature)
+	    if (showSprites)
 	      this._drawSpriteScanline(line);
 	    for (var x = 0,
 	        X = this._scanline.length; x < X; ++x) {
@@ -6549,7 +5888,7 @@ var virtjs =
 	      if (sprite.yflip)
 	        tileY = 7 - tileY;
 	      var tileRow = this._tilesets[vramBank][tileIndex][tileY];
-	      var ignoreBgPriority = this._environment.cgbUnlocked && this._environment.gpuBackgroundFeature;
+	      var useSpritePriority = !this._environment.cgbUnlocked || this._environment.gpuBackgroundFeature;
 	      for (var tileX = 0; tileX < 8; ++tileX) {
 	        var x = sprite.x + tileX;
 	        if (x < 0 || x >= 160)
@@ -6558,7 +5897,7 @@ var virtjs =
 	        var paletteIndex = tileRow[actualTileX];
 	        if (paletteIndex === 0)
 	          continue;
-	        if (!ignoreBgPriority && sprite.priority && this._scanline[x] & 0xFF000000)
+	        if (useSpritePriority && sprite.priority && (this._scanline[x] & 0xFF000000))
 	          continue;
 	        var trueColor = palette[paletteIndex];
 	        this._scanline[x] = (paletteIndex << 24) | trueColor;
@@ -6570,7 +5909,7 @@ var virtjs =
 
 
 /***/ },
-/* 31 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6619,7 +5958,7 @@ var virtjs =
 
 
 /***/ },
-/* 32 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -6629,21 +5968,21 @@ var virtjs =
 	    }},
 	  __esModule: {value: true}
 	});
-	var $__virtjs_47_mixins_47_EmitterMixin__,
-	    $__virtjs_47_utils_47_FormatUtils__,
-	    $__virtjs_47_utils_47_ObjectUtils__,
+	var $___46__46__47__46__46__47__46__46__47_mixins_47_EmitterMixin__,
+	    $___46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__,
+	    $___46__46__47__46__46__47__46__46__47_utils_47_ObjectUtils__,
 	    $___46__46__47_mbcs_47_MBC1__,
 	    $___46__46__47_mbcs_47_MBC3__,
 	    $___46__46__47_mbcs_47_MBC5__,
 	    $___46__46__47_mbcs_47_NoMBC__;
 	__webpack_require__(2);
-	var EmitterMixin = ($__virtjs_47_mixins_47_EmitterMixin__ = __webpack_require__(15), $__virtjs_47_mixins_47_EmitterMixin__ && $__virtjs_47_mixins_47_EmitterMixin__.__esModule && $__virtjs_47_mixins_47_EmitterMixin__ || {default: $__virtjs_47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var formatHexadecimal = ($__virtjs_47_utils_47_FormatUtils__ = __webpack_require__(17), $__virtjs_47_utils_47_FormatUtils__ && $__virtjs_47_utils_47_FormatUtils__.__esModule && $__virtjs_47_utils_47_FormatUtils__ || {default: $__virtjs_47_utils_47_FormatUtils__}).formatHexadecimal;
-	var mixin = ($__virtjs_47_utils_47_ObjectUtils__ = __webpack_require__(19), $__virtjs_47_utils_47_ObjectUtils__ && $__virtjs_47_utils_47_ObjectUtils__.__esModule && $__virtjs_47_utils_47_ObjectUtils__ || {default: $__virtjs_47_utils_47_ObjectUtils__}).mixin;
-	var MBC1 = ($___46__46__47_mbcs_47_MBC1__ = __webpack_require__(33), $___46__46__47_mbcs_47_MBC1__ && $___46__46__47_mbcs_47_MBC1__.__esModule && $___46__46__47_mbcs_47_MBC1__ || {default: $___46__46__47_mbcs_47_MBC1__}).MBC1;
-	var MBC3 = ($___46__46__47_mbcs_47_MBC3__ = __webpack_require__(34), $___46__46__47_mbcs_47_MBC3__ && $___46__46__47_mbcs_47_MBC3__.__esModule && $___46__46__47_mbcs_47_MBC3__ || {default: $___46__46__47_mbcs_47_MBC3__}).MBC3;
-	var MBC5 = ($___46__46__47_mbcs_47_MBC5__ = __webpack_require__(35), $___46__46__47_mbcs_47_MBC5__ && $___46__46__47_mbcs_47_MBC5__.__esModule && $___46__46__47_mbcs_47_MBC5__ || {default: $___46__46__47_mbcs_47_MBC5__}).MBC5;
-	var NoMBC = ($___46__46__47_mbcs_47_NoMBC__ = __webpack_require__(36), $___46__46__47_mbcs_47_NoMBC__ && $___46__46__47_mbcs_47_NoMBC__.__esModule && $___46__46__47_mbcs_47_NoMBC__ || {default: $___46__46__47_mbcs_47_NoMBC__}).NoMBC;
+	var EmitterMixin = ($___46__46__47__46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var formatHexadecimal = ($___46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__ = __webpack_require__(9), $___46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__ && $___46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__.__esModule && $___46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__ || {default: $___46__46__47__46__46__47__46__46__47_utils_47_FormatUtils__}).formatHexadecimal;
+	var mixin = ($___46__46__47__46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var MBC1 = ($___46__46__47_mbcs_47_MBC1__ = __webpack_require__(26), $___46__46__47_mbcs_47_MBC1__ && $___46__46__47_mbcs_47_MBC1__.__esModule && $___46__46__47_mbcs_47_MBC1__ || {default: $___46__46__47_mbcs_47_MBC1__}).MBC1;
+	var MBC3 = ($___46__46__47_mbcs_47_MBC3__ = __webpack_require__(27), $___46__46__47_mbcs_47_MBC3__ && $___46__46__47_mbcs_47_MBC3__.__esModule && $___46__46__47_mbcs_47_MBC3__ || {default: $___46__46__47_mbcs_47_MBC3__}).MBC3;
+	var MBC5 = ($___46__46__47_mbcs_47_MBC5__ = __webpack_require__(28), $___46__46__47_mbcs_47_MBC5__ && $___46__46__47_mbcs_47_MBC5__.__esModule && $___46__46__47_mbcs_47_MBC5__ || {default: $___46__46__47_mbcs_47_MBC5__}).MBC5;
+	var NoMBC = ($___46__46__47_mbcs_47_NoMBC__ = __webpack_require__(29), $___46__46__47_mbcs_47_NoMBC__ && $___46__46__47_mbcs_47_NoMBC__.__esModule && $___46__46__47_mbcs_47_NoMBC__ || {default: $___46__46__47_mbcs_47_NoMBC__}).NoMBC;
 	var MBC4 = function() {
 	  throw new Error('MBC4 is not yet supported :(');
 	};
@@ -6736,7 +6075,6 @@ var virtjs =
 	  setup: function(environment) {
 	    this._environment = environment;
 	    this._hram = new Uint8Array(this._environment.hramBuffer);
-	    this._vram = new Uint8Array(this._environment.vramBuffer);
 	    this._oam = new Uint8Array(this._environment.oamBuffer);
 	    this._wramBanks = [];
 	    for (var wramBank = 0; wramBank * 0x1000 < this._environment.wramBuffer.byteLength; ++wramBank)
@@ -6776,7 +6114,7 @@ var virtjs =
 	    if (address >= 0x0000 && address < 0x8000)
 	      return this.mbc.readRomUint8(address);
 	    else if (address >= 0x8000 && address < 0xA000)
-	      return this._vram[address & 0x1FFF];
+	      return this._vramBankNN[address & 0x1FFF];
 	    else if (address >= 0xA000 && address < 0xC000)
 	      return this.mbc.readRamUint8(address - 0xA000);
 	    else if (address >= 0xC000 && address < 0xD000)
@@ -6829,7 +6167,7 @@ var virtjs =
 	          return this._environment.gpuWindowPosition[0];
 	        case 0xFF4D:
 	          if (this._environment.cgbUnlocked) {
-	            return this._environment.cgbCurrentSpeed << 7 | this._environment.cgbPrepareSpeedSwitch;
+	            return (this._environment.cgbCurrentSpeed << 7) | 126 | (this._environment.cgbPrepareSpeedSwitch << 0);
 	          } else {
 	            return 0;
 	          }
@@ -6885,7 +6223,7 @@ var virtjs =
 	          break;
 	        case 0xFF69:
 	          if (this._environment.cgbUnlocked) {
-	            return this._environment.cgbBackgroundPalettes[this._environment.cgbBackgroundPaletteOffset >>> 1][3 + this._environment.cgbBackgroundPaletteOffset & 1];
+	            return this._environment.cgbBackgroundCgbPalettes[this._environment.cgbBackgroundPaletteOffset];
 	          } else {
 	            return 0;
 	          }
@@ -6899,7 +6237,14 @@ var virtjs =
 	          break;
 	        case 0xFF6B:
 	          if (this._environment.cgbUnlocked) {
-	            return this._environment.cgbSpritePalettes[this._environment.cgbSpritePaletteOffset >>> 1][3 + this._environment.cgbSpritePaletteOffset & 1];
+	            return this._environment.cgbSpriteCgbPalettes[this._environment.cgbSpritePaletteOffset];
+	          } else {
+	            return 0;
+	          }
+	          break;
+	        case 0xFF70:
+	          if (this._environment.cgbUnlocked) {
+	            return 0x40 | this._environment.mmuWramBank;
 	          } else {
 	            return 0;
 	          }
@@ -6962,6 +6307,7 @@ var virtjs =
 	          this._environment.pendingInterrupts = value;
 	          break;
 	        case 0xFF40:
+	          var oldLcdFeature = this._environment.gpuLcdFeature;
 	          this._environment.gpuBackgroundFeature = value & (1 << 0) ? true : false;
 	          this._environment.gpuSpriteFeature = value & (1 << 1) ? true : false;
 	          this._environment.gpuSpriteSize = value & (1 << 2) ? 1 : 0;
@@ -6970,9 +6316,12 @@ var virtjs =
 	          this._environment.gpuWindowFeature = value & (1 << 5) ? true : false;
 	          this._environment.gpuWindowBase = value & (1 << 6) ? 1 : 0;
 	          this._environment.gpuLcdFeature = value & (1 << 7) ? true : false;
+	          if (this._environment.gpuLcdFeature !== oldLcdFeature) {
+	            this._gpu.resetClock();
+	          }
 	          break;
 	        case 0xFF41:
-	          this._environment.gpuInterrupts = value & 0x78;
+	          this._environment.gpuInterrupts = 0x80 | (value & 0x78);
 	          break;
 	        case 0xFF42:
 	          this._environment.gpuBgScroll[1] = value;
@@ -6981,7 +6330,8 @@ var virtjs =
 	          this._environment.gpuBgScroll[0] = value;
 	          break;
 	        case 0xFF44:
-	          this._environment.gpuLy = 0;
+	          this._environment.gpuLine = 0;
+	          this._gpu.setLy(0);
 	          break;
 	        case 0xFF45:
 	          this._environment.gpuLyc = value;
@@ -7087,7 +6437,6 @@ var virtjs =
 	          break;
 	        case 0xFF70:
 	          if (this._environment.cgbUnlocked) {
-	            console.log('[wram rebank] ' + value);
 	            this._environment.mmuWramBank = value & 7;
 	            this._wramBankNN = this._wramBanks[Math.max(1, this._environment.mmuWramBank)];
 	          }
@@ -7119,7 +6468,7 @@ var virtjs =
 
 
 /***/ },
-/* 33 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7204,7 +6553,7 @@ var virtjs =
 
 
 /***/ },
-/* 34 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7302,7 +6651,7 @@ var virtjs =
 
 
 /***/ },
-/* 35 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7379,7 +6728,7 @@ var virtjs =
 
 
 /***/ },
-/* 36 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7415,382 +6764,247 @@ var virtjs =
 
 
 /***/ },
-/* 37 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	Object.defineProperties(exports, {
-	  LocalStorageData: {get: function() {
-	      return LocalStorageData;
+	  Engine: {get: function() {
+	      return Engine;
 	    }},
 	  __esModule: {value: true}
 	});
-	var $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
-	    $___46__46__47__46__46__47_utils_47_ObjectUtils__;
+	var $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__,
+	    $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__,
+	    $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__,
+	    $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
+	    $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
+	    $___46__46__47__46__46__47_utils_47_ObjectUtils__,
+	    $__components_47_GPU__,
+	    $__components_47_MMU__,
+	    $__Interpreter__;
 	__webpack_require__(2);
-	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(15), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(19), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
-	var LocalStorageData = function LocalStorageData() {
-	  this._localStorage = window.localStorage;
+	var NullInput = ($___46__46__47__46__46__47_devices_47_inputs_47_NullInput__ = __webpack_require__(38), $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__ && $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__.__esModule && $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__ || {default: $___46__46__47__46__46__47_devices_47_inputs_47_NullInput__}).NullInput;
+	var NullScreen = ($___46__46__47__46__46__47_devices_47_screens_47_NullScreen__ = __webpack_require__(40), $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__ && $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__.__esModule && $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__ || {default: $___46__46__47__46__46__47_devices_47_screens_47_NullScreen__}).NullScreen;
+	var SerialTimer = ($___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__ = __webpack_require__(45), $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__ && $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__.__esModule && $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__ || {default: $___46__46__47__46__46__47_devices_47_timers_47_SerialTimer__}).SerialTimer;
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var RunnableMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).RunnableMixin;
+	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var GPU = ($__components_47_GPU__ = __webpack_require__(33), $__components_47_GPU__ && $__components_47_GPU__.__esModule && $__components_47_GPU__ || {default: $__components_47_GPU__}).GPU;
+	var MMU = ($__components_47_MMU__ = __webpack_require__(34), $__components_47_MMU__ && $__components_47_MMU__.__esModule && $__components_47_MMU__ || {default: $__components_47_MMU__}).MMU;
+	var Interpreter = ($__Interpreter__ = __webpack_require__(32), $__Interpreter__ && $__Interpreter__.__esModule && $__Interpreter__ || {default: $__Interpreter__}).Interpreter;
+	var Engine = function Engine() {
+	  var $__12,
+	      $__13,
+	      $__14;
+	  var $__11 = arguments[0] !== (void 0) ? arguments[0] : {},
+	      devices = ($__12 = $__11.devices) === void 0 ? {} : $__12,
+	      advanced = ($__13 = $__11.advanced) === void 0 ? {} : $__13,
+	      hooks = ($__14 = $__11.hooks) === void 0 ? {} : $__14;
+	  $traceurRuntime.superCall(this, $Engine.prototype, "constructor", []);
+	  this._hooks = hooks;
+	  this._loop = null;
+	  this.screen = devices.screen || new NullScreen();
+	  this.timer = devices.timer || new SerialTimer();
+	  this.input = devices.input || new NullInput();
+	  this.gpu = new GPU({
+	    screen: this.screen,
+	    hooks: this._hooks
+	  });
+	  this.mmu = new MMU({hooks: this._hooks});
+	  this.interpreter = new Interpreter({hooks: this._hooks});
+	  this.gpu.link({mmu: this.mmu});
+	  this.mmu.link({gpu: this.gpu});
+	  this.interpreter.link({
+	    mmu: this.mmu,
+	    gpu: this.gpu
+	  });
 	};
-	($traceurRuntime.createClass)(LocalStorageData, {
-	  requestSave: function() {
-	    this.emit('requestSave', null);
-	  },
-	  save: function(name, data) {
-	    this._saveData(name + '.format', this._getFormat(data));
-	    this._saveTree(name + '.data', data);
-	  },
-	  restore: function(name) {
-	    var format = this._restoreData(name + '.format');
-	    if (format === null)
-	      return null;
-	    return this._restoreTree(name + '.data', format);
-	  },
-	  _getFormat: function(data) {
-	    var $__2 = this;
-	    var format = {};
-	    Object.keys(data).forEach((function(key) {
-	      var isFieldAnObject = data[key] && data[key].constructor === Object;
-	      format[key] = isFieldAnObject ? $__2._getFormat(data[key]) : null;
-	    }));
-	    return format;
-	  },
-	  _saveTree: function(name, data) {
-	    var $__2 = this;
-	    Object.keys(data).forEach((function(key) {
-	      var isFieldAnObject = data[key] && data[key] === Object;
-	      var action = isFieldAnObject ? '_saveTree' : '_saveData';
-	      $__2[action](name + '.' + key, data[key]);
-	    }));
-	  },
-	  _saveData: function(name, data) {
-	    var serialization = this._serialize(data);
-	    this._localStorage.setItem(name, serialization);
-	  },
-	  _restoreTree: function(name, format) {
-	    var $__2 = this;
-	    var restored = {};
-	    Object.keys(format).forEach((function(key) {
-	      restored[key] = $__2._restoreData(name + '.' + key);
-	    }));
-	    return restored;
-	  },
-	  _restoreData: function(name) {
-	    var serialized = this._localStorage.getItem(name);
-	    if (serialized === null)
-	      return null;
-	    return this._unserialize(serialized);
-	  },
-	  _serialize: function(data) {
-	    if (data && data.constructor === ArrayBuffer)
-	      return 'B' + String.fromCharCode.apply(null, new Uint8Array(data));
-	    return 'J' + JSON.stringify(data);
-	  },
-	  _unserialize: function(data) {
-	    switch (data[0]) {
-	      case 'J':
-	        return JSON.parse(data.substr(1));
-	      case 'B':
-	        var serialized = data.substr(1);
-	        var buffer = new ArrayBuffer(serialized.length);
-	        var bufferView = new Uint8Array(buffer);
-	        for (var t = 0,
-	            T = serialized.length; t < T; ++t)
-	          bufferView[t] = serialized.charCodeAt(t);
-	        return bufferView;
-	      default:
-	        throw new Error('Cannot unserialize data');
-	    }
-	  }
-	}, {}, mixin(null, EmitterMixin));
-	;
-
-
-/***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	Object.defineProperties(exports, {
-	  TracerDebug: {get: function() {
-	      return TracerDebug;
-	    }},
-	  __esModule: {value: true}
-	});
-	var $___46__46__47__46__46__47_utils_47_FormatUtils__;
-	__webpack_require__(2);
-	var $__0 = ($___46__46__47__46__46__47_utils_47_FormatUtils__ = __webpack_require__(17), $___46__46__47__46__46__47_utils_47_FormatUtils__ && $___46__46__47__46__46__47_utils_47_FormatUtils__.__esModule && $___46__46__47__46__46__47_utils_47_FormatUtils__ || {default: $___46__46__47__46__46__47_utils_47_FormatUtils__}),
-	    formatAddress = $__0.formatAddress,
-	    formatHexadecimal = $__0.formatHexadecimal;
-	var TracerDebug = function TracerDebug(engine) {
-	  var options = arguments[1] !== (void 0) ? arguments[1] : {};
-	  var $__1 = this;
-	  this._engine = engine;
-	  this._options = options;
-	  this._breakDelay = 0;
-	  this._skipBreakpoint = false;
-	  this._domEnabled = true;
-	  this._instructions = [];
-	  this._byAddress = {};
-	  this._breakpoints = {};
-	  this._instructions.getItemMetadata = (function(index) {
-	    var metadata = {cssClasses: 'tracer-row'};
-	    if ($__1._currentAddress === $__1._instructions[index].address)
-	      metadata.cssClasses += ' tracer-current';
-	    return metadata;
-	  });
-	  var slickBreakpointFormatter = (function(row, cell, value) {
-	    return value ? '✓' : '';
-	  });
-	  var addressFormatter = (function(row, cell, value) {
-	    return formatAddress(value, $__1._options.addressSize);
-	  });
-	  var opcodeFormatter = (function(row, cell, value) {
-	    return value.map((function(opcode) {
-	      return formatHexadecimal(opcode, $__1._options.opcodeSize);
-	    })).join(' ');
-	  });
-	  var columns = [{
-	    name: 'Breakpoint',
-	    field: 'breakpoint',
-	    cssClass: 'tracer-cell tracer-cell-breakpoint',
-	    minWidth: 100,
-	    maxWidth: 100,
-	    formatter: slickBreakpointFormatter
-	  }, {
-	    name: 'Address',
-	    field: 'address',
-	    cssClass: 'tracer-cell tracer-cell-address',
-	    minWidth: 120,
-	    maxWidth: 120,
-	    formatter: addressFormatter
-	  }, {
-	    name: 'Opcode',
-	    field: 'opcode',
-	    cssClass: 'tracer-cell tracer-cell-opcode',
-	    minWidth: 200,
-	    maxWidth: 200,
-	    formatter: opcodeFormatter
-	  }, {
-	    name: 'Instruction',
-	    field: 'label',
-	    cssClass: 'tracer-cell tracer-cell-label'
-	  }];
-	  this._grid = new Slick.Grid(this._options.container, this._instructions, columns, {
-	    enableTextSelectionOnCells: true,
-	    enableColumnReorder: false,
-	    forceFitColumns: true
-	  });
-	  this._grid.onClick.subscribe((function(e, args) {
-	    if (args.cell !== 0)
-	      return;
-	    var instruction = $__1._grid.getDataItem(args.row);
-	    $__1.toggleBreakpoint(instruction.address);
-	  }));
-	  this._grid.onKeyDown.subscribe((function(e, args) {
-	    if ([13, 32].indexOf(e.keyCode) === -1)
-	      return;
-	    var instruction = $__1._grid.getDataItem(args.row);
-	    $__1.toggleBreakpoint(instruction.address);
-	  }));
-	  this._engine.mmu.on('post-write', (function(e) {
-	    $__1._refreshFrom($__1._findInstruction(e.address));
-	  }));
-	  this._engine.on('setup', (function() {
-	    $__1._refreshAll();
-	    $__1.enableDOM();
-	  }));
-	  this._engine.on('instruction', (function(e) {
-	    $__1._jumpCheck(e);
-	    $__1._breakCheck(e);
-	    $__1._updateCurrent(e);
-	  }));
-	};
-	($traceurRuntime.createClass)(TracerDebug, {
-	  continue: function() {
-	    this._skipBreakpoint = true;
-	    this._engine.resume();
-	  },
-	  one: function() {
-	    this._skipBreakpoint = true;
-	    this._breakDelay = 2;
-	    this._engine.resume();
-	  },
-	  toggleBreakpoint: function(address) {
-	    var breakpointStatus = !this._breakpoints[address];
-	    this._breakpoints[address] = breakpointStatus;
-	    var instruction = this._byAddress[address];
-	    if (!instruction)
-	      return;
-	    instruction.breakpoint = breakpointStatus;
-	    this._updateAddress(address);
-	    this._render();
-	  },
-	  disableDOM: function() {
-	    if (!this._domEnabled)
-	      return;
-	    var currentAddress = this._currentAddress;
-	    this._currentAddress = undefined;
-	    this._updateAddress(currentAddress);
-	    this._render();
-	    this._currentAddress = currentAddress;
-	    this._options.container.classList.add('tracer-disabled');
-	    this._domEnabled = false;
-	  },
-	  enableDOM: function() {
-	    if (this._domEnabled)
-	      return;
-	    this._domEnabled = true;
-	    this._options.container.className = this._options.container.classList.remove('tracer-disabled');
-	    this._invalidate();
-	    this._updateRowCount();
-	    this._render();
-	    this._focusCurrent();
-	  },
-	  pause: function() {
-	    this._breakDelay = 1;
-	  },
-	  render: function() {
-	    if (!this._domEnabled)
-	      return;
-	    this._render();
-	  },
-	  _refreshAll: function() {
-	    this._instructions.length = 0;
-	    for (var instruction,
-	        address = 0,
-	        memorySize = this._options.memorySize; address < memorySize; address += instruction.size) {
-	      var instruction = this._engine.disassembleAt(address);
-	      instruction.breakpoint = this._breakpoints[address];
-	      this._byAddress[address] = instruction;
-	      this._instructions.push(instruction);
-	    }
-	    this._invalidate();
-	    this._requestRender();
-	  },
-	  _refreshFrom: function(startInstruction) {
-	    var address = startInstruction.address;
-	    var index = this._instructions.indexOf(startInstruction);
-	    var first = index;
-	    do {
-	      var newInstruction = this._engine.disassembleAt(address);
-	      for (var offset = 0; offset < newInstruction.size; ++offset) {
-	        if (!this._byAddress[address + offset])
-	          continue;
-	        delete this._byAddress[address + offset];
-	        this._instructions.splice(index, 1);
-	      }
-	      this._instructions.splice(index, 0, this._byAddress[address] = newInstruction);
-	      address += newInstruction.size;
-	      index += 1;
-	    } while (address < this._options.memorySize && !this._byAddress[address]);
-	    if (!this._domEnabled)
-	      return;
-	    this._invalidateRows([first, index]);
-	    this._updateRowCount();
-	    this._requestRender();
-	  },
-	  _findInstruction: function(address) {
-	    while (address > 0 && !this._byAddress[address])
-	      address -= 1;
-	    if (!this._byAddress[address])
-	      throw new Error('Instruction not found');
-	    return this._byAddress[address];
-	  },
-	  _dummifyInstruction: function(instruction) {
-	    var address = instruction.address;
-	    var index = this._instructions.indexOf(instruction);
-	    delete this._byAddress[address];
-	    this._instructions.splice(index, 1);
-	    for (var offset = 0; offset < instruction.size; ++offset) {
-	      var dummyInstruction = ({
-	        address: address + offset,
-	        label: 'db',
-	        opcode: [this._engine.byteAt(address + offset)],
-	        size: 1,
-	        breakpoint: this._breakpoints[address + offset]
-	      });
-	      this._instructions.splice(index + offset, 0, this._byAddress[address + offset] = dummyInstruction);
+	var $Engine = Engine;
+	($traceurRuntime.createClass)(Engine, {
+	  loadArrayBuffer: function(arrayBuffer) {
+	    var $__13;
+	    var $__12 = arguments[1] !== (void 0) ? arguments[1] : {},
+	        initialState = $__12.initialState,
+	        autoStart = ($__13 = $__12.autoStart) === void 0 ? true : $__13;
+	    var environment = new Environment({initialState: initialState});
+	    this.setup(environment);
+	    if (autoStart) {
+	      this.run();
 	    }
 	  },
-	  _requestRender: function() {
-	    var $__1 = this;
-	    if (!this._domEnabled)
-	      return;
-	    if (this._pendingRendering)
-	      return;
-	    this._pendingRendering = setTimeout((function() {
-	      $__1._render();
-	    }), 500);
+	  setup: function(environment) {
+	    this.gpu.setup(environment);
+	    this.mmu.setup(environment);
 	  },
-	  _invalidate: function() {
-	    if (!this._domEnabled)
+	  start: function() {
+	    var $__9 = this;
+	    if (this._loop)
 	      return;
-	    this._grid.invalidate();
-	  },
-	  _invalidateRow: function(which) {
-	    if (!this._domEnabled)
+	    if (!this.environment)
 	      return;
-	    this._grid.invalidateRow(which);
+	    var run = (function() {
+	      $__9._loop = $__9.timer.nextTick(run);
+	      $__9.interpreter.iterate();
+	    });
+	    this._loop = this.timer.nextTick(run);
+	    if (this._hooks.start) {
+	      this._hooks.start();
+	    }
 	  },
-	  _invalidateRows: function(which) {
-	    if (!this._domEnabled)
+	  stop: function() {
+	    if (!this._loop)
 	      return;
-	    this._grid.invalidateRows(which);
+	    this.interpreter.drop();
+	    this.timer.cancelTick(this._loop);
+	    if (this._hooks.stop) {
+	      this._hooks.stop();
+	    }
 	  },
-	  _updateRowCount: function() {
-	    if (!this._updateRowCount)
-	      return;
-	    this._grid.updateRowCount();
-	  },
-	  _render: function() {
-	    clearTimeout(this._pendingRendering);
-	    this._pendingRendering = undefined;
-	    this._grid.render();
-	  },
-	  _jumpCheck: function(e) {
-	    if (this._byAddress[e.address])
-	      return;
-	    this._dummifyInstruction(this._findInstruction(e.address));
-	    this._refreshFrom(this._findInstruction(e.address));
-	  },
-	  _breakCheck: function(e) {
-	    var naturalBreak = this._breakpoints[e.address] && !this._skipBreakpoint;
-	    var delayBreak = this._breakDelay > 0 && !--this._breakDelay;
-	    if (this._skipBreakpoint)
-	      this._skipBreakpoint = false;
-	    if (!naturalBreak && !delayBreak)
-	      return;
-	    e.break();
-	    this.enableDOM();
-	  },
-	  _updateAddress: function(address) {
-	    if (!this._domEnabled)
-	      return;
-	    var rowIndex = this._instructions.indexOf(this._byAddress[address]);
-	    this._invalidateRow(rowIndex);
-	  },
-	  _updateCurrent: function(e) {
-	    var oldCurrentAddress = this._currentAddress;
-	    this._currentAddress = e.address;
-	    if (!this._domEnabled)
-	      return;
-	    this._updateAddress(oldCurrentAddress);
-	    this._updateAddress(this._currentAddress);
-	    this._render();
-	    this._focusCurrent();
-	  },
-	  _focusCurrent: function() {
-	    var rowIndex = this._instructions.indexOf(this._byAddress[this._currentAddress]);
-	    this._grid.scrollRowIntoView(rowIndex);
+	  _iteration: function() {
+	    this.interpreter.nextTick();
 	  }
 	}, {});
-	;
 
 
 /***/ },
-/* 39 */
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperties(exports, {
+	  Environment: {get: function() {
+	      return Environment;
+	    }},
+	  __esModule: {value: true}
+	});
+	__webpack_require__(2);
+	var Environment = function Environment() {
+	  var $__1 = arguments[0] !== (void 0) ? arguments[0] : {},
+	      romBuffer = $__1.romBuffer,
+	      initialState = $__1.initialState;
+	};
+	($traceurRuntime.createClass)(Environment, {}, {});
+
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperties(exports, {
+	  Interpreter: {get: function() {
+	      return Interpreter;
+	    }},
+	  __esModule: {value: true}
+	});
+	__webpack_require__(2);
+	var Interpreter = function Interpreter() {
+	  this._continue = false;
+	  this._gpu = null;
+	  this._mmu = null;
+	};
+	($traceurRuntime.createClass)(Interpreter, {
+	  link: function($__1) {
+	    var $__2 = $__1,
+	        gpu = $__2.gpu,
+	        mmu = $__2.mmu;
+	    this._gpu = gpu;
+	    this._mmu = mmu;
+	  },
+	  iterate: function() {
+	    this._continue = true;
+	    while (this._continue && !this._gpu.ready)
+	      this._execute();
+	    if (this._gpu.ready)
+	      this._gpu.commit();
+	    this._continue = false;
+	  },
+	  drop: function() {
+	    this._continue = false;
+	  },
+	  _execute: function() {}
+	}, {});
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperties(exports, {
+	  GPU: {get: function() {
+	      return GPU;
+	    }},
+	  __esModule: {value: true}
+	});
+	__webpack_require__(2);
+	var GPU = function GPU($__1) {
+	  var $__2 = $__1,
+	      screen = $__2.screen,
+	      hooks = $__2.hooks;
+	  this._screen = screen;
+	  this._hooks = hooks;
+	  this._mmu = null;
+	  this._environment = null;
+	  this.ready = false;
+	};
+	($traceurRuntime.createClass)(GPU, {
+	  link: function($__1) {
+	    var mmu = $__1.mmu;
+	    this._mmu = mmu;
+	  },
+	  setup: function(environment) {
+	    this._environment = null;
+	  },
+	  commit: function() {
+	    this._screen.flushScreen();
+	    this.ready = false;
+	  }
+	}, {});
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	Object.defineProperties(exports, {
+	  MMU: {get: function() {
+	      return MMU;
+	    }},
+	  __esModule: {value: true}
+	});
+	__webpack_require__(2);
+	var MMU = function MMU($__1) {
+	  var hooks = $__1.hooks;
+	};
+	($traceurRuntime.createClass)(MMU, {
+	  link: function($__1) {
+	    var gpu = $__1.gpu;
+	    this._gpu = gpu;
+	  },
+	  setup: function(environment) {
+	    this._environment = environment;
+	  },
+	  _get: function(address) {
+	    switch (address) {
+	      case 0x04000000:
+	        return this._io[0x0000];
+	    }
+	  },
+	  _set: function(address, value) {
+	    switch (address) {
+	      case 0x04000000:
+	        this._io[0x0000] = value;
+	        this._gpu.setLcdControl(value);
+	    }
+	  }
+	}, {});
+
+
+/***/ },
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7803,8 +7017,8 @@ var virtjs =
 	var $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
 	    $___46__46__47__46__46__47_utils_47_ObjectUtils__;
 	__webpack_require__(2);
-	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(15), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(19), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
 	var ButtonInput = function ButtonInput() {
 	  var options = arguments[0] !== (void 0) ? arguments[0] : {};
 	  this._code = options.code;
@@ -7842,7 +7056,7 @@ var virtjs =
 
 
 /***/ },
-/* 40 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7855,8 +7069,8 @@ var virtjs =
 	var $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
 	    $___46__46__47__46__46__47_utils_47_ObjectUtils__;
 	__webpack_require__(2);
-	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(15), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(19), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
 	var automapData = {
 	  LEFT: [37],
 	  RIGHT: [39],
@@ -7947,7 +7161,7 @@ var virtjs =
 
 
 /***/ },
-/* 41 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -7960,8 +7174,8 @@ var virtjs =
 	var $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
 	    $___46__46__47__46__46__47_utils_47_ObjectUtils__;
 	__webpack_require__(2);
-	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(15), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(19), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
 	var MixedInput = function MixedInput() {
 	  var inputs = arguments[0] !== (void 0) ? arguments[0] : [];
 	  this._inputs = inputs;
@@ -7991,7 +7205,7 @@ var virtjs =
 
 
 /***/ },
-/* 42 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8004,8 +7218,8 @@ var virtjs =
 	var $___46__46__47__46__46__47_mixins_47_EmitterMixin__,
 	    $___46__46__47__46__46__47_utils_47_ObjectUtils__;
 	__webpack_require__(2);
-	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(15), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
-	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(19), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
+	var EmitterMixin = ($___46__46__47__46__46__47_mixins_47_EmitterMixin__ = __webpack_require__(6), $___46__46__47__46__46__47_mixins_47_EmitterMixin__ && $___46__46__47__46__46__47_mixins_47_EmitterMixin__.__esModule && $___46__46__47__46__46__47_mixins_47_EmitterMixin__ || {default: $___46__46__47__46__46__47_mixins_47_EmitterMixin__}).EmitterMixin;
+	var mixin = ($___46__46__47__46__46__47_utils_47_ObjectUtils__ = __webpack_require__(11), $___46__46__47__46__46__47_utils_47_ObjectUtils__ && $___46__46__47__46__46__47_utils_47_ObjectUtils__.__esModule && $___46__46__47__46__46__47_utils_47_ObjectUtils__ || {default: $___46__46__47__46__46__47_utils_47_ObjectUtils__}).mixin;
 	var NullInput = function NullInput() {
 	  $traceurRuntime.defaultSuperCall(this, $NullInput.prototype, arguments);
 	};
@@ -8015,7 +7229,7 @@ var virtjs =
 
 
 /***/ },
-/* 43 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8036,6 +7250,11 @@ var virtjs =
 	    this.inputWidth = width;
 	    this.inputHeight = height;
 	    this.data = new Uint8Array(this.inputWidth * this.inputHeight * 3);
+	  },
+	  setData: function(data) {
+	    if (data.length !== this.inputWidth * this.inputHeight * 3)
+	      throw new Error('Invalid data buffer');
+	    this.data.set(data);
 	  },
 	  setPixel: function(x, y, color) {
 	    var target = this.data;
@@ -8067,7 +7286,7 @@ var virtjs =
 
 
 /***/ },
-/* 44 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8090,7 +7309,7 @@ var virtjs =
 
 
 /***/ },
-/* 45 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8100,9 +7319,9 @@ var virtjs =
 	    }},
 	  __esModule: {value: true}
 	});
-	var $__virtjs_47_devices_47_screens_47_DataScreen__;
+	var $__DataScreen__;
 	__webpack_require__(2);
-	var DataScreen = ($__virtjs_47_devices_47_screens_47_DataScreen__ = __webpack_require__(43), $__virtjs_47_devices_47_screens_47_DataScreen__ && $__virtjs_47_devices_47_screens_47_DataScreen__.__esModule && $__virtjs_47_devices_47_screens_47_DataScreen__ || {default: $__virtjs_47_devices_47_screens_47_DataScreen__}).DataScreen;
+	var DataScreen = ($__DataScreen__ = __webpack_require__(39), $__DataScreen__ && $__DataScreen__.__esModule && $__DataScreen__ || {default: $__DataScreen__}).DataScreen;
 	var gVertexShaderScript = "\n\n    precision mediump float;\n\n    uniform mat4 uMatrix;\n\n    attribute vec3 aVertexPosition;\n    attribute vec2 aVertexTextureUv;\n\n    varying vec2 vTextureCoordinates;\n\n    void main( void ) {\n\n        vTextureCoordinates = vec2( aVertexTextureUv.s, 1.0 - aVertexTextureUv.t );\n\n        gl_Position = uMatrix * vec4( aVertexPosition, 1.0 );\n\n    }\n\n";
 	var gFragmentShaderScript = "\n\n    precision mediump float;\n\n    uniform sampler2D uScreenTexture;\n\n    varying vec2 vTextureCoordinates;\n\n    void main( void ) {\n\n        gl_FragColor = texture2D( uScreenTexture, vTextureCoordinates );\n\n    }\n\n";
 	var WebGLScreen = function WebGLScreen(options) {
@@ -8272,7 +7491,7 @@ var virtjs =
 
 
 /***/ },
-/* 46 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8295,7 +7514,7 @@ var virtjs =
 
 
 /***/ },
-/* 47 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8319,7 +7538,7 @@ var virtjs =
 
 
 /***/ },
-/* 48 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8339,7 +7558,7 @@ var virtjs =
 
 
 /***/ },
-/* 49 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -8383,14 +7602,14 @@ var virtjs =
 
 
 /***/ },
-/* 50 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {"use strict";
 	__webpack_require__(2);
-	var base64 = __webpack_require__(62);
-	var ieee754 = __webpack_require__(54);
-	var isArray = __webpack_require__(55);
+	var base64 = __webpack_require__(50);
+	var ieee754 = __webpack_require__(48);
+	var isArray = __webpack_require__(49);
 	exports.Buffer = Buffer;
 	exports.SlowBuffer = Buffer;
 	exports.INSPECT_MAX_BYTES = 50;
@@ -9270,90 +8489,10 @@ var virtjs =
 	  }
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(46).Buffer))
 
 /***/ },
-/* 51 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = Stream;
-	var EE = __webpack_require__(53).EventEmitter;
-	var inherits = __webpack_require__(61);
-	inherits(Stream, EE);
-	Stream.Readable = __webpack_require__(56);
-	Stream.Writable = __webpack_require__(57);
-	Stream.Duplex = __webpack_require__(58);
-	Stream.Transform = __webpack_require__(59);
-	Stream.PassThrough = __webpack_require__(60);
-	Stream.Stream = Stream;
-	function Stream() {
-	  EE.call(this);
-	}
-	Stream.prototype.pipe = function(dest, options) {
-	  var source = this;
-	  function ondata(chunk) {
-	    if (dest.writable) {
-	      if (false === dest.write(chunk) && source.pause) {
-	        source.pause();
-	      }
-	    }
-	  }
-	  source.on('data', ondata);
-	  function ondrain() {
-	    if (source.readable && source.resume) {
-	      source.resume();
-	    }
-	  }
-	  dest.on('drain', ondrain);
-	  if (!dest._isStdio && (!options || options.end !== false)) {
-	    source.on('end', onend);
-	    source.on('close', onclose);
-	  }
-	  var didOnEnd = false;
-	  function onend() {
-	    if (didOnEnd)
-	      return;
-	    didOnEnd = true;
-	    dest.end();
-	  }
-	  function onclose() {
-	    if (didOnEnd)
-	      return;
-	    didOnEnd = true;
-	    if (typeof dest.destroy === 'function')
-	      dest.destroy();
-	  }
-	  function onerror(er) {
-	    cleanup();
-	    if (EE.listenerCount(this, 'error') === 0) {
-	      throw er;
-	    }
-	  }
-	  source.on('error', onerror);
-	  dest.on('error', onerror);
-	  function cleanup() {
-	    source.removeListener('data', ondata);
-	    dest.removeListener('drain', ondrain);
-	    source.removeListener('end', onend);
-	    source.removeListener('close', onclose);
-	    source.removeListener('error', onerror);
-	    dest.removeListener('error', onerror);
-	    source.removeListener('end', cleanup);
-	    source.removeListener('close', cleanup);
-	    dest.removeListener('close', cleanup);
-	  }
-	  source.on('end', cleanup);
-	  source.on('close', cleanup);
-	  dest.on('close', cleanup);
-	  dest.emit('pipe', source);
-	  return dest;
-	};
-
-
-/***/ },
-/* 52 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9370,228 +8509,7 @@ var virtjs =
 
 
 /***/ },
-/* 53 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	function EventEmitter() {
-	  this._events = this._events || {};
-	  this._maxListeners = this._maxListeners || undefined;
-	}
-	module.exports = EventEmitter;
-	EventEmitter.EventEmitter = EventEmitter;
-	EventEmitter.prototype._events = undefined;
-	EventEmitter.prototype._maxListeners = undefined;
-	EventEmitter.defaultMaxListeners = 10;
-	EventEmitter.prototype.setMaxListeners = function(n) {
-	  if (!isNumber(n) || n < 0 || isNaN(n))
-	    throw TypeError('n must be a positive number');
-	  this._maxListeners = n;
-	  return this;
-	};
-	EventEmitter.prototype.emit = function(type) {
-	  var er,
-	      handler,
-	      len,
-	      args,
-	      i,
-	      listeners;
-	  if (!this._events)
-	    this._events = {};
-	  if (type === 'error') {
-	    if (!this._events.error || (isObject(this._events.error) && !this._events.error.length)) {
-	      er = arguments[1];
-	      if (er instanceof Error) {
-	        throw er;
-	      }
-	      throw TypeError('Uncaught, unspecified "error" event.');
-	    }
-	  }
-	  handler = this._events[type];
-	  if (isUndefined(handler))
-	    return false;
-	  if (isFunction(handler)) {
-	    switch (arguments.length) {
-	      case 1:
-	        handler.call(this);
-	        break;
-	      case 2:
-	        handler.call(this, arguments[1]);
-	        break;
-	      case 3:
-	        handler.call(this, arguments[1], arguments[2]);
-	        break;
-	      default:
-	        len = arguments.length;
-	        args = new Array(len - 1);
-	        for (i = 1; i < len; i++)
-	          args[i - 1] = arguments[i];
-	        handler.apply(this, args);
-	    }
-	  } else if (isObject(handler)) {
-	    len = arguments.length;
-	    args = new Array(len - 1);
-	    for (i = 1; i < len; i++)
-	      args[i - 1] = arguments[i];
-	    listeners = handler.slice();
-	    len = listeners.length;
-	    for (i = 0; i < len; i++)
-	      listeners[i].apply(this, args);
-	  }
-	  return true;
-	};
-	EventEmitter.prototype.addListener = function(type, listener) {
-	  var m;
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-	  if (!this._events)
-	    this._events = {};
-	  if (this._events.newListener)
-	    this.emit('newListener', type, isFunction(listener.listener) ? listener.listener : listener);
-	  if (!this._events[type])
-	    this._events[type] = listener;
-	  else if (isObject(this._events[type]))
-	    this._events[type].push(listener);
-	  else
-	    this._events[type] = [this._events[type], listener];
-	  if (isObject(this._events[type]) && !this._events[type].warned) {
-	    var m;
-	    if (!isUndefined(this._maxListeners)) {
-	      m = this._maxListeners;
-	    } else {
-	      m = EventEmitter.defaultMaxListeners;
-	    }
-	    if (m && m > 0 && this._events[type].length > m) {
-	      this._events[type].warned = true;
-	      console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', this._events[type].length);
-	      if (typeof console.trace === 'function') {
-	        console.trace();
-	      }
-	    }
-	  }
-	  return this;
-	};
-	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-	EventEmitter.prototype.once = function(type, listener) {
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-	  var fired = false;
-	  function g() {
-	    this.removeListener(type, g);
-	    if (!fired) {
-	      fired = true;
-	      listener.apply(this, arguments);
-	    }
-	  }
-	  g.listener = listener;
-	  this.on(type, g);
-	  return this;
-	};
-	EventEmitter.prototype.removeListener = function(type, listener) {
-	  var list,
-	      position,
-	      length,
-	      i;
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-	  if (!this._events || !this._events[type])
-	    return this;
-	  list = this._events[type];
-	  length = list.length;
-	  position = -1;
-	  if (list === listener || (isFunction(list.listener) && list.listener === listener)) {
-	    delete this._events[type];
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-	  } else if (isObject(list)) {
-	    for (i = length; i-- > 0; ) {
-	      if (list[i] === listener || (list[i].listener && list[i].listener === listener)) {
-	        position = i;
-	        break;
-	      }
-	    }
-	    if (position < 0)
-	      return this;
-	    if (list.length === 1) {
-	      list.length = 0;
-	      delete this._events[type];
-	    } else {
-	      list.splice(position, 1);
-	    }
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-	  }
-	  return this;
-	};
-	EventEmitter.prototype.removeAllListeners = function(type) {
-	  var key,
-	      listeners;
-	  if (!this._events)
-	    return this;
-	  if (!this._events.removeListener) {
-	    if (arguments.length === 0)
-	      this._events = {};
-	    else if (this._events[type])
-	      delete this._events[type];
-	    return this;
-	  }
-	  if (arguments.length === 0) {
-	    for (key in this._events) {
-	      if (key === 'removeListener')
-	        continue;
-	      this.removeAllListeners(key);
-	    }
-	    this.removeAllListeners('removeListener');
-	    this._events = {};
-	    return this;
-	  }
-	  listeners = this._events[type];
-	  if (isFunction(listeners)) {
-	    this.removeListener(type, listeners);
-	  } else {
-	    while (listeners.length)
-	      this.removeListener(type, listeners[listeners.length - 1]);
-	  }
-	  delete this._events[type];
-	  return this;
-	};
-	EventEmitter.prototype.listeners = function(type) {
-	  var ret;
-	  if (!this._events || !this._events[type])
-	    ret = [];
-	  else if (isFunction(this._events[type]))
-	    ret = [this._events[type]];
-	  else
-	    ret = this._events[type].slice();
-	  return ret;
-	};
-	EventEmitter.listenerCount = function(emitter, type) {
-	  var ret;
-	  if (!emitter._events || !emitter._events[type])
-	    ret = 0;
-	  else if (isFunction(emitter._events[type]))
-	    ret = 1;
-	  else
-	    ret = emitter._events[type].length;
-	  return ret;
-	};
-	function isFunction(arg) {
-	  return typeof arg === 'function';
-	}
-	function isNumber(arg) {
-	  return typeof arg === 'number';
-	}
-	function isObject(arg) {
-	  return typeof arg === 'object' && arg !== null;
-	}
-	function isUndefined(arg) {
-	  return arg === void 0;
-	}
-
-
-/***/ },
-/* 54 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9679,7 +8597,7 @@ var virtjs =
 
 
 /***/ },
-/* 55 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9692,85 +8610,7 @@ var virtjs =
 
 
 /***/ },
-/* 56 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	exports = module.exports = __webpack_require__(63);
-	exports.Stream = __webpack_require__(51);
-	exports.Readable = exports;
-	exports.Writable = __webpack_require__(64);
-	exports.Duplex = __webpack_require__(65);
-	exports.Transform = __webpack_require__(66);
-	exports.PassThrough = __webpack_require__(67);
-
-
-/***/ },
-/* 57 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = __webpack_require__(64);
-
-
-/***/ },
-/* 58 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = __webpack_require__(65);
-
-
-/***/ },
-/* 59 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = __webpack_require__(66);
-
-
-/***/ },
-/* 60 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = __webpack_require__(67);
-
-
-/***/ },
-/* 61 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	if (typeof Object.create === 'function') {
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor;
-	    ctor.prototype = Object.create(superCtor.prototype, {constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }});
-	  };
-	} else {
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor;
-	    var TempCtor = function() {};
-	    TempCtor.prototype = superCtor.prototype;
-	    ctor.prototype = new TempCtor();
-	    ctor.prototype.constructor = ctor;
-	  };
-	}
-
-
-/***/ },
-/* 62 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function() {
@@ -9874,1347 +8714,6 @@ var virtjs =
 	  return {};
 	}.call(Reflect.global);
 
-
-/***/ },
-/* 63 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
-	__webpack_require__(2);
-	module.exports = Readable;
-	var isArray = __webpack_require__(69);
-	var Buffer = __webpack_require__(50).Buffer;
-	Readable.ReadableState = ReadableState;
-	var EE = __webpack_require__(53).EventEmitter;
-	if (!EE.listenerCount)
-	  EE.listenerCount = function(emitter, type) {
-	    return emitter.listeners(type).length;
-	  };
-	var Stream = __webpack_require__(51);
-	var util = __webpack_require__(72);
-	util.inherits = __webpack_require__(71);
-	var StringDecoder;
-	var debug = __webpack_require__(68);
-	if (debug && debug.debuglog) {
-	  debug = debug.debuglog('stream');
-	} else {
-	  debug = function() {};
-	}
-	util.inherits(Readable, Stream);
-	function ReadableState(options, stream) {
-	  var Duplex = __webpack_require__(65);
-	  options = options || {};
-	  var hwm = options.highWaterMark;
-	  var defaultHwm = options.objectMode ? 16 : 16 * 1024;
-	  this.highWaterMark = (hwm || hwm === 0) ? hwm : defaultHwm;
-	  this.highWaterMark = ~~this.highWaterMark;
-	  this.buffer = [];
-	  this.length = 0;
-	  this.pipes = null;
-	  this.pipesCount = 0;
-	  this.flowing = null;
-	  this.ended = false;
-	  this.endEmitted = false;
-	  this.reading = false;
-	  this.sync = true;
-	  this.needReadable = false;
-	  this.emittedReadable = false;
-	  this.readableListening = false;
-	  this.objectMode = !!options.objectMode;
-	  if (stream instanceof Duplex)
-	    this.objectMode = this.objectMode || !!options.readableObjectMode;
-	  this.defaultEncoding = options.defaultEncoding || 'utf8';
-	  this.ranOut = false;
-	  this.awaitDrain = 0;
-	  this.readingMore = false;
-	  this.decoder = null;
-	  this.encoding = null;
-	  if (options.encoding) {
-	    if (!StringDecoder)
-	      StringDecoder = __webpack_require__(70).StringDecoder;
-	    this.decoder = new StringDecoder(options.encoding);
-	    this.encoding = options.encoding;
-	  }
-	}
-	function Readable(options) {
-	  var Duplex = __webpack_require__(65);
-	  if (!(this instanceof Readable))
-	    return new Readable(options);
-	  this._readableState = new ReadableState(options, this);
-	  this.readable = true;
-	  Stream.call(this);
-	}
-	Readable.prototype.push = function(chunk, encoding) {
-	  var state = this._readableState;
-	  if (util.isString(chunk) && !state.objectMode) {
-	    encoding = encoding || state.defaultEncoding;
-	    if (encoding !== state.encoding) {
-	      chunk = new Buffer(chunk, encoding);
-	      encoding = '';
-	    }
-	  }
-	  return readableAddChunk(this, state, chunk, encoding, false);
-	};
-	Readable.prototype.unshift = function(chunk) {
-	  var state = this._readableState;
-	  return readableAddChunk(this, state, chunk, '', true);
-	};
-	function readableAddChunk(stream, state, chunk, encoding, addToFront) {
-	  var er = chunkInvalid(state, chunk);
-	  if (er) {
-	    stream.emit('error', er);
-	  } else if (util.isNullOrUndefined(chunk)) {
-	    state.reading = false;
-	    if (!state.ended)
-	      onEofChunk(stream, state);
-	  } else if (state.objectMode || chunk && chunk.length > 0) {
-	    if (state.ended && !addToFront) {
-	      var e = new Error('stream.push() after EOF');
-	      stream.emit('error', e);
-	    } else if (state.endEmitted && addToFront) {
-	      var e = new Error('stream.unshift() after end event');
-	      stream.emit('error', e);
-	    } else {
-	      if (state.decoder && !addToFront && !encoding)
-	        chunk = state.decoder.write(chunk);
-	      if (!addToFront)
-	        state.reading = false;
-	      if (state.flowing && state.length === 0 && !state.sync) {
-	        stream.emit('data', chunk);
-	        stream.read(0);
-	      } else {
-	        state.length += state.objectMode ? 1 : chunk.length;
-	        if (addToFront)
-	          state.buffer.unshift(chunk);
-	        else
-	          state.buffer.push(chunk);
-	        if (state.needReadable)
-	          emitReadable(stream);
-	      }
-	      maybeReadMore(stream, state);
-	    }
-	  } else if (!addToFront) {
-	    state.reading = false;
-	  }
-	  return needMoreData(state);
-	}
-	function needMoreData(state) {
-	  return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
-	}
-	Readable.prototype.setEncoding = function(enc) {
-	  if (!StringDecoder)
-	    StringDecoder = __webpack_require__(70).StringDecoder;
-	  this._readableState.decoder = new StringDecoder(enc);
-	  this._readableState.encoding = enc;
-	  return this;
-	};
-	var MAX_HWM = 0x800000;
-	function roundUpToNextPowerOf2(n) {
-	  if (n >= MAX_HWM) {
-	    n = MAX_HWM;
-	  } else {
-	    n--;
-	    for (var p = 1; p < 32; p <<= 1)
-	      n |= n >> p;
-	    n++;
-	  }
-	  return n;
-	}
-	function howMuchToRead(n, state) {
-	  if (state.length === 0 && state.ended)
-	    return 0;
-	  if (state.objectMode)
-	    return n === 0 ? 0 : 1;
-	  if (isNaN(n) || util.isNull(n)) {
-	    if (state.flowing && state.buffer.length)
-	      return state.buffer[0].length;
-	    else
-	      return state.length;
-	  }
-	  if (n <= 0)
-	    return 0;
-	  if (n > state.highWaterMark)
-	    state.highWaterMark = roundUpToNextPowerOf2(n);
-	  if (n > state.length) {
-	    if (!state.ended) {
-	      state.needReadable = true;
-	      return 0;
-	    } else
-	      return state.length;
-	  }
-	  return n;
-	}
-	Readable.prototype.read = function(n) {
-	  debug('read', n);
-	  var state = this._readableState;
-	  var nOrig = n;
-	  if (!util.isNumber(n) || n > 0)
-	    state.emittedReadable = false;
-	  if (n === 0 && state.needReadable && (state.length >= state.highWaterMark || state.ended)) {
-	    debug('read: emitReadable', state.length, state.ended);
-	    if (state.length === 0 && state.ended)
-	      endReadable(this);
-	    else
-	      emitReadable(this);
-	    return null;
-	  }
-	  n = howMuchToRead(n, state);
-	  if (n === 0 && state.ended) {
-	    if (state.length === 0)
-	      endReadable(this);
-	    return null;
-	  }
-	  var doRead = state.needReadable;
-	  debug('need readable', doRead);
-	  if (state.length === 0 || state.length - n < state.highWaterMark) {
-	    doRead = true;
-	    debug('length less than watermark', doRead);
-	  }
-	  if (state.ended || state.reading) {
-	    doRead = false;
-	    debug('reading or ended', doRead);
-	  }
-	  if (doRead) {
-	    debug('do read');
-	    state.reading = true;
-	    state.sync = true;
-	    if (state.length === 0)
-	      state.needReadable = true;
-	    this._read(state.highWaterMark);
-	    state.sync = false;
-	  }
-	  if (doRead && !state.reading)
-	    n = howMuchToRead(nOrig, state);
-	  var ret;
-	  if (n > 0)
-	    ret = fromList(n, state);
-	  else
-	    ret = null;
-	  if (util.isNull(ret)) {
-	    state.needReadable = true;
-	    n = 0;
-	  }
-	  state.length -= n;
-	  if (state.length === 0 && !state.ended)
-	    state.needReadable = true;
-	  if (nOrig !== n && state.ended && state.length === 0)
-	    endReadable(this);
-	  if (!util.isNull(ret))
-	    this.emit('data', ret);
-	  return ret;
-	};
-	function chunkInvalid(state, chunk) {
-	  var er = null;
-	  if (!util.isBuffer(chunk) && !util.isString(chunk) && !util.isNullOrUndefined(chunk) && !state.objectMode) {
-	    er = new TypeError('Invalid non-string/buffer chunk');
-	  }
-	  return er;
-	}
-	function onEofChunk(stream, state) {
-	  if (state.decoder && !state.ended) {
-	    var chunk = state.decoder.end();
-	    if (chunk && chunk.length) {
-	      state.buffer.push(chunk);
-	      state.length += state.objectMode ? 1 : chunk.length;
-	    }
-	  }
-	  state.ended = true;
-	  emitReadable(stream);
-	}
-	function emitReadable(stream) {
-	  var state = stream._readableState;
-	  state.needReadable = false;
-	  if (!state.emittedReadable) {
-	    debug('emitReadable', state.flowing);
-	    state.emittedReadable = true;
-	    if (state.sync)
-	      process.nextTick(function() {
-	        emitReadable_(stream);
-	      });
-	    else
-	      emitReadable_(stream);
-	  }
-	}
-	function emitReadable_(stream) {
-	  debug('emit readable');
-	  stream.emit('readable');
-	  flow(stream);
-	}
-	function maybeReadMore(stream, state) {
-	  if (!state.readingMore) {
-	    state.readingMore = true;
-	    process.nextTick(function() {
-	      maybeReadMore_(stream, state);
-	    });
-	  }
-	}
-	function maybeReadMore_(stream, state) {
-	  var len = state.length;
-	  while (!state.reading && !state.flowing && !state.ended && state.length < state.highWaterMark) {
-	    debug('maybeReadMore read 0');
-	    stream.read(0);
-	    if (len === state.length)
-	      break;
-	    else
-	      len = state.length;
-	  }
-	  state.readingMore = false;
-	}
-	Readable.prototype._read = function(n) {
-	  this.emit('error', new Error('not implemented'));
-	};
-	Readable.prototype.pipe = function(dest, pipeOpts) {
-	  var src = this;
-	  var state = this._readableState;
-	  switch (state.pipesCount) {
-	    case 0:
-	      state.pipes = dest;
-	      break;
-	    case 1:
-	      state.pipes = [state.pipes, dest];
-	      break;
-	    default:
-	      state.pipes.push(dest);
-	      break;
-	  }
-	  state.pipesCount += 1;
-	  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
-	  var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
-	  var endFn = doEnd ? onend : cleanup;
-	  if (state.endEmitted)
-	    process.nextTick(endFn);
-	  else
-	    src.once('end', endFn);
-	  dest.on('unpipe', onunpipe);
-	  function onunpipe(readable) {
-	    debug('onunpipe');
-	    if (readable === src) {
-	      cleanup();
-	    }
-	  }
-	  function onend() {
-	    debug('onend');
-	    dest.end();
-	  }
-	  var ondrain = pipeOnDrain(src);
-	  dest.on('drain', ondrain);
-	  function cleanup() {
-	    debug('cleanup');
-	    dest.removeListener('close', onclose);
-	    dest.removeListener('finish', onfinish);
-	    dest.removeListener('drain', ondrain);
-	    dest.removeListener('error', onerror);
-	    dest.removeListener('unpipe', onunpipe);
-	    src.removeListener('end', onend);
-	    src.removeListener('end', cleanup);
-	    src.removeListener('data', ondata);
-	    if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain))
-	      ondrain();
-	  }
-	  src.on('data', ondata);
-	  function ondata(chunk) {
-	    debug('ondata');
-	    var ret = dest.write(chunk);
-	    if (false === ret) {
-	      debug('false write response, pause', src._readableState.awaitDrain);
-	      src._readableState.awaitDrain++;
-	      src.pause();
-	    }
-	  }
-	  function onerror(er) {
-	    debug('onerror', er);
-	    unpipe();
-	    dest.removeListener('error', onerror);
-	    if (EE.listenerCount(dest, 'error') === 0)
-	      dest.emit('error', er);
-	  }
-	  if (!dest._events || !dest._events.error)
-	    dest.on('error', onerror);
-	  else if (isArray(dest._events.error))
-	    dest._events.error.unshift(onerror);
-	  else
-	    dest._events.error = [onerror, dest._events.error];
-	  function onclose() {
-	    dest.removeListener('finish', onfinish);
-	    unpipe();
-	  }
-	  dest.once('close', onclose);
-	  function onfinish() {
-	    debug('onfinish');
-	    dest.removeListener('close', onclose);
-	    unpipe();
-	  }
-	  dest.once('finish', onfinish);
-	  function unpipe() {
-	    debug('unpipe');
-	    src.unpipe(dest);
-	  }
-	  dest.emit('pipe', src);
-	  if (!state.flowing) {
-	    debug('pipe resume');
-	    src.resume();
-	  }
-	  return dest;
-	};
-	function pipeOnDrain(src) {
-	  return function() {
-	    var state = src._readableState;
-	    debug('pipeOnDrain', state.awaitDrain);
-	    if (state.awaitDrain)
-	      state.awaitDrain--;
-	    if (state.awaitDrain === 0 && EE.listenerCount(src, 'data')) {
-	      state.flowing = true;
-	      flow(src);
-	    }
-	  };
-	}
-	Readable.prototype.unpipe = function(dest) {
-	  var state = this._readableState;
-	  if (state.pipesCount === 0)
-	    return this;
-	  if (state.pipesCount === 1) {
-	    if (dest && dest !== state.pipes)
-	      return this;
-	    if (!dest)
-	      dest = state.pipes;
-	    state.pipes = null;
-	    state.pipesCount = 0;
-	    state.flowing = false;
-	    if (dest)
-	      dest.emit('unpipe', this);
-	    return this;
-	  }
-	  if (!dest) {
-	    var dests = state.pipes;
-	    var len = state.pipesCount;
-	    state.pipes = null;
-	    state.pipesCount = 0;
-	    state.flowing = false;
-	    for (var i = 0; i < len; i++)
-	      dests[i].emit('unpipe', this);
-	    return this;
-	  }
-	  var i = indexOf(state.pipes, dest);
-	  if (i === -1)
-	    return this;
-	  state.pipes.splice(i, 1);
-	  state.pipesCount -= 1;
-	  if (state.pipesCount === 1)
-	    state.pipes = state.pipes[0];
-	  dest.emit('unpipe', this);
-	  return this;
-	};
-	Readable.prototype.on = function(ev, fn) {
-	  var res = Stream.prototype.on.call(this, ev, fn);
-	  if (ev === 'data' && false !== this._readableState.flowing) {
-	    this.resume();
-	  }
-	  if (ev === 'readable' && this.readable) {
-	    var state = this._readableState;
-	    if (!state.readableListening) {
-	      state.readableListening = true;
-	      state.emittedReadable = false;
-	      state.needReadable = true;
-	      if (!state.reading) {
-	        var self = this;
-	        process.nextTick(function() {
-	          debug('readable nexttick read 0');
-	          self.read(0);
-	        });
-	      } else if (state.length) {
-	        emitReadable(this, state);
-	      }
-	    }
-	  }
-	  return res;
-	};
-	Readable.prototype.addListener = Readable.prototype.on;
-	Readable.prototype.resume = function() {
-	  var state = this._readableState;
-	  if (!state.flowing) {
-	    debug('resume');
-	    state.flowing = true;
-	    if (!state.reading) {
-	      debug('resume read 0');
-	      this.read(0);
-	    }
-	    resume(this, state);
-	  }
-	  return this;
-	};
-	function resume(stream, state) {
-	  if (!state.resumeScheduled) {
-	    state.resumeScheduled = true;
-	    process.nextTick(function() {
-	      resume_(stream, state);
-	    });
-	  }
-	}
-	function resume_(stream, state) {
-	  state.resumeScheduled = false;
-	  stream.emit('resume');
-	  flow(stream);
-	  if (state.flowing && !state.reading)
-	    stream.read(0);
-	}
-	Readable.prototype.pause = function() {
-	  debug('call pause flowing=%j', this._readableState.flowing);
-	  if (false !== this._readableState.flowing) {
-	    debug('pause');
-	    this._readableState.flowing = false;
-	    this.emit('pause');
-	  }
-	  return this;
-	};
-	function flow(stream) {
-	  var state = stream._readableState;
-	  debug('flow', state.flowing);
-	  if (state.flowing) {
-	    do {
-	      var chunk = stream.read();
-	    } while (null !== chunk && state.flowing);
-	  }
-	}
-	Readable.prototype.wrap = function(stream) {
-	  var state = this._readableState;
-	  var paused = false;
-	  var self = this;
-	  stream.on('end', function() {
-	    debug('wrapped end');
-	    if (state.decoder && !state.ended) {
-	      var chunk = state.decoder.end();
-	      if (chunk && chunk.length)
-	        self.push(chunk);
-	    }
-	    self.push(null);
-	  });
-	  stream.on('data', function(chunk) {
-	    debug('wrapped data');
-	    if (state.decoder)
-	      chunk = state.decoder.write(chunk);
-	    if (!chunk || !state.objectMode && !chunk.length)
-	      return;
-	    var ret = self.push(chunk);
-	    if (!ret) {
-	      paused = true;
-	      stream.pause();
-	    }
-	  });
-	  for (var i in stream) {
-	    if (util.isFunction(stream[i]) && util.isUndefined(this[i])) {
-	      this[i] = function(method) {
-	        return function() {
-	          return stream[method].apply(stream, arguments);
-	        };
-	      }(i);
-	    }
-	  }
-	  var events = ['error', 'close', 'destroy', 'pause', 'resume'];
-	  forEach(events, function(ev) {
-	    stream.on(ev, self.emit.bind(self, ev));
-	  });
-	  self._read = function(n) {
-	    debug('wrapped _read', n);
-	    if (paused) {
-	      paused = false;
-	      stream.resume();
-	    }
-	  };
-	  return self;
-	};
-	Readable._fromList = fromList;
-	function fromList(n, state) {
-	  var list = state.buffer;
-	  var length = state.length;
-	  var stringMode = !!state.decoder;
-	  var objectMode = !!state.objectMode;
-	  var ret;
-	  if (list.length === 0)
-	    return null;
-	  if (length === 0)
-	    ret = null;
-	  else if (objectMode)
-	    ret = list.shift();
-	  else if (!n || n >= length) {
-	    if (stringMode)
-	      ret = list.join('');
-	    else
-	      ret = Buffer.concat(list, length);
-	    list.length = 0;
-	  } else {
-	    if (n < list[0].length) {
-	      var buf = list[0];
-	      ret = buf.slice(0, n);
-	      list[0] = buf.slice(n);
-	    } else if (n === list[0].length) {
-	      ret = list.shift();
-	    } else {
-	      if (stringMode)
-	        ret = '';
-	      else
-	        ret = new Buffer(n);
-	      var c = 0;
-	      for (var i = 0,
-	          l = list.length; i < l && c < n; i++) {
-	        var buf = list[0];
-	        var cpy = Math.min(n - c, buf.length);
-	        if (stringMode)
-	          ret += buf.slice(0, cpy);
-	        else
-	          buf.copy(ret, c, 0, cpy);
-	        if (cpy < buf.length)
-	          list[0] = buf.slice(cpy);
-	        else
-	          list.shift();
-	        c += cpy;
-	      }
-	    }
-	  }
-	  return ret;
-	}
-	function endReadable(stream) {
-	  var state = stream._readableState;
-	  if (state.length > 0)
-	    throw new Error('endReadable called on non-empty stream');
-	  if (!state.endEmitted) {
-	    state.ended = true;
-	    process.nextTick(function() {
-	      if (!state.endEmitted && state.length === 0) {
-	        state.endEmitted = true;
-	        stream.readable = false;
-	        stream.emit('end');
-	      }
-	    });
-	  }
-	}
-	function forEach(xs, f) {
-	  for (var i = 0,
-	      l = xs.length; i < l; i++) {
-	    f(xs[i], i);
-	  }
-	}
-	function indexOf(xs, x) {
-	  for (var i = 0,
-	      l = xs.length; i < l; i++) {
-	    if (xs[i] === x)
-	      return i;
-	  }
-	  return -1;
-	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 64 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
-	__webpack_require__(2);
-	module.exports = Writable;
-	var Buffer = __webpack_require__(50).Buffer;
-	Writable.WritableState = WritableState;
-	var util = __webpack_require__(72);
-	util.inherits = __webpack_require__(71);
-	var Stream = __webpack_require__(51);
-	util.inherits(Writable, Stream);
-	function WriteReq(chunk, encoding, cb) {
-	  this.chunk = chunk;
-	  this.encoding = encoding;
-	  this.callback = cb;
-	}
-	function WritableState(options, stream) {
-	  var Duplex = __webpack_require__(65);
-	  options = options || {};
-	  var hwm = options.highWaterMark;
-	  var defaultHwm = options.objectMode ? 16 : 16 * 1024;
-	  this.highWaterMark = (hwm || hwm === 0) ? hwm : defaultHwm;
-	  this.objectMode = !!options.objectMode;
-	  if (stream instanceof Duplex)
-	    this.objectMode = this.objectMode || !!options.writableObjectMode;
-	  this.highWaterMark = ~~this.highWaterMark;
-	  this.needDrain = false;
-	  this.ending = false;
-	  this.ended = false;
-	  this.finished = false;
-	  var noDecode = options.decodeStrings === false;
-	  this.decodeStrings = !noDecode;
-	  this.defaultEncoding = options.defaultEncoding || 'utf8';
-	  this.length = 0;
-	  this.writing = false;
-	  this.corked = 0;
-	  this.sync = true;
-	  this.bufferProcessing = false;
-	  this.onwrite = function(er) {
-	    onwrite(stream, er);
-	  };
-	  this.writecb = null;
-	  this.writelen = 0;
-	  this.buffer = [];
-	  this.pendingcb = 0;
-	  this.prefinished = false;
-	  this.errorEmitted = false;
-	}
-	function Writable(options) {
-	  var Duplex = __webpack_require__(65);
-	  if (!(this instanceof Writable) && !(this instanceof Duplex))
-	    return new Writable(options);
-	  this._writableState = new WritableState(options, this);
-	  this.writable = true;
-	  Stream.call(this);
-	}
-	Writable.prototype.pipe = function() {
-	  this.emit('error', new Error('Cannot pipe. Not readable.'));
-	};
-	function writeAfterEnd(stream, state, cb) {
-	  var er = new Error('write after end');
-	  stream.emit('error', er);
-	  process.nextTick(function() {
-	    cb(er);
-	  });
-	}
-	function validChunk(stream, state, chunk, cb) {
-	  var valid = true;
-	  if (!util.isBuffer(chunk) && !util.isString(chunk) && !util.isNullOrUndefined(chunk) && !state.objectMode) {
-	    var er = new TypeError('Invalid non-string/buffer chunk');
-	    stream.emit('error', er);
-	    process.nextTick(function() {
-	      cb(er);
-	    });
-	    valid = false;
-	  }
-	  return valid;
-	}
-	Writable.prototype.write = function(chunk, encoding, cb) {
-	  var state = this._writableState;
-	  var ret = false;
-	  if (util.isFunction(encoding)) {
-	    cb = encoding;
-	    encoding = null;
-	  }
-	  if (util.isBuffer(chunk))
-	    encoding = 'buffer';
-	  else if (!encoding)
-	    encoding = state.defaultEncoding;
-	  if (!util.isFunction(cb))
-	    cb = function() {};
-	  if (state.ended)
-	    writeAfterEnd(this, state, cb);
-	  else if (validChunk(this, state, chunk, cb)) {
-	    state.pendingcb++;
-	    ret = writeOrBuffer(this, state, chunk, encoding, cb);
-	  }
-	  return ret;
-	};
-	Writable.prototype.cork = function() {
-	  var state = this._writableState;
-	  state.corked++;
-	};
-	Writable.prototype.uncork = function() {
-	  var state = this._writableState;
-	  if (state.corked) {
-	    state.corked--;
-	    if (!state.writing && !state.corked && !state.finished && !state.bufferProcessing && state.buffer.length)
-	      clearBuffer(this, state);
-	  }
-	};
-	function decodeChunk(state, chunk, encoding) {
-	  if (!state.objectMode && state.decodeStrings !== false && util.isString(chunk)) {
-	    chunk = new Buffer(chunk, encoding);
-	  }
-	  return chunk;
-	}
-	function writeOrBuffer(stream, state, chunk, encoding, cb) {
-	  chunk = decodeChunk(state, chunk, encoding);
-	  if (util.isBuffer(chunk))
-	    encoding = 'buffer';
-	  var len = state.objectMode ? 1 : chunk.length;
-	  state.length += len;
-	  var ret = state.length < state.highWaterMark;
-	  if (!ret)
-	    state.needDrain = true;
-	  if (state.writing || state.corked)
-	    state.buffer.push(new WriteReq(chunk, encoding, cb));
-	  else
-	    doWrite(stream, state, false, len, chunk, encoding, cb);
-	  return ret;
-	}
-	function doWrite(stream, state, writev, len, chunk, encoding, cb) {
-	  state.writelen = len;
-	  state.writecb = cb;
-	  state.writing = true;
-	  state.sync = true;
-	  if (writev)
-	    stream._writev(chunk, state.onwrite);
-	  else
-	    stream._write(chunk, encoding, state.onwrite);
-	  state.sync = false;
-	}
-	function onwriteError(stream, state, sync, er, cb) {
-	  if (sync)
-	    process.nextTick(function() {
-	      state.pendingcb--;
-	      cb(er);
-	    });
-	  else {
-	    state.pendingcb--;
-	    cb(er);
-	  }
-	  stream._writableState.errorEmitted = true;
-	  stream.emit('error', er);
-	}
-	function onwriteStateUpdate(state) {
-	  state.writing = false;
-	  state.writecb = null;
-	  state.length -= state.writelen;
-	  state.writelen = 0;
-	}
-	function onwrite(stream, er) {
-	  var state = stream._writableState;
-	  var sync = state.sync;
-	  var cb = state.writecb;
-	  onwriteStateUpdate(state);
-	  if (er)
-	    onwriteError(stream, state, sync, er, cb);
-	  else {
-	    var finished = needFinish(stream, state);
-	    if (!finished && !state.corked && !state.bufferProcessing && state.buffer.length) {
-	      clearBuffer(stream, state);
-	    }
-	    if (sync) {
-	      process.nextTick(function() {
-	        afterWrite(stream, state, finished, cb);
-	      });
-	    } else {
-	      afterWrite(stream, state, finished, cb);
-	    }
-	  }
-	}
-	function afterWrite(stream, state, finished, cb) {
-	  if (!finished)
-	    onwriteDrain(stream, state);
-	  state.pendingcb--;
-	  cb();
-	  finishMaybe(stream, state);
-	}
-	function onwriteDrain(stream, state) {
-	  if (state.length === 0 && state.needDrain) {
-	    state.needDrain = false;
-	    stream.emit('drain');
-	  }
-	}
-	function clearBuffer(stream, state) {
-	  state.bufferProcessing = true;
-	  if (stream._writev && state.buffer.length > 1) {
-	    var cbs = [];
-	    for (var c = 0; c < state.buffer.length; c++)
-	      cbs.push(state.buffer[c].callback);
-	    state.pendingcb++;
-	    doWrite(stream, state, true, state.length, state.buffer, '', function(err) {
-	      for (var i = 0; i < cbs.length; i++) {
-	        state.pendingcb--;
-	        cbs[i](err);
-	      }
-	    });
-	    state.buffer = [];
-	  } else {
-	    for (var c = 0; c < state.buffer.length; c++) {
-	      var entry = state.buffer[c];
-	      var chunk = entry.chunk;
-	      var encoding = entry.encoding;
-	      var cb = entry.callback;
-	      var len = state.objectMode ? 1 : chunk.length;
-	      doWrite(stream, state, false, len, chunk, encoding, cb);
-	      if (state.writing) {
-	        c++;
-	        break;
-	      }
-	    }
-	    if (c < state.buffer.length)
-	      state.buffer = state.buffer.slice(c);
-	    else
-	      state.buffer.length = 0;
-	  }
-	  state.bufferProcessing = false;
-	}
-	Writable.prototype._write = function(chunk, encoding, cb) {
-	  cb(new Error('not implemented'));
-	};
-	Writable.prototype._writev = null;
-	Writable.prototype.end = function(chunk, encoding, cb) {
-	  var state = this._writableState;
-	  if (util.isFunction(chunk)) {
-	    cb = chunk;
-	    chunk = null;
-	    encoding = null;
-	  } else if (util.isFunction(encoding)) {
-	    cb = encoding;
-	    encoding = null;
-	  }
-	  if (!util.isNullOrUndefined(chunk))
-	    this.write(chunk, encoding);
-	  if (state.corked) {
-	    state.corked = 1;
-	    this.uncork();
-	  }
-	  if (!state.ending && !state.finished)
-	    endWritable(this, state, cb);
-	};
-	function needFinish(stream, state) {
-	  return (state.ending && state.length === 0 && !state.finished && !state.writing);
-	}
-	function prefinish(stream, state) {
-	  if (!state.prefinished) {
-	    state.prefinished = true;
-	    stream.emit('prefinish');
-	  }
-	}
-	function finishMaybe(stream, state) {
-	  var need = needFinish(stream, state);
-	  if (need) {
-	    if (state.pendingcb === 0) {
-	      prefinish(stream, state);
-	      state.finished = true;
-	      stream.emit('finish');
-	    } else
-	      prefinish(stream, state);
-	  }
-	  return need;
-	}
-	function endWritable(stream, state, cb) {
-	  state.ending = true;
-	  finishMaybe(stream, state);
-	  if (cb) {
-	    if (state.finished)
-	      process.nextTick(cb);
-	    else
-	      stream.once('finish', cb);
-	  }
-	  state.ended = true;
-	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 65 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {"use strict";
-	__webpack_require__(2);
-	module.exports = Duplex;
-	var objectKeys = Object.keys || function(obj) {
-	  var keys = [];
-	  for (var key in obj)
-	    keys.push(key);
-	  return keys;
-	};
-	var util = __webpack_require__(72);
-	util.inherits = __webpack_require__(71);
-	var Readable = __webpack_require__(63);
-	var Writable = __webpack_require__(64);
-	util.inherits(Duplex, Readable);
-	forEach(objectKeys(Writable.prototype), function(method) {
-	  if (!Duplex.prototype[method])
-	    Duplex.prototype[method] = Writable.prototype[method];
-	});
-	function Duplex(options) {
-	  if (!(this instanceof Duplex))
-	    return new Duplex(options);
-	  Readable.call(this, options);
-	  Writable.call(this, options);
-	  if (options && options.readable === false)
-	    this.readable = false;
-	  if (options && options.writable === false)
-	    this.writable = false;
-	  this.allowHalfOpen = true;
-	  if (options && options.allowHalfOpen === false)
-	    this.allowHalfOpen = false;
-	  this.once('end', onend);
-	}
-	function onend() {
-	  if (this.allowHalfOpen || this._writableState.ended)
-	    return;
-	  process.nextTick(this.end.bind(this));
-	}
-	function forEach(xs, f) {
-	  for (var i = 0,
-	      l = xs.length; i < l; i++) {
-	    f(xs[i], i);
-	  }
-	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
-
-/***/ },
-/* 66 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = Transform;
-	var Duplex = __webpack_require__(65);
-	var util = __webpack_require__(72);
-	util.inherits = __webpack_require__(71);
-	util.inherits(Transform, Duplex);
-	function TransformState(options, stream) {
-	  this.afterTransform = function(er, data) {
-	    return afterTransform(stream, er, data);
-	  };
-	  this.needTransform = false;
-	  this.transforming = false;
-	  this.writecb = null;
-	  this.writechunk = null;
-	}
-	function afterTransform(stream, er, data) {
-	  var ts = stream._transformState;
-	  ts.transforming = false;
-	  var cb = ts.writecb;
-	  if (!cb)
-	    return stream.emit('error', new Error('no writecb in Transform class'));
-	  ts.writechunk = null;
-	  ts.writecb = null;
-	  if (!util.isNullOrUndefined(data))
-	    stream.push(data);
-	  if (cb)
-	    cb(er);
-	  var rs = stream._readableState;
-	  rs.reading = false;
-	  if (rs.needReadable || rs.length < rs.highWaterMark) {
-	    stream._read(rs.highWaterMark);
-	  }
-	}
-	function Transform(options) {
-	  if (!(this instanceof Transform))
-	    return new Transform(options);
-	  Duplex.call(this, options);
-	  this._transformState = new TransformState(options, this);
-	  var stream = this;
-	  this._readableState.needReadable = true;
-	  this._readableState.sync = false;
-	  this.once('prefinish', function() {
-	    if (util.isFunction(this._flush))
-	      this._flush(function(er) {
-	        done(stream, er);
-	      });
-	    else
-	      done(stream);
-	  });
-	}
-	Transform.prototype.push = function(chunk, encoding) {
-	  this._transformState.needTransform = false;
-	  return Duplex.prototype.push.call(this, chunk, encoding);
-	};
-	Transform.prototype._transform = function(chunk, encoding, cb) {
-	  throw new Error('not implemented');
-	};
-	Transform.prototype._write = function(chunk, encoding, cb) {
-	  var ts = this._transformState;
-	  ts.writecb = cb;
-	  ts.writechunk = chunk;
-	  ts.writeencoding = encoding;
-	  if (!ts.transforming) {
-	    var rs = this._readableState;
-	    if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark)
-	      this._read(rs.highWaterMark);
-	  }
-	};
-	Transform.prototype._read = function(n) {
-	  var ts = this._transformState;
-	  if (!util.isNull(ts.writechunk) && ts.writecb && !ts.transforming) {
-	    ts.transforming = true;
-	    this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
-	  } else {
-	    ts.needTransform = true;
-	  }
-	};
-	function done(stream, er) {
-	  if (er)
-	    return stream.emit('error', er);
-	  var ws = stream._writableState;
-	  var ts = stream._transformState;
-	  if (ws.length)
-	    throw new Error('calling transform done when ws.length != 0');
-	  if (ts.transforming)
-	    throw new Error('calling transform done when still transforming');
-	  return stream.push(null);
-	}
-
-
-/***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = PassThrough;
-	var Transform = __webpack_require__(66);
-	var util = __webpack_require__(72);
-	util.inherits = __webpack_require__(71);
-	util.inherits(PassThrough, Transform);
-	function PassThrough(options) {
-	  if (!(this instanceof PassThrough))
-	    return new PassThrough(options);
-	  Transform.call(this, options);
-	}
-	PassThrough.prototype._transform = function(chunk, encoding, cb) {
-	  cb(null, chunk);
-	};
-
-
-/***/ },
-/* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* (ignored) */
-
-/***/ },
-/* 69 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	module.exports = Array.isArray || function(arr) {
-	  return Object.prototype.toString.call(arr) == '[object Array]';
-	};
-
-
-/***/ },
-/* 70 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	var Buffer = __webpack_require__(50).Buffer;
-	var isBufferEncoding = Buffer.isEncoding || function(encoding) {
-	  switch (encoding && encoding.toLowerCase()) {
-	    case 'hex':
-	    case 'utf8':
-	    case 'utf-8':
-	    case 'ascii':
-	    case 'binary':
-	    case 'base64':
-	    case 'ucs2':
-	    case 'ucs-2':
-	    case 'utf16le':
-	    case 'utf-16le':
-	    case 'raw':
-	      return true;
-	    default:
-	      return false;
-	  }
-	};
-	function assertEncoding(encoding) {
-	  if (encoding && !isBufferEncoding(encoding)) {
-	    throw new Error('Unknown encoding: ' + encoding);
-	  }
-	}
-	var StringDecoder = exports.StringDecoder = function(encoding) {
-	  this.encoding = (encoding || 'utf8').toLowerCase().replace(/[-_]/, '');
-	  assertEncoding(encoding);
-	  switch (this.encoding) {
-	    case 'utf8':
-	      this.surrogateSize = 3;
-	      break;
-	    case 'ucs2':
-	    case 'utf16le':
-	      this.surrogateSize = 2;
-	      this.detectIncompleteChar = utf16DetectIncompleteChar;
-	      break;
-	    case 'base64':
-	      this.surrogateSize = 3;
-	      this.detectIncompleteChar = base64DetectIncompleteChar;
-	      break;
-	    default:
-	      this.write = passThroughWrite;
-	      return;
-	  }
-	  this.charBuffer = new Buffer(6);
-	  this.charReceived = 0;
-	  this.charLength = 0;
-	};
-	StringDecoder.prototype.write = function(buffer) {
-	  var charStr = '';
-	  while (this.charLength) {
-	    var available = (buffer.length >= this.charLength - this.charReceived) ? this.charLength - this.charReceived : buffer.length;
-	    buffer.copy(this.charBuffer, this.charReceived, 0, available);
-	    this.charReceived += available;
-	    if (this.charReceived < this.charLength) {
-	      return '';
-	    }
-	    buffer = buffer.slice(available, buffer.length);
-	    charStr = this.charBuffer.slice(0, this.charLength).toString(this.encoding);
-	    var charCode = charStr.charCodeAt(charStr.length - 1);
-	    if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-	      this.charLength += this.surrogateSize;
-	      charStr = '';
-	      continue;
-	    }
-	    this.charReceived = this.charLength = 0;
-	    if (buffer.length === 0) {
-	      return charStr;
-	    }
-	    break;
-	  }
-	  this.detectIncompleteChar(buffer);
-	  var end = buffer.length;
-	  if (this.charLength) {
-	    buffer.copy(this.charBuffer, 0, buffer.length - this.charReceived, end);
-	    end -= this.charReceived;
-	  }
-	  charStr += buffer.toString(this.encoding, 0, end);
-	  var end = charStr.length - 1;
-	  var charCode = charStr.charCodeAt(end);
-	  if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-	    var size = this.surrogateSize;
-	    this.charLength += size;
-	    this.charReceived += size;
-	    this.charBuffer.copy(this.charBuffer, size, 0, size);
-	    buffer.copy(this.charBuffer, 0, 0, size);
-	    return charStr.substring(0, end);
-	  }
-	  return charStr;
-	};
-	StringDecoder.prototype.detectIncompleteChar = function(buffer) {
-	  var i = (buffer.length >= 3) ? 3 : buffer.length;
-	  for (; i > 0; i--) {
-	    var c = buffer[buffer.length - i];
-	    if (i == 1 && c >> 5 == 0x06) {
-	      this.charLength = 2;
-	      break;
-	    }
-	    if (i <= 2 && c >> 4 == 0x0E) {
-	      this.charLength = 3;
-	      break;
-	    }
-	    if (i <= 3 && c >> 3 == 0x1E) {
-	      this.charLength = 4;
-	      break;
-	    }
-	  }
-	  this.charReceived = i;
-	};
-	StringDecoder.prototype.end = function(buffer) {
-	  var res = '';
-	  if (buffer && buffer.length)
-	    res = this.write(buffer);
-	  if (this.charReceived) {
-	    var cr = this.charReceived;
-	    var buf = this.charBuffer;
-	    var enc = this.encoding;
-	    res += buf.slice(0, cr).toString(enc);
-	  }
-	  return res;
-	};
-	function passThroughWrite(buffer) {
-	  return buffer.toString(this.encoding);
-	}
-	function utf16DetectIncompleteChar(buffer) {
-	  this.charReceived = buffer.length % 2;
-	  this.charLength = this.charReceived ? 2 : 0;
-	}
-	function base64DetectIncompleteChar(buffer) {
-	  this.charReceived = buffer.length % 3;
-	  this.charLength = this.charReceived ? 3 : 0;
-	}
-
-
-/***/ },
-/* 71 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	__webpack_require__(2);
-	if (typeof Object.create === 'function') {
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor;
-	    ctor.prototype = Object.create(superCtor.prototype, {constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }});
-	  };
-	} else {
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor;
-	    var TempCtor = function() {};
-	    TempCtor.prototype = superCtor.prototype;
-	    ctor.prototype = new TempCtor();
-	    ctor.prototype.constructor = ctor;
-	  };
-	}
-
-
-/***/ },
-/* 72 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(Buffer) {"use strict";
-	__webpack_require__(2);
-	function isArray(ar) {
-	  return Array.isArray(ar);
-	}
-	exports.isArray = isArray;
-	function isBoolean(arg) {
-	  return typeof arg === 'boolean';
-	}
-	exports.isBoolean = isBoolean;
-	function isNull(arg) {
-	  return arg === null;
-	}
-	exports.isNull = isNull;
-	function isNullOrUndefined(arg) {
-	  return arg == null;
-	}
-	exports.isNullOrUndefined = isNullOrUndefined;
-	function isNumber(arg) {
-	  return typeof arg === 'number';
-	}
-	exports.isNumber = isNumber;
-	function isString(arg) {
-	  return typeof arg === 'string';
-	}
-	exports.isString = isString;
-	function isSymbol(arg) {
-	  return typeof arg === 'symbol';
-	}
-	exports.isSymbol = isSymbol;
-	function isUndefined(arg) {
-	  return arg === void 0;
-	}
-	exports.isUndefined = isUndefined;
-	function isRegExp(re) {
-	  return isObject(re) && objectToString(re) === '[object RegExp]';
-	}
-	exports.isRegExp = isRegExp;
-	function isObject(arg) {
-	  return typeof arg === 'object' && arg !== null;
-	}
-	exports.isObject = isObject;
-	function isDate(d) {
-	  return isObject(d) && objectToString(d) === '[object Date]';
-	}
-	exports.isDate = isDate;
-	function isError(e) {
-	  return isObject(e) && (objectToString(e) === '[object Error]' || e instanceof Error);
-	}
-	exports.isError = isError;
-	function isFunction(arg) {
-	  return typeof arg === 'function';
-	}
-	exports.isFunction = isFunction;
-	function isPrimitive(arg) {
-	  return arg === null || typeof arg === 'boolean' || typeof arg === 'number' || typeof arg === 'string' || typeof arg === 'symbol' || typeof arg === 'undefined';
-	}
-	exports.isPrimitive = isPrimitive;
-	function isBuffer(arg) {
-	  return Buffer.isBuffer(arg);
-	}
-	exports.isBuffer = isBuffer;
-	function objectToString(o) {
-	  return Object.prototype.toString.call(o);
-	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50).Buffer))
 
 /***/ }
 /******/ ])
