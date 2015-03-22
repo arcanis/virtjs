@@ -1,14 +1,16 @@
-export class ImmediateTimer {
+import { AsyncTimer } from './AsyncTimer';
 
-    nextTick( callback ) {
+export class ImmediateTimer extends AsyncTimer {
+
+    prepare( callback ) {
 
         return setImmediate( callback );
 
     }
 
-    cancelTick( marker ) {
+    cancel( immediateId ) {
 
-        clearImmediate( marker );
+        clearImmediate( nextTickId );
 
     }
 

@@ -1,14 +1,16 @@
-export class AnimationFrameTimer {
+import { AsyncTimer } from './AsyncTimer';
 
-    nextTick( callback ) {
+export class AnimationFrameTimer extends AsyncTimer {
 
-        return requestAnimationFrame( callback );
+    prepare( callback ) {
+
+        return window.requestAnimationFrame( callback );
 
     }
 
-    cancelTick( marker ) {
+    cancel( animationFrameId ) {
 
-        cancelAnimationFrame( marker );
+        window.cancelAnimationFrame( animationFrameId );
 
     }
 

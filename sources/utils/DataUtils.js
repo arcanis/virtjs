@@ -13,7 +13,7 @@ function nodeToUint8( ... buffers ) {
 
 }
 
-function binaryStringToUint8( ... strings ) {
+export function binaryStringToUint8( ... strings ) {
 
     var totalByteLength = strings.reduce( ( sum, string ) => sum + string.length, 0 );
     var array = new Uint8Array( totalByteLength ), offset = 0;
@@ -23,6 +23,18 @@ function binaryStringToUint8( ... strings ) {
             array[ offset ++ ] = string.charCodeAt( t ); } );
 
     return array;
+
+}
+
+export function base64ToUint8( ... strings ) {
+
+    var isBrowser = typeof window !== 'undefined';
+
+    if ( isBrowser ) {
+        return binaryStringToUint8( ... strings.map( string => atob( string ) ) );
+    } else {
+        return nodeToUint8( ... strings.map( string => new Buffer( string, 'base64' ) ) );
+    }
 
 }
 
@@ -49,11 +61,7 @@ export function fetchArrayBuffer( path ) {
 
         } else if ( isDataURI ) {
 
-            if ( isBrowser ) {
-                resolve( binaryStringToUint8( atob( isDataURI[ 1 ] ) ).buffer );
-            } else {
-                resolve( nodeToUint8( new Buffer( isDataURI[ 1 ], 'base64' ) ).buffer );
-            }
+            resolve( base64ToUint8( isDataURI[ 1 ] ).buffer );
 
         } else if ( isBrowser ) {
 

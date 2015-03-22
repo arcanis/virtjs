@@ -1,4 +1,6 @@
-import { DataScreen } from './DataScreen';
+var gWebGlSupportedInputFormats = [
+    { depth : 16, rMask : 0b1111100000000000, gMask : 0b0000011111100000, bMask : 0b0000000000011111, aMask : 0b0000000000000000, _typedView : Uint16Array, _format : 'RGB', _type : 'UNSIGNED_SHORT_5_6_5' }
+];
 
 var gVertexShaderScript = `
 
@@ -37,19 +39,34 @@ var gFragmentShaderScript = `
 
 `;
 
-export class WebGLScreen extends DataScreen {
+function getMatchingInputFormat( { depth, rMask, gMask, bMask, aMask } ) {
 
-    constructor( options ) {
+    for ( var supported of gWebGlSupportedInputFormats )
+        if ( depth === supported.depth && rMask === supported.rMask && gMask === supported.gMask && bMask === supported.bMask && aMask === supported.aMask )
+            return supported;
 
-        super( options );
+    return null;
 
-        var { canvas = document.createElement( 'canvas' ), useDebugContext = false } = options;
+}
+
+export class WebGLScreen {
+
+    constructor( { canvas = document.createElement( 'canvas' ), useDebugContext = false } ) {
 
         this.canvas = canvas;
         this.gl = null;
 
+        this.inputWidth = 0;
+        this.inputHeight = 0;
+        this.inputPitch = 0;
+
+        this.inputFormat = null;
+        this.inputData = null;
+
         this.outputWidth = 0;
         this.outputHeight = 0;
+
+        this._pitchedInputData = null;
 
         this._useDebugContext = useDebugContext;
         this._shaderProgram = null;
@@ -73,9 +90,16 @@ export class WebGLScreen extends DataScreen {
 
     }
 
-    setInputSize( width, height ) {
+    setInputSize( width, height, pitch = width ) {
 
-        super.setInputSize( width, height );
+        if ( width === this.inputWidth && height === this.inputHeight && pitch === this.inputPitch )
+            return ;
+
+        this.inputWidth = width;
+        this.inputHeight = height;
+        this.inputPitch = pitch;
+
+        this._setupAlignmentBuffer( );
 
         this._updateViewport( );
         this._draw( );
@@ -83,6 +107,9 @@ export class WebGLScreen extends DataScreen {
     }
 
     setOutputSize( width, height ) {
+
+        if ( width === this.outputWidth && height === this.outputHeight )
+            return ;
 
         this.outputWidth = width;
         this.outputHeight = height;
@@ -93,6 +120,9 @@ export class WebGLScreen extends DataScreen {
     }
 
     setShaderProgram( shaderProgram ) {
+
+        if ( shaderProgram === this._shaderProgram )
+            return ;
 
         if ( this._shaderProgram !== null )
             this.gl.deleteProgram( this._shaderProgram );
@@ -120,6 +150,34 @@ export class WebGLScreen extends DataScreen {
 
         this.gl.bindBuffer( this._vertexTextureUvBuffer.bufferTarget, this._vertexTextureUvBuffer );
         this.gl.vertexAttribPointer( this._aVertexTextureUvLocation, this._vertexTextureUvBuffer.itemSize, this.gl.FLOAT, false, 0, 0 );
+
+    }
+
+    validateInputFormat( format ) {
+
+        return getMatchingInputFormat( format ) !== null;
+
+    }
+
+    setInputFormat( partialFormat ) {
+
+        var fullFormat = getMatchingInputFormat( partialFormat );
+
+        if ( !fullFormat )
+            throw new Error( 'Invalid input format' );
+
+        this.inputFormat = fullFormat;
+
+        this._setupAlignmentBuffer( );
+
+    }
+
+    setInputData( data ) {
+
+        if ( ! data )
+            return ;
+
+        this.inputData = data;
 
     }
 
@@ -227,6 +285,50 @@ export class WebGLScreen extends DataScreen {
 
     }
 
+    _setupAlignmentBuffer( ) {
+
+        if ( ! this.inputFormat )
+            return ;
+
+        if ( this.inputPitch === this.inputWidth * this.inputFormat.depth / 8 ) {
+            this._alignedData = null;
+        } else {
+            this._alignedData = new this.inputFormat._typedView( this.inputWidth * this.inputHeight );
+        }
+
+    }
+
+    _getAlignedData( ) {
+
+        if ( ! this._alignedData )
+            return this.inputData;
+
+        var height = this.inputHeight;
+        var byteLength = this.inputFormat.depth / 8;
+
+        var sourceRowSize = this.inputPitch / byteLength;
+        var destinationRowSize = this.inputWidth;
+
+        var source = this.inputData;
+        var destination = this._alignedData;
+
+        var sourceIndex = 0;
+        var destinationIndex = 0;
+
+        for ( var y = 0; y < height; ++ y ) {
+
+            for ( var t = 0; t < destinationRowSize; ++ t )
+                destination[ destinationIndex + t ] = source[ sourceIndex + t ];
+
+            sourceIndex += sourceRowSize;
+            destinationIndex += destinationRowSize;
+
+        }
+
+        return this._alignedData;
+
+    }
+
     _updateViewport( ) {
 
         var inputWidth = this.inputWidth;
@@ -272,12 +374,16 @@ export class WebGLScreen extends DataScreen {
 
         this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
 
-        if ( this.inputWidth === 0 || this.inputHeight === 0 )
+        if ( ! this.inputData || this.inputWidth === 0 || this.inputHeight === 0 )
             return ;
+
+        var format = this.gl[ this.inputFormat._format ];
+        var type = this.gl[ this.inputFormat._type ];
+        var data = this._getAlignedData( );
 
         var textureIndex = ( this._textureIndex ++ ) % 2;
         this.gl.bindTexture( this.gl.TEXTURE_2D, this._textures[ textureIndex ] );
-        this.gl.texImage2D( this.gl.TEXTURE_2D, 0, this.gl.RGB, this.inputWidth, this.inputHeight, 0, this.gl.RGB, this.gl.UNSIGNED_BYTE, this.data );
+        this.gl.texImage2D( this.gl.TEXTURE_2D, 0, this.gl.RGB, this.inputWidth, this.inputHeight, 0, format, type, data );
 
         this.gl.bindBuffer( this._vertexIndexBuffer.bufferTarget, this._vertexIndexBuffer );
         this.gl.drawElements( this.gl.TRIANGLE_STRIP, this._vertexIndexBuffer.itemCount, this.gl.UNSIGNED_SHORT, 0 );

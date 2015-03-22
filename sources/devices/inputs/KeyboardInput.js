@@ -1,7 +1,4 @@
-import { EmitterMixin } from '../../mixins/EmitterMixin';
-import { mixin }        from '../../utils/ObjectUtils';
-
-var automapData = {
+var defaultTranslationMap = {
 
     LEFT   : [ 37 ], // arrow left
     RIGHT  : [ 39 ], // arrow right
@@ -16,14 +13,18 @@ var automapData = {
 
 };
 
-export class KeyboardInput extends mixin( null, EmitterMixin ) {
+export class KeyboardInput {
 
-    constructor( { map = null, element = document.body, inputs } = { } ) {
+    constructor( { element = document.body, keyMap = null, inputMap = null } = { } ) {
 
         super( );
 
-        this.element = null;
-        this.map = map;
+        this._element = null;
+        this._keyMap = keyMap;
+
+        this._activeKeystate = { };
+        this._pendingKeystate = 0;
+        this._keystateChanged = false;
 
         this._onKeyDown_ = e => { this._onKeyDown( e ); };
         this._onKeyUp_ = e => { this._onKeyUp( e ); };
@@ -31,50 +32,86 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
         if ( element )
             this.setElement( element );
 
-        if ( inputs ) {
-            this.setInputs( inputs );
+        if ( inputMap ) {
+            this.applyInputMap( inputMap );
         }
 
     }
 
     setElement( element ) {
 
-        if ( this.element )
-            this._detach( element );
+        if ( this._element )
+            this._detach( this._element );
 
-        this.element = element;
-        this._attach( element );
+        this._element = element;
 
-    }
-
-    setInputs( inputs ) {
-
-        this.map = this._createAutomap( inputs );
+        if ( this._element ) {
+            this._attach( this._element );
+        }
 
     }
 
-    destroy( ) {
+    applyInputMap( inputs, options ) {
 
-        this.setElement( null );
+        this.setKeyMap( this._parseInputMap( inputs, options ) );
 
     }
 
-    _createAutomap( inputs ) {
+    setKeyMap( map ) {
 
-        var map = { };
+        this._map = map;
 
-        Object.keys( inputs ).forEach( function ( name ) {
+        this._activeInputState = { };
+        this._pendingInputState = { };
+        this._inputStateChanged = false;
 
-            if ( ! automapData[ name ] )
-                return ;
+        for ( var keyCode of Object.keys( this._map ) ) {
+            var inputCode = this._map[ keyCode ];
+            this._activeInputState[ inputCode ] = false;
+        }
 
-            automapData[ name ].forEach( function ( keyCode ) {
-                map[ keyCode ] = inputs[ name ];
-            } );
+    }
 
-        }, this );
+    pollInputs( ) {
 
-        return map;
+        if ( ! this._inputStateChanged )
+            return ;
+
+        for ( var inputCode of Object.keys( this._pendingInputState ) )
+            this._activeInputState[ inputCode ] = this._pendingInputState[ inputCode ];
+
+        this._pendingInputState = { };
+        this._inputStateChanged = false;
+
+    }
+
+    getState( port, inputCode ) {
+
+        if ( port !== 0 )
+            return false;
+
+        return this._activeInputState[ inputCode ];
+
+    }
+
+    _parseInputMap( inputMap, { translationMap = defaultTranslationMap } = { } ) {
+
+        var keyMap = { };
+
+        for ( var inputName of Object.keys( inputMap ) ) {
+
+            if ( ! translationMap[ inputName ] )
+                throw new Error( `Unrecognized input name ${inputName}` );
+
+            var inputCode = inputMap[ inputName ];
+
+            for ( var keyCode of translationMap[ inputName ] ) {
+                keyMap[ keyCode ] = inputCode;
+            }
+
+        }
+
+        return keyMap;
 
     }
 
@@ -100,27 +137,33 @@ export class KeyboardInput extends mixin( null, EmitterMixin ) {
         if ( e.metaKey || e.ctrlKey || e.shiftKey || e.altKey )
             return ;
 
-        if ( ! this.map )
+        if ( ! this._map )
             return ;
 
-        if ( typeof this.map[ e.keyCode ] === 'undefined' )
+        var inputCode = this._map[ e.keyCode ];
+
+        if ( typeof inputCode === 'undefined' )
             return ;
 
         e.preventDefault( );
 
-        this.emit( 'keydown', this.map[ e.keyCode ] );
+        this._pendingInputState[ inputCode ] = true;
+        this._inputStateChanged = true;
 
     }
 
     _onKeyUp( e ) {
 
-        if ( ! this.map )
+        if ( ! this._map )
             return ;
 
-        if ( typeof this.map[ e.keyCode ] === 'undefined' )
+        var inputCode = this._map[ e.keyCode ];
+
+        if ( typeof inputCode === 'undefined' )
             return ;
 
-        this.emit( 'keyup', this.map[ e.keyCode ] );
+        this._pendingInputState[ inputCode ] = false;
+        this._inputStateChanged = true;
 
     }
 

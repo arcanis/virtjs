@@ -2,43 +2,69 @@ export class SerialTimer {
 
     constructor( ) {
 
+        this._running = false;
+        this._nested = false;
+
         this._actions = [ ];
+
+        this._queues = [ [ ], [ ] ];
+        this._activeQueueIndex = 0;
 
     }
 
     nextTick( callback ) {
 
-        this._actions.push( callback );
+        var activeQueueIndex = this._activeQueueIndex;
+        var queue = this._queues[ activeQueueIndex ];
+        var callbackIndex = queue.length;
 
-        return callback;
+        queue.push( callback );
+
+        return activeQueueIndex << 24 | callbackIndex;
 
     }
 
-    cancelTick( marker ) {
+    cancelTick( nextTickId ) {
 
-        var index = this._aactions.indexOf( marker );
+        var activeQueueIndex = handler >>> 24;
+        var callbackIndex = handler & 0x00FFFFFF;
 
-        if ( index === -1 )
+        this._queues[ activeQueueIndex ][ callbackIndex ] = null;
+
+    }
+
+    start( ) {
+
+        this._running = true;
+
+        if ( this._nested )
             return ;
 
-        this._actions.splice( index, 1 );
+        this._nested = true;
+
+        while ( this._running ) {
+            this.one( );
+        }
 
     }
 
-    tick( count = 1 ) {
+    one( ) {
 
-        for ( ; count; -- count ) {
+        var activeQueueIndex = this._activeQueueIndex;
+        this._activeQueueIndex = activeQueueIndex ^ 1;
 
-            var actions = this._actions;
-            this._actions = [ ];
+        var queue = this._queues[ activeQueueIndex ];
 
-            for ( var action of actions ) {
-                action( );
-            }
+        for ( var t = 0, T = queue.length; t < T; ++ t )
+            queue[ t ] && queue[ t ]( );
 
-        }
+        queue.length = 0;
 
-        return this;
+    }
+
+    stop( ) {
+
+        this._running = false;
 
     }
 
