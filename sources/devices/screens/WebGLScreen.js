@@ -1,5 +1,8 @@
 var gWebGlSupportedInputFormats = [
-    { depth : 16, rMask : 0b1111100000000000, gMask : 0b0000011111100000, bMask : 0b0000000000011111, aMask : 0b0000000000000000, _typedView : Uint16Array, _format : 'RGB', _type : 'UNSIGNED_SHORT_5_6_5' }
+
+    { depth : 16, rMask : 0b1111100000000000, gMask : 0b0000011111100000, bMask : 0b0000000000011111, aMask : 0b0000000000000000, _typedView : Uint16Array,
+      /* The following is private and shouldn't be used anywhere else */ _format : 'RGB', _type : 'UNSIGNED_SHORT_5_6_5' }
+
 ];
 
 var gVertexShaderScript = `
@@ -51,7 +54,7 @@ function getMatchingInputFormat( { depth, rMask, gMask, bMask, aMask } ) {
 
 export class WebGLScreen {
 
-    constructor( { canvas = document.createElement( 'canvas' ), useDebugContext = false } ) {
+    constructor( { canvas = document.createElement( 'canvas' ), useDebugContext = false } = { } ) {
 
         this.canvas = canvas;
         this.gl = null;
