@@ -131,6 +131,9 @@ export class KeyboardInput {
 
     _onKeyDown( e ) {
 
+        if ( [ 'select', 'input', 'textarea' ].includes( e.target.tagName.toLowerCase( ) ) )
+            return ;
+
         if ( e.keyCode === 8 /* backspace */ )
             e.preventDefault( );
 
