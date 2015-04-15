@@ -17,8 +17,6 @@ export class KeyboardInput {
 
     constructor( { element = document.body, keyMap = null, inputMap = null } = { } ) {
 
-        super( );
-
         this._element = null;
         this._keyMap = keyMap;
 
