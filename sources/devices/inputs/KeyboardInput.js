@@ -99,7 +99,7 @@ export class KeyboardInput {
         for ( var inputName of Object.keys( inputMap ) ) {
 
             if ( ! translationMap[ inputName ] )
-                throw new Error( `Unrecognized input name ${inputName}` );
+                continue ;
 
             var inputCode = inputMap[ inputName ];
 

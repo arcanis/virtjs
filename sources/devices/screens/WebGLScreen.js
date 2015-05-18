@@ -1,11 +1,11 @@
-var gWebGlSupportedInputFormats = [
+let gWebGlSupportedInputFormats = [
 
     { depth : 16, rMask : 0b1111100000000000, gMask : 0b0000011111100000, bMask : 0b0000000000011111, aMask : 0b0000000000000000, _typedView : Uint16Array,
       /* The following is private and shouldn't be used anywhere else */ _format : 'RGB', _type : 'UNSIGNED_SHORT_5_6_5' }
 
 ];
 
-var gVertexShaderScript = `
+let gVertexShaderScript = `
 
     precision mediump float;
 
@@ -26,7 +26,7 @@ var gVertexShaderScript = `
 
 `;
 
-var gFragmentShaderScript = `
+let gFragmentShaderScript = `
 
     precision mediump float;
 
@@ -44,7 +44,7 @@ var gFragmentShaderScript = `
 
 function getMatchingInputFormat( { depth, rMask, gMask, bMask, aMask } ) {
 
-    for ( var supported of gWebGlSupportedInputFormats )
+    for ( let supported of gWebGlSupportedInputFormats )
         if ( depth === supported.depth && rMask === supported.rMask && gMask === supported.gMask && bMask === supported.bMask && aMask === supported.aMask )
             return supported;
 
@@ -85,8 +85,8 @@ export class WebGLScreen {
         this._textureIndex = 0;
         this._setupGl( );
 
-        var boundingBox = this.canvas.getBoundingClientRect( );
-        var width = boundingBox.width, height = boundingBox.height;
+        let boundingBox = this.canvas.getBoundingClientRect( );
+        let width = boundingBox.width, height = boundingBox.height;
 
         this.setInputSize( width, height );
         this.setOutputSize( width, height );
@@ -164,7 +164,7 @@ export class WebGLScreen {
 
     setInputFormat( partialFormat ) {
 
-        var fullFormat = getMatchingInputFormat( partialFormat );
+        let fullFormat = getMatchingInputFormat( partialFormat );
 
         if ( !fullFormat )
             throw new Error( 'Invalid input format' );
@@ -192,7 +192,7 @@ export class WebGLScreen {
 
     _createTexture( ) {
 
-        var texture = this.gl.createTexture( );
+        let texture = this.gl.createTexture( );
 
         return texture;
 
@@ -200,7 +200,7 @@ export class WebGLScreen {
 
     _createBuffer( target, count, content ) {
 
-        var buffer = this.gl.createBuffer( );
+        let buffer = this.gl.createBuffer( );
         buffer.bufferTarget = target;
         buffer.itemCount = count;
         buffer.itemSize = content.length / count;
@@ -214,7 +214,7 @@ export class WebGLScreen {
 
     _createOrthoMatrix( left, right, bottom, top, near, far ) {
 
-        var lr = 1 / ( left - right ), bt = 1 / ( bottom - top ), nf = 1 / ( near - far );
+        let lr = 1 / ( left - right ), bt = 1 / ( bottom - top ), nf = 1 / ( near - far );
 
         return [ - 2 * lr, 0, 0, 0, 0, - 2 * bt, 0, 0, 0, 0, 2 * nf, 0, ( left + right ) * lr, ( bottom + top ) * bt, ( near + far ) * nf, 1 ];
 
@@ -222,16 +222,11 @@ export class WebGLScreen {
 
     _setupGl( ) {
 
-        var options = { };
+        let options = { };
 
         this.gl = this.canvas.getContext( 'webgl', options ) || this.canvas.getContext( 'experimental-webgl', options );
 
-        if ( this._useDebugContext )
-            this.gl = WebGLDebugUtils.makeDebugContext( this.gl );
-
-        this.gl.clearColor( 0.0, 0.0, 0.0, 0.0);
-        this.gl.blendFunc( this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA );
-        this.gl.enable( this.gl.BLEND );
+        this.gl.clearColor( 0.0, 0.0, 0.0, 0.0 );
 
         this._vertexPositionBuffer = this._createBuffer( this.gl.ARRAY_BUFFER, 4, new Float32Array( [ -1, -1, 0, /**/ 1, -1, 0, /**/ 1, 1, 0, /**/ -1, 1, 0 ] ) );
         this._vertexTextureUvBuffer = this._createBuffer( this.gl.ARRAY_BUFFER, 4, new Float32Array( [ 0, 0, /**/ 1, 0, /**/ 1, 1, /**/ 0, 1 ] ) );
@@ -260,7 +255,7 @@ export class WebGLScreen {
 
     _createShader( type, script ) {
 
-        var shader = this.gl.createShader( type );
+        let shader = this.gl.createShader( type );
 
         this.gl.shaderSource( shader, script );
         this.gl.compileShader( shader );
@@ -274,7 +269,7 @@ export class WebGLScreen {
 
     _linkShaders( vertexShader, fragmentShader ) {
 
-        var shaderProgram = this.gl.createProgram( );
+        let shaderProgram = this.gl.createProgram( );
 
         this.gl.attachShader( shaderProgram, vertexShader );
         this.gl.attachShader( shaderProgram, fragmentShader );
@@ -306,21 +301,21 @@ export class WebGLScreen {
         if ( ! this._alignedData )
             return this.inputData;
 
-        var height = this.inputHeight;
-        var byteLength = this.inputFormat.depth / 8;
+        let height = this.inputHeight;
+        let byteLength = this.inputFormat.depth / 8;
 
-        var sourceRowSize = this.inputPitch / byteLength;
-        var destinationRowSize = this.inputWidth;
+        let sourceRowSize = this.inputPitch / byteLength;
+        let destinationRowSize = this.inputWidth;
 
-        var source = this.inputData;
-        var destination = this._alignedData;
+        let source = this.inputData;
+        let destination = this._alignedData;
 
-        var sourceIndex = 0;
-        var destinationIndex = 0;
+        let sourceIndex = 0;
+        let destinationIndex = 0;
 
-        for ( var y = 0; y < height; ++ y ) {
+        for ( let y = 0; y < height; ++ y ) {
 
-            for ( var t = 0; t < destinationRowSize; ++ t )
+            for ( let t = 0; t < destinationRowSize; ++ t )
                 destination[ destinationIndex + t ] = source[ sourceIndex + t ];
 
             sourceIndex += sourceRowSize;
@@ -334,13 +329,13 @@ export class WebGLScreen {
 
     _updateViewport( ) {
 
-        var inputWidth = this.inputWidth;
-        var inputHeight = this.inputHeight;
+        let inputWidth = this.inputWidth;
+        let inputHeight = this.inputHeight;
 
-        var outputWidth = this.outputWidth;
-        var outputHeight = this.outputHeight;
+        let outputWidth = this.outputWidth;
+        let outputHeight = this.outputHeight;
 
-        var isUndefined = value => value == null || value === '';
+        let isUndefined = value => value == null || value === '';
 
         if ( isUndefined( outputWidth ) && isUndefined( outputHeight ) )
             outputWidth = inputWidth, outputHeight = inputHeight;
@@ -351,18 +346,18 @@ export class WebGLScreen {
         if ( isUndefined( outputHeight ) )
             outputHeight = inputHeight * ( outputWidth / inputWidth );
 
-        var widthRatio = outputWidth / inputWidth;
-        var heightRatio = outputHeight / inputHeight;
+        let widthRatio = outputWidth / inputWidth;
+        let heightRatio = outputHeight / inputHeight;
 
-        var ratio = Math.min( widthRatio, heightRatio );
+        let ratio = Math.min( widthRatio, heightRatio );
 
-        var viewportWidth = widthRatio / ratio;
-        var viewportHeight = heightRatio / ratio;
+        let viewportWidth = widthRatio / ratio;
+        let viewportHeight = heightRatio / ratio;
 
         this.canvas.width = outputWidth;
         this.canvas.height = outputHeight;
 
-        var matrix = this._createOrthoMatrix( - viewportWidth, viewportWidth, - viewportHeight, viewportHeight, - 100, 100 );
+        let matrix = this._createOrthoMatrix( - viewportWidth, viewportWidth, - viewportHeight, viewportHeight, - 100, 100 );
         this.gl.uniformMatrix4fv( this._uMatrixLocation, false, matrix );
 
         this.gl.uniform2f( this._uInputResolutionLocation, inputWidth, inputHeight );
@@ -375,16 +370,16 @@ export class WebGLScreen {
 
     _draw( ) {
 
-        this.gl.clear( this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT );
+        this.gl.clear( this.gl.COLOR_BUFFER_BIT );
 
         if ( ! this.inputData || this.inputWidth === 0 || this.inputHeight === 0 )
             return ;
 
-        var format = this.gl[ this.inputFormat._format ];
-        var type = this.gl[ this.inputFormat._type ];
-        var data = this._getAlignedData( );
+        let format = this.gl[ this.inputFormat._format ];
+        let type = this.gl[ this.inputFormat._type ];
+        let data = this._getAlignedData( );
 
-        var textureIndex = ( this._textureIndex ++ ) % 2;
+        let textureIndex = ( this._textureIndex ++ ) % 2;
         this.gl.bindTexture( this.gl.TEXTURE_2D, this._textures[ textureIndex ] );
         this.gl.texImage2D( this.gl.TEXTURE_2D, 0, this.gl.RGB, this.inputWidth, this.inputHeight, 0, format, type, data );
 
