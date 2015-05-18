@@ -1,15 +1,18 @@
 var defaultTranslationMap = {
 
-    LEFT   : [ 37 ], // arrow left
-    RIGHT  : [ 39 ], // arrow right
-    UP     : [ 38 ], // arrow up
-    DOWN   : [ 40 ], // arrow down
+    LEFT   : [ 37 ],         // arrow left
+    RIGHT  : [ 39 ],         // arrow right
+    UP     : [ 38 ],         // arrow up
+    DOWN   : [ 40 ],         // arrow down
 
-    A      : [ 65, 81 ], // 'A', 'Q'
-    B      : [ 90, 87 ], // 'Z', 'W'
+    A      : [ 65, 81 ],     // 'A', 'Q'
+    B      : [ 90, 87, 66 ], // 'Z', 'W', 'B'
 
-    START  : [ 13 ], // enter
-    SELECT : [ 32 ]  // space
+    L      : [ 76 ],         // 'L'
+    R      : [ 82 ],         // 'R'
+
+    START  : [ 13 ],         // enter
+    SELECT : [ 8, 32 ]       // backspace, space
 
 };
 
