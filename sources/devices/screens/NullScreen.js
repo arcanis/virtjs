@@ -2,13 +2,13 @@ export class NullScreen {
 
     validateInputFormat( format ) { /*
 
-        The engines are calling this function to check if a device can work the specified format before setting it. The device should return a boolean.
+        The engines are calling this function to check if the device can work with the specified format, before actually setting it. It should return a boolean.
 
-    */ }
+    */ return true; }
 
     setInputFormat( format ) { /*
 
-        The engines are calling this function to tell the device what is the format they will be using from now.
+        The engines are calling this function to inform the device about the data format that they will receive from this moment.
 
     */ }
 
