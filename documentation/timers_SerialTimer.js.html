@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Virtjs Source: timers/SerialTimer.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.simplex.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Virtjs</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="AggregateInput.html">AggregateInput</a></li><li><a href="AnimationFrameTimer.html">AnimationFrameTimer</a></li><li><a href="AsyncTimer.html">AsyncTimer</a></li><li><a href="ImmediateTimer.html">ImmediateTimer</a></li><li><a href="KeyboardInput.html">KeyboardInput</a></li><li><a href="ManualInput.html">ManualInput</a></li><li><a href="NullAudio.html">NullAudio</a></li><li><a href="NullInput.html">NullInput</a></li><li><a href="NullScreen.html">NullScreen</a></li><li><a href="NullTimer.html">NullTimer</a></li><li><a href="SerialTimer.html">SerialTimer</a></li><li><a href="WebGLScreen.html">WebGLScreen</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Audio.html">Audio</a></li><li><a href="Input.html">Input</a></li><li><a href="Screen.html">Screen</a></li><li><a href="Timer.html">Timer</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: timers/SerialTimer.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">import { makeFastTick } from 'virtjs/devices/timers/utils';
+
+let HANDLER_FN_SIZE = 31;
+let HANDLER_FN_PATTERN = 0x7FFFFFFF;
+
+export class SerialTimer {
+
+    /**
+     * A SerialTimer is a synchronous timer device. You can use it to run your emulator synchronously (ie. blocking the main thread). It also has the ability to only run a finite number of ticks before returning, which is quite valuable when debugging engines.
+     *
+     * @constructor
+     * @implements {Timer}
+     */
+
+    constructor() {
+
+        this.running = false;
+        this.nested = false;
+
+        this.queues = [ [ ], [ ] ];
+        this.activeQueueIndex = 0;
+
+    }
+
+    nextTick(callback) {
+
+        let activeQueueIndex = this.activeQueueIndex;
+        let queue = this.queues[activeQueueIndex];
+        let callbackIndex = queue.length;
+
+        queue.push(callback);
+
+        return activeQueueIndex &lt;&lt; HANDLER_FN_SIZE | callbackIndex;
+
+    }
+
+    cancelTick(handler) {
+
+        let activeQueueIndex = handler >>> HANDLER_FN_SIZE;
+        let callbackIndex = handler &amp; HANDLER_FN_PATTERN;
+
+        this.queues[activeQueueIndex][callbackIndex] = null;
+
+    }
+
+    start(beginning, ending) {
+
+        if (this.running)
+            throw new Error(`You can't start a timer that is already running`);
+
+        if (this.nested)
+            throw new Error(`You can't start a timer from its callbacks - use resume instead`);
+
+        let fastTick = makeFastTick(beginning, ending, () => {
+            this.one();
+        });
+
+        this.running = true;
+        this.nested = true;
+
+        while (this.running)
+            fastTick();
+
+        this.nested = false;
+
+    }
+
+    resume() {
+
+        if (!this.nested)
+            throw new Error(`You can't resume a timer from anywhere else than its callbacks - use start instead`);
+
+        if (this.running)
+            return;
+
+        this.running = true;
+
+    }
+
+    stop() {
+
+        if (!this.running)
+            return;
+
+        this.running = false;
+
+    }
+
+    /**
+     * Start the emulator. Run a single cycle then exit.
+     */
+
+    one() {
+
+        let activeQueueIndex = this.activeQueueIndex;
+        this.activeQueueIndex = activeQueueIndex ^ 1;
+
+        let queue = this.queues[activeQueueIndex];
+
+        for (let t = 0, T = queue.length; t &lt; T; ++t)
+            queue[t] &amp;&amp; queue[t]();
+
+        queue.length = 0;
+
+    }
+
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+	<span class="copyright">
+	Virtjs Copyright © 2012-2016 The contributors to the Virtjs project.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on Sun May 15th 2016
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
