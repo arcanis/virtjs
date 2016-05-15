@@ -1,7 +1,7 @@
 {
   "name": "virtjs",
   "description": "Javascript emulation library",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "./build/main.js",
   "scripts": {
     "build": "webpack",

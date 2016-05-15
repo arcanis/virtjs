@@ -20,7 +20,8 @@ module.exports = {
 
     output: {
         path: __dirname + '/build/',
-        libraryTarget: 'commonjs2',
+        library: 'Virtjs',
+        libraryTarget: 'umd',
         filename: '[name].js',
         chunkFilename: '[id].js'
     },
