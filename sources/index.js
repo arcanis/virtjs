@@ -1,4 +1,4 @@
-let req = require.context(`./`, true, /\.js$/);
+let req = require.context(`./`, true, /^(?!.*\.test\.js$).*\.js$/);
 
 for (let name of req.keys()) {
 
