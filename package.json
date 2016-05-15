@@ -8,7 +8,8 @@
     "prepublish": "npm run build",
     "doc": "jsdoc --destination documentation -c jsdoc.conf.json -t ./node_modules/ink-docstrap/template -r sources",
     "lint": "find sources \\( -name '*.js' -a -not -name '*.test.js' -a -not -name '.eslintrc.js' \\) -exec eslint {} +",
-    "test": "NODE_ENV=test xvfb-run -s '-ac -screen 0 1280x1024x24' mocha mocha.spec.js sources/**/*.test.js --compilers js:babel-register --require babel-polyfill"
+    "test": "NODE_ENV=test xvfb-run -s '-ac -screen 0 1280x1024x24' mocha mocha.spec.js sources/**/*.test.js --compilers js:babel-register --require babel-polyfill",
+    "publish-doc": "(git checkout gh-pages && git reset --hard master && npm run doc && git add -f documentation && git commit -m 'Generates documentation' && git push --set-upstream origin gh-pages && git checkout -)"
   },
   "devDependencies": {
     "babel-core": "^6.8.0",
