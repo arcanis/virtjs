@@ -1,3 +1,7 @@
 /documents/
 /sources/
 /documentation/
+
+/webpack.config.js
+/mocha.spec.js
+/jsdoc.conf.json
