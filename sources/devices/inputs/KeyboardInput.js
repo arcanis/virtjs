@@ -41,7 +41,7 @@ export class KeyboardInput {
      * @param {KeyMap} [options.keyMap] - The initial key map.
      */
 
-    constructor({ element = document.body, keyMap = DEFAULT_KEY_MAP, inputMap = null } = {}) {
+    constructor({ element = document.body, keyMap = DEFAULT_KEY_MAP, codeMap = null } = {}) {
 
         /**
          * This value contains the element on which the DOM listeners have been bound.
@@ -63,7 +63,15 @@ export class KeyboardInput {
 
         this.keyMap = null;
 
-        this.input = new ManualInput({ inputMap });
+        /**
+         * @borrows ManualInput#codeMap as KeyboardInput#codeMap
+         */
+
+        Reflect.defineProperty(this, `codeMap`, { get() {
+            return this.input.codeMap;
+        } });
+
+        this.input = new ManualInput({ codeMap });
 
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
