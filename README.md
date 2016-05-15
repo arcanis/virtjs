@@ -2,13 +2,13 @@
 
 ![](http://arcanis.github.io/virtjs/documents/assets/github-banner.png)
 
-> Virtjs is a collection of standard devices that can be used to power virtjs-compatible emulation cores (such as those provided by [Archjs](https://github.com/start9/archjs)).
+> Virtjs is a free collection of useful standard devices, that can be used to power various engine that makes use of the exposed interfaces.
 
 ## Supported Devices
 
   - [Audio](https://arcanis.github.io/virtjs/documentation/Audio.html)
       - [`NullAudio`](https://arcanis.github.io/virtjs/documentation/NullAudio.html)
-      - [`TaiselAudio`](https://github.com/start9/taisel) (external)
+      - [`TaiselAudio`](https://github.com/start9/taisel) (external, via TaiselAudio)
 
   - [Input](https://arcanis.github.io/virtjs/documentation/Input.html)
       - [`NullInput`](https://arcanis.github.io/virtjs/documentation/NullInput.html)
@@ -18,7 +18,7 @@
   - [Screen](https://arcanis.github.io/virtjs/documentation/Screen.html)
       - [`NullScreen`](https://arcanis.github.io/virtjs/documentation/NullScreen.html)
       - [`WebGLScreen`](https://arcanis.github.io/virtjs/documentation/WebGLScreen.html)
-      - [`PProcScreen`](https://github.com/start9/pprocjs) (external)
+      - [`PProcScreen`](https://github.com/start9/pprocjs) (external, via PProcJS)
 
   - [Timer](https://arcanis.github.io/virtjs/documentation/Timer.html)
       - [`NullTimer`](https://arcanis.github.io/virtjs/documentation/NullTimer.html)
@@ -26,6 +26,10 @@
       - [`AsyncTimer`](https://arcanis.github.io/virtjs/documentation/AsyncTimer.html)
       - [`AnimationFrameTimer`](https://arcanis.github.io/virtjs/documentation/AnimationFrameTimer.html)
       - [`ImmediateTimer`](https://arcanis.github.io/virtjs/documentation/ImmediateTimer.html)
+
+## Compatible With
+
+  - [Archjs](https://github.com/start9/archjs)
 
 ## Maintainer
 
