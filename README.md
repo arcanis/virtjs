@@ -29,7 +29,7 @@
 
 ## Compatible With
 
-  - [Archjs](https://github.com/start9/archjs)
+  - [Archjs](https://github.com/start9/archjs) engines (Gambatte, VBA-Next, ...)
 
 ## Maintainer
 
