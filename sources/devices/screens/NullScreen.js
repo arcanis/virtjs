@@ -1,39 +1,63 @@
 export class NullScreen {
 
-    validateInputFormat( format ) { /*
+    /**
+     * A NullScreen is a screen device that doesn't actually render anything. It might be useful if you want to run an engine on Node.
+     *
+     * @constructor
+     * @implements {Screen}
+     */
 
-        The engines are calling this function to check if the device can work with the specified format, before actually setting it. It should return a boolean.
+    constructor() {
 
-    */ return true; }
+        this.inputWidth = 0;
+        this.inputHeight = 0;
+        this.inputPitch = 0;
 
-    setInputFormat( format ) { /*
+        this.inputFormat = null;
+        this.inputData = null;
 
-        The engines are calling this function to inform the device about the data format that they will receive from this moment.
+        this.outputWidth = 0;
+        this.outputHeight = 0;
 
-    */ }
+    }
 
-    setInputSize( width, height, pitch = width ) { /*
+    validateInputFormat(format) {
 
-        The engines are calling this function to tell the device how much width/height they are using.
+        return true;
 
-    */ }
+    }
 
-    setInputData( data ) { /*
+    setInputFormat(format) {
 
-        The engines are calling this function to set the color of every screen pixel at once.
+        this.inputFormat = format;
 
-    */ }
+    }
 
-    setOutputSize( width, height ) { /*
+    setInputSize(width, height, pitch = width) {
 
-        The user code is calling this function to tell the device how much width/height it should actually take on the screen.
+        this.inputWidth = width;
+        this.inputHeight = height;
+        this.inputPitch = pitch;
 
-    */ }
+    }
 
-    flushScreen( ) { /*
+    setInputData(data) {
 
-        The engines are calling this function every time the screen has been fully updated (usually during vblank).
+        this.inputData = data;
 
-    */ }
+    }
 
-};
+    setOutputSize(width, height) {
+
+        this.outputWidth = width;
+        this.outputHeight = height;
+
+    }
+
+    flushScreen() {
+
+        // nothing
+
+    }
+
+}

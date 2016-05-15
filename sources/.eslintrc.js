@@ -7,7 +7,8 @@ module.exports = {
 
     env: {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "node": true
     },
 
     globals: {
@@ -156,7 +157,7 @@ module.exports = {
         ],
         "no-magic-numbers": [
             ERROR,
-            { ignore: [ -1, 0, 1, 2, 100, 403, 404 ] }
+            { ignore: [ -1, 0, 1, 2, 100 ] }
         ],
         "no-multi-spaces": [
             ERROR,
@@ -327,9 +328,6 @@ module.exports = {
             ERROR
         ],
         "no-array-constructor": [
-            ERROR
-        ],
-        "no-bitwise": [
             ERROR
         ],
         "no-lonely-if": [

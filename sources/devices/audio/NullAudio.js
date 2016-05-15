@@ -1,21 +1,34 @@
 export class NullAudio {
 
-    validateInputFormat( format ) { /*
+    /**
+     * A NullAudio is an audio device that won't play anything.
+     *
+     * @constructor
+     * @implements {Audio}
+     */
 
-        The engines are calling this function to check if the device can work with the specified format, before actually setting it. It should return a boolean.
+    constructor() { // eslint-disable-line no-useless-constructor
 
-    */ return true; }
+        // nothing
 
-    setInputFormat( format ) { /*
+    }
 
-        The engines are calling this function to inform the device about the data format that they will receive from this moment.
+    validateInputFormat(format) {
 
-    */ }
+        return true;
 
-    pushSampleBatch( samples ) { /*
+    }
 
-        The engines are calling this function to send a unspecified amount of samples to the device to be played later. The samples are expected to be interlaced, regardless of the input format (for example, a mono stream will have [left, left, left] and a stereo will have [left, right, left, right, left, right]).
+    setInputFormat(format) {
 
-    */ }
+        // nothing
+
+    }
+
+    pushSampleBatch(samples) {
+
+        // nothing
+
+    }
 
 }

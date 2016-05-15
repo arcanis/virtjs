@@ -1,189 +1,186 @@
-export function createDefensiveProxy( object ) {
+export function createDefensiveProxy(object) {
 
-    if ( typeof Proxy === 'undefined' ) {
+    if (typeof Proxy === `undefined`) {
 
-        console.warn( 'Proxies are not available in your browser, and have been turned off.' );
+        console.warn(`Proxies are not available in your browser, and have been turned off.`); // eslint-disable-line no-console
 
         return object;
 
     } else {
 
-        console.warn( 'Proxies are slows, and should not be enabled in production.' );
+        console.warn(`Proxies are slows, and should not be enabled in production.`); // eslint-disable-line no-console
 
-        return new Proxy( object, {
+        return new Proxy(object, {
 
-            get : ( target, property ) => {
+            get(target, property) {
 
-                if ( property in target ) {
+                if (Reflect.has(target, property)) {
 
-                    return target[ property ];
+                    return target[property];
 
                 } else {
 
-                    throw new Error( 'Undefined property cannot be get: ' + property );
+                    throw new Error(`Undefined property cannot be get: ${property}`);
 
                 }
 
             },
 
-            set : ( target, property, value ) => {
+            set(target, property, value) {
 
-                if ( property in target ) {
+                if (Reflect.has(target, property)) {
 
-                    target[ property ] = value;
+                    target[property] = value;
 
                 } else {
 
-                    throw new Error( 'Undefined property cannot be set: ' + property );
+                    throw new Error(`Undefined property cannot be set: ${property}`);
 
                 }
 
             }
 
-        } );
+        });
 
     }
 
 }
 
-export function mixin( Base, ... mixins ) {
+export function mixin(Base, ... mixins) {
 
-    if ( ! Base )
+    if (!Base)
         Base = class { };
 
-    var mixed = class extends Base {
+    let mixed = class extends Base {
 
-        constructor( ... parameters ) {
+        constructor(... parameters) {
 
-            super( ... parameters );
+            super(... parameters);
 
-            mixins.forEach( mixin => {
-                mixin.call( this );
-            } );
+            // eslint-disable-next-line no-shadow
+            mixins.forEach(mixin => {
+                Reflect.apply(mixin, this);
+            });
 
         }
 
     };
 
-    for ( var mixin of mixins ) {
-
-        for ( var method of Object.keys( mixin.prototype ) ) {
-
-            mixed.prototype[ method ] = mixin.prototype[ method ];
-
-        }
-
-    }
+    for (let mixin of mixins) // eslint-disable-line no-shadow
+        for (let method of Object.keys(mixin.prototype))
+            mixed.prototype[method] = mixin.prototype[method];
 
     return mixed;
 
-};
+}
 
-export function serializeArrayBuffer( arrayBuffer ) {
+export function serializeArrayBuffer(arrayBuffer) {
 
-    var serialization = '';
+    let serialization = ``;
 
-    for ( var array = new Uint8Array( arrayBuffer ), t = 0, T = array.length; t < T; ++ t )
-        serialization += String.fromCharCode( array[ t ] );
+    for (let array = new Uint8Array(arrayBuffer), t = 0, T = array.length; t < T; ++t)
+        serialization += String.fromCharCode(array[t]);
 
     return serialization;
 
 }
 
-export function serialize( data ) {
+export function serialize(data) {
 
-    var getFormat = data => Object.keys( data ).reduce( ( format, key ) => {
+    // eslint-disable-next-line no-shadow
+    let getFormat = data => Object.keys(data).reduce((format, key) => {
 
-        var value = data[ key ];
+        let value = data[key];
 
-        if ( value instanceof ArrayBuffer ) {
-            format[ key ] = 'arraybuffer';
-        } else if ( value && value.constructor === Object ) {
-            format[ key ] = getFormat( value );
+        if (value instanceof ArrayBuffer) {
+            format[key] = `arraybuffer`;
+        } else if (value && value.constructor === Object) {
+            format[key] = getFormat(value);
         } else {
-            format[ key ] = null;
+            format[key] = null;
         }
 
         return format;
 
-    }, { } );
+    }, { });
 
-    var simplify = data => Object.keys( data ).reduce( ( simplified, key ) => {
+    // eslint-disable-next-line no-shadow
+    let simplify = data => Object.keys(data).reduce((simplified, key) => {
 
-        var value = data[ key ];
+        let value = data[key];
 
-        if ( value instanceof ArrayBuffer ) {
-            simplified[ key ] = serializeArrayBuffer( value );
-        } else if ( value && value.constructor === Object ) {
-            simplified[ key ] = simplify( value );
+        if (value instanceof ArrayBuffer) {
+            simplified[key] = serializeArrayBuffer(value);
+        } else if (value && value.constructor === Object) {
+            simplified[key] = simplify(value);
         } else {
-            simplified[ key ] = value;
+            simplified[key] = value;
         }
 
         return simplified;
 
-    }, { } );
+    }, { });
 
-    return JSON.stringify( {
+    return JSON.stringify({
 
-        format : getFormat( data ),
-        tree : simplify( data )
+        format: getFormat(data),
+        tree: simplify(data)
 
-    } );
+    });
 
 }
 
-export function unserializeArrayBuffer( serialization ) {
+export function unserializeArrayBuffer(serialization) {
 
-    var buffer = new ArrayBuffer( serialization.length );
+    let buffer = new ArrayBuffer(serialization.length);
+    let bufferView = new Uint8Array(buffer);
 
-    var bufferView = new Uint8Array( buffer );
-    for ( var t = 0, T = bufferView.length; t < T; ++ t )
-        bufferView[ t ] = serialization.charCodeAt( t );
+    for (let t = 0, T = bufferView.length; t < T; ++t)
+        bufferView[t] = serialization.charCodeAt(t);
 
     return bufferView.buffer;
 
 }
 
-export function unserialize( serialization ) {
+export function unserialize(serialization) {
 
-    var complexify = ( format, tree ) => Object.keys( format ).reduce( ( complexified, key ) => {
+    let complexify = (format, tree) => Object.keys(format).reduce((complexified, key) => {
 
-        var type = format[ key ];
-        var node = tree[ key ];
+        let type = format[key];
+        let node = tree[key];
 
-        if ( type === 'arraybuffer' ) {
-            complexified[ key ] = unserializeArrayBuffer( node );
-        } else if ( type && type.constructor === Object ) {
-            complexified[ key ] = complexify( type, node );
+        if (type === `arraybuffer`) {
+            complexified[key] = unserializeArrayBuffer(node);
+        } else if (type && type.constructor === Object) {
+            complexified[key] = complexify(type, node);
         } else {
-            complexified[ key ] = node;
+            complexified[key] = node;
         }
 
         return complexified;
 
-    }, { } );
+    }, { });
 
-    var { format, tree } = typeof serialization === 'object' ? serialization : JSON.parse( serialization );
-    return complexify( format, tree );
+    let { format, tree } = typeof serialization === `object` ? serialization : JSON.parse(serialization);
+    return complexify(format, tree);
 
 }
 
-export function clone( input ) {
+export function clone(input) {
 
-    if ( typeof input !== 'object' )
+    if (typeof input !== `object`)
         return input;
 
-    if ( input instanceof Array )
-        return input.map( value => clone( value ) );
+    if (input instanceof Array)
+        return input.map(value => clone(value));
 
-    if ( input instanceof ArrayBuffer )
-        return input.slice( 0 );
+    if (input instanceof ArrayBuffer)
+        return input.slice(0);
 
-    var output = { };
+    let output = {};
 
-    for ( var key of Object.keys( input ) )
-        output[ key ] = clone( input[ key ] );
+    for (let key of Object.keys(input))
+        output[key] = clone(input[key]);
 
     return output;
 

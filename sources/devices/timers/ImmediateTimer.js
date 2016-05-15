@@ -2,16 +2,28 @@ import { AsyncTimer } from './AsyncTimer';
 
 export class ImmediateTimer extends AsyncTimer {
 
-    prepare( callback ) {
+    /**
+     * An ImmediateTimer is a timer device that makes use of the setImmediate/clearImmediate API from Node to trigger aynchronous ticks.
+     *
+     * @constructor
+     */
 
-        return setImmediate( callback );
+    constructor() { // eslint-disable-line no-useless-constructor
+
+        super();
 
     }
 
-    cancel( immediateId ) {
+    prepare(callback) {
 
-        clearImmediate( nextTickId );
+        return setImmediate(callback);
 
     }
 
-};
+    cancel(handler) {
+
+        clearImmediate(handler);
+
+    }
+
+}

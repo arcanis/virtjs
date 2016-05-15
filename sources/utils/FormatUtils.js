@@ -1,97 +1,103 @@
-export function formatRelativeAddress( sourceAddress, relativeAddress, sourceBits, relativeBits ) {
+let BITS_PER_HEX_CHAR = 4;
+let HEX_BASE = 16;
 
-    var sign = relativeAddress < 0 ? '-' : '+';
+export function formatAddress(address, bits, withPrefix = true) {
 
-    if ( typeof relativeAddress !== 'string' || ! isNaN( relativeAddress ) )
-        relativeAddress = formatAddress( Math.abs( relativeAddress ), relativeBits, false );
+    if (isNaN(address))
+        return `NaN`;
 
-    return formatAddress( sourceAddress, sourceBits ) + sign + relativeAddress;
+    let str = Number(address).toString(HEX_BASE).toLowerCase();
 
-};
+    if (typeof bits !== `undefined`)
+        while (str.length < Math.ceil(bits / BITS_PER_HEX_CHAR))
+            str = `0` + str; // eslint-disable-line prefer-template
 
-export function formatDecimal( value, size ) {
-
-    if ( isNaN( value ) )
-        return 'NaN';
-
-    var str = Number( str ).toString( );
-
-    if ( typeof size === 'undefined' )
-        return str;
-
-    for ( var t = str.length; t < size; ++ t )
-        str = '0' + str;
+    if (withPrefix)
+        str = `$` + str; // eslint-disable-line prefer-template
 
     return str;
 
-};
+}
 
-export function formatString( str, size, leftAligned = true ) {
+export function formatRelativeAddress(sourceAddress, relativeAddress, sourceBits, relativeBits) {
 
-    str = str.toString( );
+    let sign = relativeAddress < 0 ? `-` : `+`;
 
-    if ( typeof size === 'undefined' )
+    if (typeof relativeAddress !== `string` || !isNaN(relativeAddress))
+        relativeAddress = formatAddress(Math.abs(relativeAddress), relativeBits, false);
+
+    return formatAddress(sourceAddress, sourceBits) + sign + relativeAddress;
+
+}
+
+export function formatDecimal(value, size) {
+
+    if (isNaN(value))
+        return `NaN`;
+
+    let str = Number(value).toString();
+
+    if (typeof size === `undefined`)
         return str;
 
-    for ( var t = str.length; t < size; ++ t ) {
-        if ( leftAligned ) {
-            str += ' ';
+    for (let t = str.length; t < size; ++t)
+        str = `0` + str; // eslint-disable-line prefer-template
+
+    return str;
+
+}
+
+export function formatString(str, size, leftAligned = true) {
+
+    str = str.toString();
+
+    if (typeof size === `undefined`)
+        return str;
+
+    for (let t = str.length; t < size; ++t) {
+        if (leftAligned) {
+            str = str + ` `; // eslint-disable-line prefer-template
         } else {
-            str = ' ' + str;
+            str = ` ` + str; // eslint-disable-line prefer-template
         }
     }
 
     return str;
 
-};
+}
 
-export function formatAddress( address, bits, withPrefix = true ) {
+export function formatHexadecimal(value, bits, withPrefix = true) {
 
-    if ( isNaN( address ) )
-        return 'NaN';
+    if (isNaN(value))
+        return `NaN`;
 
-    var str = Number( address ).toString( 16 ).toLowerCase( );
+    let str = Number(value).toString(HEX_BASE).toLowerCase();
 
-    if ( typeof bits !== 'undefined' )
-        while ( str.length < Math.ceil( bits / 4 ) )
-            str = '0' + str;
+    if (typeof bits !== `undefined`)
+        while (str.length < Math.ceil(bits / BITS_PER_HEX_CHAR))
+            str = `0` + str; // eslint-disable-line prefer-template
 
-    if ( withPrefix )
-        str = '$' + str;
-
-    return str;
-
-};
-
-export function formatHexadecimal( value, bits, withPrefix = true ) {
-
-    if ( isNaN( value ) )
-        return 'NaN';
-
-    var str = Number( value ).toString( 16 ).toLowerCase( );
-
-    if ( typeof bits !== 'undefined' )
-        while ( str.length < Math.ceil( bits / 4 ) )
-            str = '0' + str;
-
-    if ( withPrefix )
-        str = '0x' + str;
+    if (withPrefix)
+        str = `0x` + str; // eslint-disable-line prefer-template
 
     return str;
 
-};
+}
 
-export function formatBinary( value, bits ) {
+export function formatBinary(value, bits, withPrefix = true) {
 
-    if ( isNaN( value ) )
-        return 'NaN';
+    if (isNaN(value))
+        return `NaN`;
 
-    var str = Number( value ).toString( 2 );
+    let str = Number(value).toString(2);
 
-    if ( typeof bits !== 'undefined' )
-        while ( str.length < bits )
-            str = '0' + str;
+    if (typeof bits !== `undefined`)
+        while (str.length < bits)
+            str = `0` + str; // eslint-disable-line prefer-template
 
-    return '0b' + str;
+    if (withPrefix)
+        str = `0b` + str; // eslint-disable-line prefer-template
 
-};
+    return str;
+
+}

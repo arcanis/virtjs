@@ -1,113 +1,155 @@
+import { SerialTimer }  from 'virtjs/devices/timers/SerialTimer';
+import { makeFastTick } from 'virtjs/devices/timers/utils';
+
 export class AsyncTimer {
 
-    constructor( { prepare, cancel } = { } ) {
+    /**
+     * An AsyncTimer is an asynchronous timer device. You can use it to run your emulator without blocking your main thread. However, unless you really want to implement a new asynchronous device on top of a new API, you're probably looking for {@link AnimationFrameTimer} for browser environments, or {@link ImmediateTimer} for Node.js environments.
+     *
+     * @constructor
+     * @implements {Timer}
+     *
+     * @param {object} [options] - The timer options.
+     * @param {function} [options.prepare] - The callback that will schedule the next cycle
+     * @param {function} [options.cancel] - The callback that will abort the next cycle
+     *
+     * @see {@link AnimationFrameTimer}
+     * @see {@link ImmediateTimer}
+     */
 
-        if ( prepare )
+    constructor({ prepare, cancel } = { }) {
+
+        if (prepare)
             this.prepare = prepare;
 
-        if ( cancel )
+        if (cancel)
             this.cancel = cancel;
 
-        this._timer = null;
+        this.running = false;
+        this.nested = false;
 
-        this._queues = [ [ ], [ ] ];
-        this._activeQueueIndex = 0;
+        this.loopHandler = null;
+        this.fastLoop = null;
 
-    }
-
-    nextTick( callback ) {
-
-        var activeQueueIndex = this._activeQueueIndex;
-        var queue = this._queues[ activeQueueIndex ];
-        var callbackIndex = queue.length;
-
-        queue.push( callback );
-
-        return activeQueueIndex << 24 | callbackIndex;
+        this.timer = new SerialTimer();
 
     }
 
-    cancelTick( handler ) {
+    nextTick(callback) {
 
-        var activeQueueIndex = handler >>> 24;
-        var callbackIndex = handler & 0x00FFFFFF;
-
-        this._queues[ activeQueueIndex ][ callbackIndex ] = null;
+        return this.timer.nextTick(callback);
 
     }
 
-    start( beginning, ending ) {
+    cancelTick(handler) {
 
-        if ( this._timer )
-            return ;
+        return this.timer.cancelTick(handler);
 
-        var loop = beginning && ending ? ( ) => {
+    }
 
-            this._timer = this.prepare( loop );
+    start(beginning, ending) {
 
-            beginning( );
-            this.one( );
-            ending( );
+        if (this.running)
+            throw new Error(`You can't start a timer that is already running`);
 
-        } : beginning ? ( ) => {
+        if (this.nested)
+            throw new Error(`You can't start a timer from its callbacks - use resume instead`);
 
-            this._timer = this.prepare( loop );
+        this.running = true;
 
-            beginning( );
-            this.one( );
+        let resolve;
+        let reject;
 
-        } : ending ? ( ) => {
+        let promise = new Promise((resolveFn, rejectFn) => {
 
-            this._timer = this.prepare( loop );
+            resolve = resolveFn;
+            reject = rejectFn;
 
-            this.one( );
-            ending( );
+        });
 
-        } : ( ) => {
+        let fastTick = makeFastTick(beginning, ending, () => {
 
-            this._timer = this.prepare( loop );
+            this.timer.one();
 
-            this.one( );
+        });
+
+        let mainLoop = () => {
+
+            if (!this.running) {
+
+                resolve();
+
+            } else try {
+
+                this.prepare(mainLoop);
+
+                this.nested = true;
+                fastTick();
+                this.nested = false;
+
+            } catch (e) {
+
+                this.running = false;
+                this.nested = false;
+
+                reject(e);
+
+            }
 
         };
 
-        loop( );
+        this.prepare(mainLoop);
+
+        return promise;
 
     }
 
-    one( ) {
+    resume() {
 
-        var activeQueueIndex = this._activeQueueIndex;
-        this._activeQueueIndex = activeQueueIndex ^ 1;
+        if (!this.nested)
+            throw new Error(`You can't resume a timer from anywhere else than its callbacks - use start instead`);
 
-        var queue = this._queues[ activeQueueIndex ];
+        if (this.running)
+            return;
 
-        for ( var t = 0, T = queue.length; t < T; ++ t )
-            queue[ t ] && queue[ t ]( );
-
-        queue.length = 0;
+        this.running = true;
 
     }
 
-    stop( ) {
+    stop() {
 
-        if ( ! this._timer )
-            return ;
+        if (!this.running)
+            return;
 
-        this.cancel( this._timer );
-        this._timer = null;
-
-    }
-
-    prepare( ) {
-
-        throw new Error( 'Unimplemented' );
+        this.running = false;
 
     }
 
-    cancel( ) {
+    /**
+     * This method should be specialized, either via subclassing, or by passing the proper parameter when instanciating the timer.
+     *
+     * @protected
+     *
+     * @type {prepareCallback}
+     */
 
-        throw new Error( 'Unimplemented' );
+    prepare() {
+
+        throw new Error(`Unimplemented`);
+
+    }
+
+    /**
+     * This method should be specialized, either via subclassing, or by passing the proper parameter when instanciating the timer.
+     *
+     * @protected
+     *
+     * @type {cancelCallback}
+     */
+
+    cancel() {
+
+        throw new Error(`Unimplemented`);
 
     }
 

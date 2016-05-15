@@ -1,13 +1,13 @@
-export var toSigned8 = ( function ( ) {
+export let toSigned8 = (() => {
 
-    var tmp = new Int8Array( 1 );
+    let tmp = new Int8Array(1);
 
-    return function ( n ) {
+    return n => {
 
-        tmp[ 0 ] = n;
+        tmp[0] = n;
 
-        return tmp[ 0 ];
+        return tmp[0];
 
     };
 
-} )( );
+})();

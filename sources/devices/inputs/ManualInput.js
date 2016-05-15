@@ -1,60 +1,100 @@
 export class ManualInput {
 
-    constructor( ) {
+    /**
+     * A ManualInput is an input device that will transmit any state you manually set from a Javascript API. It's a strictly better {@link NullInput}, that works on any environment while still giving you a way to trigger some events when you need to.
+     *
+     * @constructor
+     * @implements {Input}
+     *
+     * @param {object} [options] - The device options.
+     * @param {object} [options.codeMap] - The initial code map.
+     */
 
-        this._inputMap = null;
+    constructor({ codeMap = null } = {}) {
 
-        this._devices = { };
-        this._pending = { };
+        /**
+         * This value contains the current code map used to translate codes.
+         *
+         * @member
+         * @readonly
+         * @type {object}
+         */
 
-    }
+        this.codeMap = null;
 
-    applyInputMap( inputMap ) {
+        this.devices = {};
+        this.pending = {};
 
-        this._inputMap = inputMap;
-
-        this._devices = { };
-        this._pending = { };
-
-    }
-
-    down( port, inputCode ) {
-
-        if ( this._inputMap )
-            inputCode = this._inputMap[ inputCode ];
-
-        this._pending[ port ] = this._pending[ port ] || { };
-        this._pending[ port ][ inputCode ] = true;
-
-    }
-
-    up( port, inputCode ) {
-
-        if ( this._inputMap )
-            inputCode = this._inputMap[ inputCode ];
-
-        this._pending[ port ] = this._pending[ port ] || { };
-        this._pending[ port ][ inputCode ] = false;
+        this.setCodeMap(codeMap);
 
     }
 
-    pollInputs( ) {
+    /**
+     * Set the code map that will be used to translate input codes from one to another.
+     *
+     * @param {object} codeMap - The new input map.
+     */
 
-        let pending = this._pending;
-        this._pending = { };
+    setCodeMap(codeMap) {
 
-        for ( let port of Object.keys( pending ) ) {
-            for ( let inputCode of Object.keys( pending[ port ] ) ) {
-                this._devices[ port ] = this._devices[ port ] || { };
-                this._devices[ port ][ inputCode ] = pending[ port ][ inputCode ];
+        if (codeMap === this.codeMap)
+            return;
+
+        this.codeMap = codeMap;
+
+    }
+
+    /**
+     * Set an input slot as being pressed.
+     *
+     * @param {number} port - The input slot controller port.
+     * @param {number} code - The input slot code.
+     */
+
+    down(port, code) {
+
+        if (this.codeMap)
+            code = this.codeMap[code];
+
+        this.pending[port] = this.pending[port] || {};
+        this.pending[port][code] = true;
+
+    }
+
+    /**
+     * Set an input slot as being released.
+     *
+     * @param {number} port - The input slot controller port.
+     * @param {number} code - The input slot code.
+     */
+
+    up(port, code) {
+
+        if (this.codeMap)
+            code = this.codeMap[code];
+
+        this.pending[port] = this.pending[port] || {};
+        this.pending[port][code] = false;
+
+    }
+
+    pollInputs() {
+
+        let pending = this.pending;
+        this.pending = {};
+
+        for (let port of Reflect.ownKeys(pending)) {
+            for (let code of Reflect.ownKeys(pending[port])) {
+                this.devices[port] = this.devices[port] || {};
+                this.devices[port][code] = pending[port][code];
             }
         }
 
     }
 
-    getState( port, inputCode ) {
+    getState(port, code) {
 
-        return Boolean( this._devices[ port ] && this._devices[ port ][ inputCode ] );
+        return Boolean(this.devices[port] && this.devices[port][code]);
 
     }
 

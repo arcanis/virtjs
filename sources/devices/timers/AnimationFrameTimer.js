@@ -2,15 +2,27 @@ import { AsyncTimer } from './AsyncTimer';
 
 export class AnimationFrameTimer extends AsyncTimer {
 
-    prepare( callback ) {
+    /**
+     * An AnimationFrameTimer is timer device that makes use of the requestAnimationFrame/cancelAnimationFrame API from modern browsers to trigger asynchronous ticks.
+     *
+     * @constructor
+     */
 
-        return window.requestAnimationFrame( callback );
+    constructor() { // eslint-disable-line no-useless-constructor
+
+        super();
 
     }
 
-    cancel( animationFrameId ) {
+    prepare(callback) {
 
-        window.cancelAnimationFrame( animationFrameId );
+        return window.requestAnimationFrame(callback);
+
+    }
+
+    cancel(animationFrameId) {
+
+        window.cancelAnimationFrame(animationFrameId);
 
     }
 

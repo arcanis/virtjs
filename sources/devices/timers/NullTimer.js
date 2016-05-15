@@ -1,25 +1,42 @@
 export class NullTimer {
 
-    nextTick( callback ) { /*
+    /**
+     * A NullTimer is a timer device that will never tick. You probably don't want to use it. If you're looking for a synchronous timer, check {@link SerialTimer} instead. If you're looking for an asynchronous timer that works on Node.js, check {@link ImmediateTimer} instead. If you're looking for a synchronous timer that works on Node.js, check {@link SerialTimer} instead.
+     *
+     * @constructor
+     * @implements {Timer}
+     *
+     * @see {@link SerialTimer}
+     */
 
-        An engine will call this function if it wants a function to be called at the next frame.
+    constructor() { // eslint-disable-line no-useless-constructor
 
-    */ }
+        // nothing
 
-    cancelTick( nextTickId ) { /*
+    }
 
-        An engine will call this function if it wants to cancel a register tick callback.
+    nextTick(callback) {
 
-        The argument passed to cancelTick should be the return value of the matching nextTick call.
+        // nothing
 
-    */ }
+    }
 
-    start( beginning, ending ) { /*
+    cancelTick(nextTickId) {
 
-        You have to call this function in order to actually start the timer.
+        // nothing
 
-        The beginning and ending options are optionals, and will be called before and after calling any registered callbacks. Even if multiple callbacks are registered, beginning and ending will be called only once.
+    }
 
-    */ }
+    start(beginning, ending) {
 
-};
+        return new Promise(() => {});
+
+    }
+
+    stop() {
+
+        // nothing
+
+    }
+
+}

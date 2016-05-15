@@ -1,19 +1,28 @@
 export class NullInput {
 
-    pollInputs( ) { /*
+    /**
+     * A NullInput is an input device that will never transmit any key as pressed. Even if you don't want any fancy keyboard support or similar, {@link ManualInput} is probably a better candidate than NullInput since the later allows you to programmatically trigger key events should you need to, whereas NullInput will never ever do anything.
+     *
+     * @constructor
+     * @implements {Input}
+     */
 
-        The engines will call this function to tell the device that it should update the input states.
+    constructor() { // eslint-disable-line no-useless-constructor
 
-        It means that the devices should not update the input state by themselves, and that they should wait for the engine to tell them to do so.
+        // nothing
 
-    */ }
+    }
 
-    getState( port, inputCode ) { /*
+    pollInputs() {
 
-        The engines will call this function to check a specified input state. It is expected to return a boolean.
+        // nothing
 
-        The `port` argument is an integer specifying which controller we're talking about.
+    }
 
-    */ }
+    getState(port, inputCode) {
 
-};
+        return false;
+
+    }
+
+}

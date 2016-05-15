@@ -1,70 +1,106 @@
+import { makeFastTick } from 'virtjs/devices/timers/utils';
+
+let HANDLER_FN_SIZE = 31;
+let HANDLER_FN_PATTERN = 0x7FFFFFFF;
+
 export class SerialTimer {
 
-    constructor( ) {
+    /**
+     * A SerialTimer is a synchronous timer device. You can use it to run your emulator synchronously (ie. blocking the main thread). It also has the ability to only run a finite number of ticks before returning, which is quite valuable when debugging engines.
+     *
+     * @constructor
+     * @implements {Timer}
+     */
 
-        this._running = false;
-        this._nested = false;
+    constructor() {
 
-        this._actions = [ ];
+        this.running = false;
+        this.nested = false;
 
-        this._queues = [ [ ], [ ] ];
-        this._activeQueueIndex = 0;
-
-    }
-
-    nextTick( callback ) {
-
-        var activeQueueIndex = this._activeQueueIndex;
-        var queue = this._queues[ activeQueueIndex ];
-        var callbackIndex = queue.length;
-
-        queue.push( callback );
-
-        return activeQueueIndex << 24 | callbackIndex;
+        this.queues = [ [ ], [ ] ];
+        this.activeQueueIndex = 0;
 
     }
 
-    cancelTick( nextTickId ) {
+    nextTick(callback) {
 
-        var activeQueueIndex = handler >>> 24;
-        var callbackIndex = handler & 0x00FFFFFF;
+        let activeQueueIndex = this.activeQueueIndex;
+        let queue = this.queues[activeQueueIndex];
+        let callbackIndex = queue.length;
 
-        this._queues[ activeQueueIndex ][ callbackIndex ] = null;
+        queue.push(callback);
 
-    }
-
-    start( ) {
-
-        this._running = true;
-
-        if ( this._nested )
-            return ;
-
-        this._nested = true;
-
-        while ( this._running ) {
-            this.one( );
-        }
+        return activeQueueIndex << HANDLER_FN_SIZE | callbackIndex;
 
     }
 
-    one( ) {
+    cancelTick(handler) {
 
-        var activeQueueIndex = this._activeQueueIndex;
-        this._activeQueueIndex = activeQueueIndex ^ 1;
+        let activeQueueIndex = handler >>> HANDLER_FN_SIZE;
+        let callbackIndex = handler & HANDLER_FN_PATTERN;
 
-        var queue = this._queues[ activeQueueIndex ];
+        this.queues[activeQueueIndex][callbackIndex] = null;
 
-        for ( var t = 0, T = queue.length; t < T; ++ t )
-            queue[ t ] && queue[ t ]( );
+    }
+
+    start(beginning, ending) {
+
+        if (this.running)
+            throw new Error(`You can't start a timer that is already running`);
+
+        if (this.nested)
+            throw new Error(`You can't start a timer from its callbacks - use resume instead`);
+
+        let fastTick = makeFastTick(beginning, ending, () => {
+            this.one();
+        });
+
+        this.running = true;
+        this.nested = true;
+
+        while (this.running)
+            fastTick();
+
+        this.nested = false;
+
+    }
+
+    resume() {
+
+        if (!this.nested)
+            throw new Error(`You can't resume a timer from anywhere else than its callbacks - use start instead`);
+
+        if (this.running)
+            return;
+
+        this.running = true;
+
+    }
+
+    stop() {
+
+        if (!this.running)
+            return;
+
+        this.running = false;
+
+    }
+
+    /**
+     * Start the emulator. Run a single cycle then exit.
+     */
+
+    one() {
+
+        let activeQueueIndex = this.activeQueueIndex;
+        this.activeQueueIndex = activeQueueIndex ^ 1;
+
+        let queue = this.queues[activeQueueIndex];
+
+        for (let t = 0, T = queue.length; t < T; ++t)
+            queue[t] && queue[t]();
 
         queue.length = 0;
-
-    }
-
-    stop( ) {
-
-        this._running = false;
 
     }
 

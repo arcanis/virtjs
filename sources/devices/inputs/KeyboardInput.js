@@ -1,174 +1,193 @@
-var defaultTranslationMap = {
+import { ManualInput } from 'virtjs/devices/inputs/ManualInput';
 
-    LEFT   : [ 37 ],         // arrow left
-    RIGHT  : [ 39 ],         // arrow right
-    UP     : [ 38 ],         // arrow up
-    DOWN   : [ 40 ],         // arrow down
+let DEFAULT_KEY_MAP = {
 
-    A      : [ 65, 81 ],     // 'A', 'Q'
-    B      : [ 90, 87, 66 ], // 'Z', 'W', 'B'
+    /* eslint-disable no-magic-numbers */
 
-    L      : [ 76 ],         // 'L'
-    R      : [ 82 ],         // 'R'
+    37: [ 0, `LEFT` ],   // arrow left
+    39: [ 0, `RIGHT` ],  // arrow right
+    38: [ 0, `UP` ],     // arrow up
+    40: [ 0, `DOWN` ],   // arrow down
 
-    START  : [ 13 ],         // enter
-    SELECT : [ 8, 32 ]       // backspace, space
+    65: [ 0, `A` ],      // 'A'
+    81: [ 0, `A` ],      // 'Q'
+
+    90: [ 0, `B` ],      // 'Z'
+    87: [ 0, `B` ],      // 'W'
+    66: [ 0, `B` ],      // 'B'
+
+    76: [ 0, `L` ],      // 'L'
+    82: [ 0, `R` ],      // 'R'
+
+    13: [ 0, `START` ],  // enter
+
+    8: [ 0, `SELECT` ],  // backspace
+    32: [ 0, `SELECT` ]  // space
+
+    /* eslint-enable no-magic-numbers */
 
 };
 
 export class KeyboardInput {
 
-    constructor( { element = document.body, keyMap = null, inputMap = null } = { } ) {
+    /**
+     * A KeyboardInput is an input device that will monitor the keystrokes on a specified DOM element and transmit those actions to the engines.
+     *
+     * @constructor
+     * @implements {Input}
+     *
+     * @param {object} [options] - The device options.
+     * @param {Element} [options.element] - The element on which will be bound the DOM listeners.
+     * @param {KeyMap} [options.keyMap] - The initial key map.
+     */
 
-        this._element = null;
-        this._keyMap = keyMap;
+    constructor({ element = document.body, keyMap = DEFAULT_KEY_MAP, inputMap = null } = {}) {
 
-        this._activeKeystate = { };
-        this._pendingKeystate = 0;
-        this._keystateChanged = false;
+        /**
+         * This value contains the element on which the DOM listeners have been bound.
+         *
+         * @member
+         * @readonly
+         * @type {Element}
+         */
 
-        this._onKeyDown_ = e => { this._onKeyDown( e ); };
-        this._onKeyUp_ = e => { this._onKeyUp( e ); };
+        this.element = null;
 
-        if ( element )
-            this.setElement( element );
+        /**
+         * This value contains the current key map used to filter keys.
+         *
+         * @member
+         * @readonly
+         * @type {KeyMap}
+         */
 
-        if ( inputMap ) {
-            this.applyInputMap( inputMap );
+        this.keyMap = null;
+
+        this.input = new ManualInput({ inputMap });
+
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
+
+        this.setKeyMap(keyMap);
+        this.setElement(element);
+
+    }
+
+    /**
+     * Change the element on which are bound the DOM listeners.
+     */
+
+    setElement(element) {
+
+        if (element === this.element)
+            return;
+
+        if (this.element !== null)
+            this.detachEvents();
+
+        this.element = element;
+
+        if (this.element !== null) {
+            this.attachEvents();
         }
 
     }
 
-    setElement( element ) {
+    /**
+     * Set the key map that will be used to translate key codes into inputs.
+     *
+     * Any old key that doesn't map to the same input anymore will be automatically released.
+     *
+     * @param {KeyMap} keyMap - The new key map.
+     */
 
-        if ( this._element )
-            this._detach( this._element );
+    setKeyMap(keyMap) {
 
-        this._element = element;
+        if (keyMap === this.keyMap)
+            return;
 
-        if ( this._element ) {
-            this._attach( this._element );
-        }
+        if (this.keyMap) {
+            for (let key of Reflect.ownKeys(this.keyMap)) {
 
-    }
+                let [ port, code ] = this.keyMap[key];
 
-    applyInputMap( inputs, options ) {
+                if (keyMap && Reflect.has(keyMap, key) && keyMap[key][0] === port && keyMap[key][1] === code)
+                    continue;
 
-        this.setKeyMap( this._parseInputMap( inputs, options ) );
+                this.input.up(port, code);
 
-    }
-
-    setKeyMap( map ) {
-
-        this._map = map;
-
-        this._activeInputState = { };
-        this._pendingInputState = { };
-        this._inputStateChanged = false;
-
-        for ( var keyCode of Object.keys( this._map ) ) {
-            var inputCode = this._map[ keyCode ];
-            this._activeInputState[ inputCode ] = false;
-        }
-
-    }
-
-    pollInputs( ) {
-
-        if ( ! this._inputStateChanged )
-            return ;
-
-        for ( var inputCode of Object.keys( this._pendingInputState ) )
-            this._activeInputState[ inputCode ] = this._pendingInputState[ inputCode ];
-
-        this._pendingInputState = { };
-        this._inputStateChanged = false;
-
-    }
-
-    getState( port, inputCode ) {
-
-        if ( port !== 0 )
-            return false;
-
-        return this._activeInputState[ inputCode ];
-
-    }
-
-    _parseInputMap( inputMap, { translationMap = defaultTranslationMap } = { } ) {
-
-        var keyMap = { };
-
-        for ( var inputName of Object.keys( inputMap ) ) {
-
-            if ( ! translationMap[ inputName ] )
-                continue ;
-
-            var inputCode = inputMap[ inputName ];
-
-            for ( var keyCode of translationMap[ inputName ] ) {
-                keyMap[ keyCode ] = inputCode;
             }
-
         }
 
-        return keyMap;
+        this.keyMap = keyMap;
 
     }
 
-    _attach( element ) {
+    /**
+     * @borrows ManualInput#setCodeMap as KeyboardInput#setCodeMap
+     */
 
-        element.addEventListener( 'keydown', this._onKeyDown_ );
-        element.addEventListener( 'keyup', this._onKeyUp_ );
+    setCodeMap(codeMap) {
 
-    }
-
-    _detach( ) {
-
-        element.removeEventListener( 'keydown', this._onKeyDown_ );
-        element.removeEventListener( 'keyup', this._onKeyUp_ );
+        this.input.setCodeMap(codeMap);
 
     }
 
-    _onKeyDown( e ) {
+    pollInputs() {
 
-        if ( [ 'select', 'input', 'textarea' ].includes( e.target.tagName.toLowerCase( ) ) )
-            return ;
-
-        if ( e.keyCode === 8 /* backspace */ )
-            e.preventDefault( );
-
-        if ( e.metaKey || e.ctrlKey || e.shiftKey || e.altKey )
-            return ;
-
-        if ( ! this._map )
-            return ;
-
-        var inputCode = this._map[ e.keyCode ];
-
-        if ( typeof inputCode === 'undefined' )
-            return ;
-
-        e.preventDefault( );
-
-        this._pendingInputState[ inputCode ] = true;
-        this._inputStateChanged = true;
+        this.input.pollInputs();
 
     }
 
-    _onKeyUp( e ) {
+    getState(port, code) {
 
-        if ( ! this._map )
-            return ;
-
-        var inputCode = this._map[ e.keyCode ];
-
-        if ( typeof inputCode === 'undefined' )
-            return ;
-
-        this._pendingInputState[ inputCode ] = false;
-        this._inputStateChanged = true;
+        return this.input.getState(port, code);
 
     }
 
-};
+    attachEvents() {
+
+        this.element.addEventListener(`keydown`, this.onKeyDown);
+        this.element.addEventListener(`keyup`, this.onKeyUp);
+
+    }
+
+    detachEvents() {
+
+        this.element.removeEventListener(`keydown`, this.onKeyDown);
+        this.element.removeEventListener(`keyup`, this.onKeyUp);
+
+    }
+
+    onKeyDown(e) {
+
+        if ([ `select`, `input`, `textarea` ].includes(e.target.tagName.toLowerCase()))
+            return;
+
+        if (e.keyCode === 8 /* backspace */) // eslint-disable-line no-magic-numbers
+            e.preventDefault();
+
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+            return;
+
+        if (!Reflect.has(this.keyMap, e.keyCode))
+            return;
+
+        e.preventDefault();
+
+        let [ port, code ] = this.keyMap[e.keyCode];
+        this.input.down(port, code);
+
+    }
+
+    onKeyUp(e) {
+
+        if (!Reflect.has(this.keyMap, e.keyCode))
+            return;
+
+        let [ port, code ] = this.keyMap[e.keyCode];
+        this.input.up(port, code);
+
+    }
+
+}
