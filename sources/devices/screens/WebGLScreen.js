@@ -139,8 +139,8 @@ export class WebGLScreen {
         let boundingBox = this.canvas && this.canvas.getBoundingClientRect();
         let { width, height } = boundingBox || { width: 100, height: 100 };
 
-        this.setInputSize(width, height);
-        this.setOutputSize(width, height);
+        this.setInputSize(Math.ceil(width), Math.ceil(height));
+        this.setOutputSize(Math.ceil(width), Math.ceil(height));
 
     }
 
