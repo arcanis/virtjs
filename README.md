@@ -12,7 +12,7 @@
 
   - [Input](https://arcanis.github.io/virtjs/documentation/Input.html)
       - [`NullInput`](https://arcanis.github.io/virtjs/documentation/NullInput.html)
-      - [`ManualInput`](https://arcanis.github.io/virtjs/documentation/Manual.html)
+      - [`ManualInput`](https://arcanis.github.io/virtjs/documentation/ManualInput.html)
       - [`KeyboardInput`](https://arcanis.github.io/virtjs/documentation/KeyboardInput.html)
 
   - [Screen](https://arcanis.github.io/virtjs/documentation/Screen.html)
