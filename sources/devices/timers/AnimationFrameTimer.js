@@ -3,7 +3,7 @@ import { AsyncTimer } from './AsyncTimer';
 export class AnimationFrameTimer extends AsyncTimer {
 
     /**
-     * An AnimationFrameTimer is timer device that makes use of the requestAnimationFrame/cancelAnimationFrame API from modern browsers to trigger asynchronous ticks.
+     * An AnimationFrameTimer is a timer device that makes use of the requestAnimationFrame/cancelAnimationFrame API from modern browsers to trigger asynchronous ticks.
      *
      * @constructor
      */
