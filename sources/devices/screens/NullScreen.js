@@ -5,9 +5,12 @@ export class NullScreen {
      *
      * @constructor
      * @implements {Screen}
+     *
+     * @param {object} [options] - The screen options.
+     * @param {function} [options.flushCallback] - A callback that will be called when the screen will be flushed.
      */
 
-    constructor() {
+    constructor({ flushCallback = () => {} } = {}) {
 
         this.inputWidth = 0;
         this.inputHeight = 0;
@@ -18,6 +21,8 @@ export class NullScreen {
 
         this.outputWidth = 0;
         this.outputHeight = 0;
+
+        this.flushCallback = flushCallback;
 
     }
 
@@ -56,7 +61,7 @@ export class NullScreen {
 
     flushScreen() {
 
-        // nothing
+        this.flushCallback(this);
 
     }
 
