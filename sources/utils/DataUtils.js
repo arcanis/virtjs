@@ -1,6 +1,6 @@
-let base64DataUrl = /^data:[^;]*;base64,([a-zA-Z0-9+/]+={0,2})$/;
+const base64DataUrl = /^data:[^;]*;base64,([a-zA-Z0-9+/]+={0,2})$/;
 
-function areEqualBuffers(a, b) {
+export function areEqualBuffers(a, b) {
 
     if (a.byteLength !== b.byteLength)
         return false;
@@ -9,7 +9,7 @@ function areEqualBuffers(a, b) {
 
 }
 
-function areEqualViews(a, b) {
+export function areEqualViews(a, b) {
 
     if (a.length !== b.length)
         return false;
@@ -22,7 +22,7 @@ function areEqualViews(a, b) {
 
 }
 
-function nodeToUint8(... buffers) {
+export function nodeToUint8(... buffers) {
 
     let totalByteLength = buffers.reduce((sum, buffer) => sum + buffer.length, 0);
 
