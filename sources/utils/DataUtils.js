@@ -96,7 +96,7 @@ export function fetchArrayBuffer(path) {
         } else if (isWeb) {
 
             let protocol = path.substr(0, path.indexOf(`:`));
-            let web = module.require(protocol /* http or https */);
+            let web = eval(`require(protocol /* http or https */)`);
 
             let buffers = [ ];
 
@@ -118,7 +118,7 @@ export function fetchArrayBuffer(path) {
 
         } else {
 
-            let fs = module.require(`fs`);
+            let fs = eval(`require('fs')`);
 
             fs.readFile(path, (err, buffer) => {
 
