@@ -1,5 +1,27 @@
 let base64DataUrl = /^data:[^;]*;base64,([a-zA-Z0-9+/]+={0,2})$/;
 
+function areEqualBuffers(a, b) {
+
+    if (a.byteLength !== b.byteLength)
+        return false;
+
+    return areEqualViews(new Uint8View(a), new Uint8View(b));
+
+}
+
+function areEqualViews(a, b) {
+
+    if (a.length !== b.length)
+        return false;
+
+    for (let t = 0, T = a.length; t < T; ++t)
+        if (a[t] !== b[t])
+            return false;
+
+    return true;
+
+}
+
 function nodeToUint8(... buffers) {
 
     let totalByteLength = buffers.reduce((sum, buffer) => sum + buffer.length, 0);
@@ -7,11 +29,11 @@ function nodeToUint8(... buffers) {
     let array = new Uint8Array(totalByteLength);
     let offset = 0;
 
-    buffers.forEach(buffer => {
+    for (let buffer of buffers) {
         for (let t = 0, T = array.length; t < T; ++t) {
             array[offset++] = buffer[t];
         }
-    });
+    }
 
     return array;
 
@@ -24,11 +46,11 @@ export function binaryStringToUint8(... strings) {
     let array = new Uint8Array(totalByteLength);
     let offset = 0;
 
-    strings.forEach(string => {
+    for (let string of strings) {
         for (let t = 0, T = string.length; t < T; ++t) {
             array[offset++] = string.charCodeAt(t);
         }
-    });
+    }
 
     return array;
 
